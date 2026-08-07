@@ -1,34 +1,70 @@
-# 🛡️ Sentri
+# 🛡️ Sentri (In Progress)
 
-Sentri is a cybersecurity portfolio project designed to scan suspicious URLs and identify potential security threats.
-
-The project demonstrates practical cybersecurity concepts through a modern web interface while showcasing skills in full-stack development, threat analysis, and security-focused application design.
-
-> 🚧 **Project Status:** In Development
+> A modern cybersecurity threat detection platform designed to analyze suspicious URLs, identify potential scam indicators, and help users understand online security risks.
 
 ---
 
-## 🔍 Overview
+## 📖 Overview
 
-Suspicious URLs are commonly used in phishing attacks, scams, malware distribution, and other online threats.
+Sentri is a cybersecurity-focused web application designed to make identifying suspicious online content easier and more understandable.
 
-Sentri allows users to submit a URL and receive a security analysis that highlights potential risks and suspicious indicators.
+Instead of simply labeling a URL as safe or dangerous, Sentri aims to analyze potential threat indicators and provide users with clear information about why something may be suspicious.
 
-The main purpose of Sentri is to demonstrate cybersecurity and software development skills through a functional portfolio project.
+Sentri allows users to:
+
+- Scan suspicious URLs
+- Detect potential security threats
+- Identify scam and phishing indicators
+- View URL risk levels
+- Understand why a URL may be dangerous
+- Receive security recommendations
+
+The goal is to create an accessible cybersecurity tool while demonstrating practical skills in threat detection, full-stack development, and security-focused application design.
 
 ---
 
 ## ✨ Features
 
-- 🔗 Scan suspicious URLs
-- ⚠️ Detect potential threat indicators
-- 📊 Display URL risk analysis
-- 🛡️ Present security-focused recommendations
-- 🌐 Modern cybersecurity dashboard interface
+### 🔗 URL Scanner
+
+- Scan suspicious URLs
+- Analyze URL structure
+- Detect suspicious patterns
+- Identify potential malicious links
+- Display scan results
+
+### ⚠️ Threat Detection
+
+- Detect common threat indicators
+- Identify suspicious URL behavior
+- Flag potentially dangerous links
+- Categorize detected security concerns
+
+### 📊 Risk Analysis
+
+- URL risk scoring
+- Low, Medium, and High risk levels
+- Security flag breakdown
+- Easy-to-understand results
+
+### 🛡️ Security Recommendations
+
+- Explain detected risks
+- Provide recommended actions
+- Help users recognize suspicious links
+- Promote safer browsing decisions
+
+### 🎨 Modern Dashboard
+
+- Cybersecurity-focused interface
+- Responsive layout
+- Interactive scanning components
+- Security status indicators
+- Futuristic visual design
 
 ---
 
-## 🛠️ Tech Stack
+# 🛠 Tech Stack
 
 ### Frontend
 
@@ -44,71 +80,83 @@ The main purpose of Sentri is to demonstrate cybersecurity and software developm
 - TypeScript
 - REST API
 
-### Development Tools
+### Cybersecurity
 
-- Git
-- GitHub
-- Visual Studio Code
-- npm
+- URL Analysis
+- Threat Detection
+- Risk Classification
+- Scam Pattern Detection
+
+### Future Integrations
+
+- Threat Intelligence APIs
+- Domain Reputation Services
+- Phishing Detection
+- AI-Assisted Threat Explanations
 
 ---
 
-## 🏗️ Project Structure
+# 📁 Project Structure
 
 ```text
 sentri/
 │
 ├── client/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── services/
-│   │   └── App.tsx
-│   └── package.json
+│   └── src/
+│       │
+│       ├── components/
+│       │
+│       ├── pages/
+│       │
+│       ├── services/
+│       │
+│       ├── types/
+│       │
+│       ├── App.tsx
+│       └── main.tsx
 │
 ├── server/
-│   ├── src/
-│   │   ├── routes/
-│   │   ├── services/
-│   │   ├── types/
-│   │   └── server.ts
-│   └── package.json
+│   └── src/
+│       │
+│       ├── routes/
+│       ├── services/
+│       ├── types/
+│       └── server.ts
 │
 └── README.md
 ```
 
 ---
 
-## 🚀 Getting Started
+# 🚀 Getting Started
 
-### 1. Clone the Repository
+## Clone Repository
 
 ```bash
 git clone https://github.com/SeukallesX/sentri.git
-cd sentri
 ```
 
-### 2. Install Frontend Dependencies
+## Install Frontend Dependencies
 
 ```bash
-cd client
+cd sentri/client
 npm install
 ```
 
-### 3. Install Backend Dependencies
+## Install Backend Dependencies
 
 ```bash
 cd ../server
 npm install
 ```
 
-### 4. Start the Backend
+## Start Backend Server
 
 ```bash
 npm run dev
 ```
 
-### 5. Start the Frontend
+## Start Frontend
 
 Open another terminal:
 
@@ -117,108 +165,125 @@ cd client
 npm run dev
 ```
 
-Open the local development URL provided by Vite.
+---
+
+# 📸 Screenshots
+
+### Main Dashboard
+
+> *(Coming Soon)*
+
+### URL Scanner
+
+> *(Coming Soon)*
+
+### Threat Analysis
+
+> *(Coming Soon)*
+
+### Risk Results
+
+> *(Coming Soon)*
 
 ---
 
-## 🎯 Project Goals
+# 🎯 Project Goals
 
-Sentri was created to demonstrate practical skills in:
-
-- Cybersecurity application development
-- URL threat analysis
-- React and TypeScript development
-- Node.js and Express
-- REST API development
-- Frontend and backend integration
-- Security-focused UI/UX design
-- Git and GitHub version control
+- Develop a practical cybersecurity application
+- Analyze suspicious URLs
+- Detect common scam and phishing indicators
+- Provide understandable security risk assessments
+- Explore threat detection techniques
+- Build a full-stack TypeScript application
+- Create a modern cybersecurity dashboard
+- Demonstrate cybersecurity skills through a portfolio project
 
 ---
 
-## 🛡️ Cybersecurity Focus
+# 🔮 Roadmap
 
-Sentri explores common techniques used to identify potentially dangerous URLs.
+## Version 1 — URL Scanner
 
-The application is designed to help demonstrate concepts related to:
+- [x] Project Setup
+- [x] Frontend Dashboard
+- [x] Backend API
+- [x] URL Scanner Interface
+- [x] Basic URL Analysis
+- [x] Risk Classification
+- [ ] Improve Scan Results
+- [ ] URL Scan History
 
-- Phishing detection
-- Malicious URL identification
-- Suspicious domain analysis
-- Threat indicators
-- Risk classification
-- Security awareness
+## Version 2 — Threat Detection
 
-The goal is not only to determine whether a URL may be suspicious, but also to present the reasoning behind the analysis in a clear and understandable way.
+- [ ] Domain Reputation Analysis
+- [ ] Suspicious Domain Detection
+- [ ] Advanced URL Pattern Detection
+- [ ] Threat Categories
+- [ ] Security Recommendation System
+
+## Version 3 — Scam Detection
+
+- [ ] Suspicious Message Analysis
+- [ ] Phishing Detection
+- [ ] Scam Pattern Recognition
+- [ ] Message Risk Scoring
+- [ ] Detailed Threat Explanations
+
+## Version 4 — Threat Intelligence
+
+- [ ] External Threat Intelligence APIs
+- [ ] Domain Reputation Services
+- [ ] Known Malicious URL Detection
+- [ ] Threat Intelligence Dashboard
+- [ ] Security Statistics
 
 ---
 
-## 🗺️ Planned Features
+# 🎓 Learning Objectives
 
-Sentri is currently under development.
+This project explores:
 
-Future versions may include:
-
-- 💬 Suspicious message analysis
-- 🎣 Phishing detection
-- 📊 Scam risk scoring
-- 🌐 Domain reputation analysis
-- 🔎 URL metadata inspection
-- 🧠 Detailed threat explanations
-- 🕒 Scan history
-- 📈 Security dashboard statistics
-- 🚨 Improved threat classification
-- 🔗 External threat intelligence integration
+- Cybersecurity Fundamentals
+- URL Threat Analysis
+- Phishing & Scam Detection
+- Risk Classification
+- React Architecture
+- TypeScript
+- Node.js & Express
+- REST API Development
+- Full-Stack Application Development
+- Security-Focused UI/UX Design
 
 ---
 
-## 🔐 Security Notice
+# 🔐 Security Disclaimer
 
 Sentri is an educational and portfolio project.
 
-Scan results should not be considered a replacement for professional cybersecurity tools, threat intelligence platforms, or professional security analysis.
+The results generated by Sentri should not be considered a replacement for professional cybersecurity software, threat intelligence platforms, or professional security analysis.
 
-Do not submit sensitive, private, or confidential information.
-
----
-
-## 📚 What This Project Demonstrates
-
-Sentri demonstrates how cybersecurity concepts can be incorporated into a modern full-stack web application.
-
-The project provides hands-on experience with:
-
-- Designing security-focused applications
-- Building reusable React components
-- Developing APIs with Node.js and Express
-- Working with TypeScript across the frontend and backend
-- Processing and displaying security analysis results
-- Designing cybersecurity dashboards
-- Managing application state
-- Structuring a full-stack project
-- Using Git and GitHub for version control
+Users should avoid submitting sensitive, private, or confidential information.
 
 ---
 
-## 🔮 Future Direction
+# 🤝 Contributing
 
-The long-term goal for Sentri is to expand beyond basic URL scanning into a broader scam and threat-analysis platform.
+Contributions, suggestions, and feedback are welcome.
 
-Potential future capabilities include analyzing suspicious messages, identifying phishing patterns, assigning risk scores, integrating external threat intelligence sources, and providing clearer explanations of detected security indicators.
-
----
-
-## 👩‍💻 Developer
-
-**Mariel Angelene Bravo**
-
-Computer Science  
-California State University, Fullerton
-
-GitHub: **SeukallesX**
+Feel free to fork the repository and submit a pull request.
 
 ---
 
-## 📄 License
+# 📄 License
 
-This project is intended for educational and portfolio purposes.
+This project is licensed under the MIT License.
+
+---
+
+## 👤 Author
+
+**Mariel Bravo**
+
+Computer Science @ California State University, Fullerton
+
+Exploring AI • Blockchain • Cybersecurity
