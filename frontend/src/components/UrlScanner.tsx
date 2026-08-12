@@ -6,7 +6,10 @@ import {
 } from "../services/api";
 
 interface UrlScannerProps {
-  onScanComplete: (result: AnalysisResult) => void;
+  onScanComplete: (
+    result: AnalysisResult,
+    url: string,
+  ) => void;
 }
 
 function UrlScanner({
@@ -45,7 +48,10 @@ function UrlScanner({
 
       setResult(data);
 
-      onScanComplete(data);
+      onScanComplete(
+        data,
+        normalizedUrl,
+      );
     } catch (requestError) {
       setError(
         requestError instanceof Error

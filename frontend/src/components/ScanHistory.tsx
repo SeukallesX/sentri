@@ -1,8 +1,11 @@
 import type { AnalysisResult } from "../services/api";
 
+export type ScanType = "Message" | "URL";
+
 export interface ScanHistoryItem {
   id: string;
-  message: string;
+  type: ScanType;
+  content: string;
   result: AnalysisResult;
   createdAt: string;
 }
@@ -22,8 +25,8 @@ function ScanHistory({
     <section className="history-section">
       <div className="history-header">
         <div>
-          <p className="eyebrow">Recent Scans</p>
-          <h3>Scan History</h3>
+          <p className="eyebrow">Security Archive</p>
+          <h3>Recent Scans</h3>
         </div>
 
         {history.length > 0 && (
@@ -39,8 +42,8 @@ function ScanHistory({
 
       {history.length === 0 ? (
         <div className="history-empty">
-          <p>No scans yet.</p>
-          <span>Your recent Sentri analyses will appear here.</span>
+          <p>No scans recorded.</p>
+          <span>Message and URL scans will appear here.</span>
         </div>
       ) : (
         <div className="history-list">
@@ -52,9 +55,17 @@ function ScanHistory({
               onClick={() => onSelect(item)}
             >
               <div className="history-message">
-                <strong>{item.result.riskLevel} Risk</strong>
+                <div className="history-title-row">
+                  <span className="scan-type-badge">
+                    {item.type}
+                  </span>
 
-                <p>{item.message}</p>
+                  <strong>
+                    {item.result.riskLevel} Risk
+                  </strong>
+                </div>
+
+                <p>{item.content}</p>
               </div>
 
               <div className="history-meta">

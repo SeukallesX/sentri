@@ -11,6 +11,9 @@ import Hero from "./components/Hero";
 import Navbar from "./components/Navbar";
 import ResultsCard from "./components/ResultsCard";
 import ScanHistory from "./components/ScanHistory";
+import ThreatAnalytics from "./components/ThreatAnalytics";
+import ThreatFeed from "./components/ThreatFeed";
+import ThreatIndex from "./components/ThreatIndex";
 import UrlScanner from "./components/UrlScanner";
 
 import type { ScanHistoryItem } from "./components/ScanHistory";
@@ -48,20 +51,58 @@ function App() {
     useState<DashboardStatTotals>(defaultStats);
 
   useEffect(() => {
-    const savedHistory = localStorage.getItem(HISTORY_KEY);
+    const savedHistory =
+      localStorage.getItem(HISTORY_KEY);
 
     if (savedHistory) {
       try {
         const parsedHistory =
           JSON.parse(savedHistory) as ScanHistoryItem[];
 
-        setHistory(parsedHistory);
+        const migratedHistory =
+          parsedHistory
+            .map((item) => {
+              if (
+                item.type &&
+                item.content
+              ) {
+                return item;
+              }
+
+              const oldItem = item as ScanHistoryItem & {
+                message?: string;
+              };
+
+              if (oldItem.message) {
+                return {
+                  ...item,
+                  type: "Message" as const,
+                  content: oldItem.message,
+                };
+              }
+
+              return null;
+            })
+            .filter(
+              (
+                item,
+              ): item is ScanHistoryItem =>
+                item !== null,
+            );
+
+        setHistory(migratedHistory);
+
+        localStorage.setItem(
+          HISTORY_KEY,
+          JSON.stringify(migratedHistory),
+        );
       } catch {
         localStorage.removeItem(HISTORY_KEY);
       }
     }
 
-    const savedStats = localStorage.getItem(STATS_KEY);
+    const savedStats =
+      localStorage.getItem(STATS_KEY);
 
     if (savedStats) {
       try {
@@ -75,7 +116,9 @@ function App() {
     }
   }, []);
 
-  function saveHistory(items: ScanHistoryItem[]) {
+  function saveHistory(
+    items: ScanHistoryItem[],
+  ) {
     setHistory(items);
 
     localStorage.setItem(
@@ -84,22 +127,49 @@ function App() {
     );
   }
 
-  function updateStats(scanResult: AnalysisResult) {
+  function addHistoryItem(
+    item: ScanHistoryItem,
+  ) {
+    setHistory((currentHistory) => {
+      const updatedHistory = [
+        item,
+        ...currentHistory,
+      ].slice(0, 10);
+
+      localStorage.setItem(
+        HISTORY_KEY,
+        JSON.stringify(updatedHistory),
+      );
+
+      return updatedHistory;
+    });
+  }
+
+  function updateStats(
+    scanResult: AnalysisResult,
+  ) {
     setStats((currentStats) => {
       const updatedStats: DashboardStatTotals = {
         ...currentStats,
-        totalScans: currentStats.totalScans + 1,
+        totalScans:
+          currentStats.totalScans + 1,
       };
 
-      if (scanResult.riskLevel === "High") {
+      if (
+        scanResult.riskLevel === "High"
+      ) {
         updatedStats.highRisk += 1;
       }
 
-      if (scanResult.riskLevel === "Medium") {
+      if (
+        scanResult.riskLevel === "Medium"
+      ) {
         updatedStats.mediumRisk += 1;
       }
 
-      if (scanResult.riskLevel === "Low") {
+      if (
+        scanResult.riskLevel === "Low"
+      ) {
         updatedStats.lowRisk += 1;
       }
 
@@ -117,10 +187,14 @@ function App() {
   ) {
     event.preventDefault();
 
-    const cleanedMessage = message.trim();
+    const cleanedMessage =
+      message.trim();
 
     if (!cleanedMessage) {
-      setError("Please enter a suspicious message.");
+      setError(
+        "Please enter a suspicious message.",
+      );
+
       return;
     }
 
@@ -129,7 +203,10 @@ function App() {
       setError("");
       setResult(null);
 
-      const data = await analyzeMessage(cleanedMessage);
+      const data =
+        await analyzeMessage(
+          cleanedMessage,
+        );
 
       setResult(data);
 
@@ -137,17 +214,14 @@ function App() {
 
       const historyItem: ScanHistoryItem = {
         id: crypto.randomUUID(),
-        message: cleanedMessage,
+        type: "Message",
+        content: cleanedMessage,
         result: data,
-        createdAt: new Date().toISOString(),
+        createdAt:
+          new Date().toISOString(),
       };
 
-      const updatedHistory = [
-        historyItem,
-        ...history,
-      ].slice(0, 10);
-
-      saveHistory(updatedHistory);
+      addHistoryItem(historyItem);
     } catch (requestError) {
       setError(
         requestError instanceof Error
@@ -159,7 +233,27 @@ function App() {
     }
   }
 
-  function handleMessageChange(value: string) {
+  function handleUrlScanComplete(
+    scanResult: AnalysisResult,
+    url: string,
+  ) {
+    updateStats(scanResult);
+
+    const historyItem: ScanHistoryItem = {
+      id: crypto.randomUUID(),
+      type: "URL",
+      content: url,
+      result: scanResult,
+      createdAt:
+        new Date().toISOString(),
+    };
+
+    addHistoryItem(historyItem);
+  }
+
+  function handleMessageChange(
+    value: string,
+  ) {
     setMessage(value);
 
     if (error) {
@@ -173,27 +267,44 @@ function App() {
     setError("");
   }
 
-  function handleSelectHistory(item: ScanHistoryItem) {
-    setMessage(item.message);
-    setResult(item.result);
+  function handleSelectHistory(
+    item: ScanHistoryItem,
+  ) {
     setError("");
 
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+    if (
+      item.type === "Message"
+    ) {
+      setMessage(item.content);
+      setResult(item.result);
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+
+      return;
+    }
+
+    if (
+      item.type === "URL"
+    ) {
+      window.alert(
+        `URL Scan\n\n${item.content}\n\nRisk: ${item.result.riskLevel}\nScore: ${item.result.riskScore}/100`,
+      );
+    }
   }
 
   function handleClearHistory() {
-    setHistory([]);
-
-    localStorage.removeItem(HISTORY_KEY);
+    saveHistory([]);
   }
 
   function handleResetStats() {
     setStats(defaultStats);
 
-    localStorage.removeItem(STATS_KEY);
+    localStorage.removeItem(
+      STATS_KEY,
+    );
   }
 
   return (
@@ -219,10 +330,18 @@ function App() {
           NETWORK OVERVIEW
         </div>
 
-        <DashboardStats stats={stats} />
+        <DashboardStats
+          stats={stats}
+        />
 
         <DashboardControls
-          onResetStats={handleResetStats}
+          onResetStats={
+            handleResetStats
+          }
+        />
+
+        <ThreatIndex
+          history={history}
         />
 
         <div className="section-marker">
@@ -235,12 +354,20 @@ function App() {
             message={message}
             isLoading={isLoading}
             error={error}
-            onMessageChange={handleMessageChange}
-            onAnalyze={handleAnalyze}
-            onClear={handleClear}
+            onMessageChange={
+              handleMessageChange
+            }
+            onAnalyze={
+              handleAnalyze
+            }
+            onClear={
+              handleClear
+            }
           />
 
-          <ResultsCard result={result} />
+          <ResultsCard
+            result={result}
+          />
         </section>
 
         <div className="report-actions">
@@ -255,7 +382,26 @@ function App() {
           LINK INTELLIGENCE
         </div>
 
-        <UrlScanner onScanComplete={updateStats} />
+        <div className="intel-grid">
+          <UrlScanner
+            onScanComplete={
+              handleUrlScanComplete
+            }
+          />
+
+          <ThreatFeed
+            history={history}
+          />
+        </div>
+
+        <div className="section-marker">
+          <span>04</span>
+          THREAT ANALYTICS
+        </div>
+
+        <ThreatAnalytics
+          history={history}
+        />
 
         <section className="feature-grid">
           <article>
@@ -263,13 +409,19 @@ function App() {
               <span>⌁</span>
             </div>
 
-            <span className="feature-number">01</span>
+            <span className="feature-number">
+              01
+            </span>
 
-            <h3>Threat Detection</h3>
+            <h3>
+              Threat Detection
+            </h3>
 
             <p>
-              Detects phishing patterns, urgency, impersonation,
-              fraudulent payments, fake prizes, and social engineering.
+              Detects phishing patterns,
+              urgency, impersonation,
+              fraudulent payments, fake
+              prizes, and social engineering.
             </p>
           </article>
 
@@ -278,12 +430,17 @@ function App() {
               <span>◎</span>
             </div>
 
-            <span className="feature-number">02</span>
+            <span className="feature-number">
+              02
+            </span>
 
-            <h3>Risk Intelligence</h3>
+            <h3>
+              Risk Intelligence
+            </h3>
 
             <p>
-              Converts detected indicators into a dynamic threat score
+              Converts detected indicators
+              into a dynamic threat score
               from zero to one hundred.
             </p>
           </article>
@@ -293,36 +450,51 @@ function App() {
               <span>◇</span>
             </div>
 
-            <span className="feature-number">03</span>
+            <span className="feature-number">
+              03
+            </span>
 
-            <h3>Defense Guidance</h3>
+            <h3>
+              Defense Guidance
+            </h3>
 
             <p>
-              Provides security recommendations without depending on an
-              external artificial intelligence provider.
+              Provides security
+              recommendations without
+              depending on an external
+              artificial intelligence
+              provider.
             </p>
           </article>
         </section>
 
         <div className="section-marker">
-          <span>04</span>
+          <span>05</span>
           SECURITY ARCHIVE
         </div>
 
         <ScanHistory
           history={history}
-          onSelect={handleSelectHistory}
-          onClearHistory={handleClearHistory}
+          onSelect={
+            handleSelectHistory
+          }
+          onClearHistory={
+            handleClearHistory
+          }
         />
 
         <footer className="sentri-footer">
           <div>
             <strong>SENTRI</strong>
-            <span>Digital Threat Defense System</span>
+
+            <span>
+              Digital Threat Defense System
+            </span>
           </div>
 
           <p>
-            Rule-Based Security Engine • Local Analysis • V1.0
+            Rule-Based Security Engine •
+            Local Analysis • V1.0
           </p>
         </footer>
       </main>
