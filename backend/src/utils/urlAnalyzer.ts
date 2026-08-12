@@ -1,5 +1,37 @@
 import type { ScamFlag } from "../types/analysis.js";
 
+export interface UrlIntelligence {
+  originalUrl: string;
+  normalizedUrl: string;
+
+  protocol: string;
+  hostname: string;
+  pathname: string;
+
+  usesHttps: boolean;
+
+  isShortened: boolean;
+  isIpAddress: boolean;
+  hasSuspiciousTld: boolean;
+  hasLongSubdomainChain: boolean;
+
+  subdomainDepth: number;
+
+  suspiciousTld: string | null;
+
+  domainLength: number;
+
+  containsAtSymbol: boolean;
+  containsPunycode: boolean;
+
+  port: string | null;
+}
+
+export interface UrlAnalysis {
+  flags: ScamFlag[];
+  intelligence: UrlIntelligence | null;
+}
+
 const shortenerDomains = [
   "bit.ly",
   "tinyurl.com",
@@ -8,6 +40,8 @@ const shortenerDomains = [
   "goo.gl",
   "is.gd",
   "buff.ly",
+  "ow.ly",
+  "shorturl.at",
 ];
 
 const suspiciousTlds = [
@@ -19,147 +53,351 @@ const suspiciousTlds = [
   ".link",
   ".work",
   ".support",
+  ".info",
+  ".live",
+  ".buzz",
 ];
 
-function extractUrls(message: string): string[] {
-  const urlPattern = /https?:\/\/[^\s]+|www\.[^\s]+/gi;
+function normalizeUrl(
+  rawUrl: string,
+): string {
+  const trimmedUrl =
+    rawUrl.trim();
 
-  const matches = message.match(urlPattern);
-
-  if (!matches) {
-    return [];
+  if (
+    trimmedUrl.startsWith("http://") ||
+    trimmedUrl.startsWith("https://")
+  ) {
+    return trimmedUrl;
   }
 
-  return matches.map((url) =>
-    url.replace(/[),.!?]+$/, ""),
+  if (
+    trimmedUrl.startsWith("www.")
+  ) {
+    return `https://${trimmedUrl}`;
+  }
+
+  return `https://${trimmedUrl}`;
+}
+
+function isIpAddress(
+  hostname: string,
+): boolean {
+  const ipv4Pattern =
+    /^(?:\d{1,3}\.){3}\d{1,3}$/;
+
+  if (
+    !ipv4Pattern.test(hostname)
+  ) {
+    return false;
+  }
+
+  const parts =
+    hostname.split(".");
+
+  return parts.every((part) => {
+    const number =
+      Number(part);
+
+    return (
+      Number.isInteger(number) &&
+      number >= 0 &&
+      number <= 255
+    );
+  });
+}
+
+function getSubdomainDepth(
+  hostname: string,
+): number {
+  if (
+    isIpAddress(hostname)
+  ) {
+    return 0;
+  }
+
+  const parts =
+    hostname
+      .split(".")
+      .filter(Boolean);
+
+  if (
+    parts.length <= 2
+  ) {
+    return 0;
+  }
+
+  return parts.length - 2;
+}
+
+function getSuspiciousTld(
+  hostname: string,
+): string | null {
+  const detected =
+    suspiciousTlds.find(
+      (tld) =>
+        hostname.endsWith(tld),
+    );
+
+  return detected ?? null;
+}
+
+function isShortenedDomain(
+  hostname: string,
+): boolean {
+  return shortenerDomains.some(
+    (domain) =>
+      hostname === domain ||
+      hostname.endsWith(
+        `.${domain}`,
+      ),
   );
 }
 
-function normalizeUrl(rawUrl: string): string {
-  if (rawUrl.startsWith("www.")) {
-    return `https://${rawUrl}`;
-  }
-
-  return rawUrl;
+export function analyzeUrls(
+  rawUrl: string,
+): ScamFlag[] {
+  return analyzeUrlIntelligence(
+    rawUrl,
+  ).flags;
 }
 
-function isIpAddress(hostname: string): boolean {
-  return /^\d{1,3}(\.\d{1,3}){3}$/.test(hostname);
-}
-
-export function analyzeUrls(message: string): ScamFlag[] {
-  const urls = extractUrls(message);
+export function analyzeUrlIntelligence(
+  rawUrl: string,
+): UrlAnalysis {
   const flags: ScamFlag[] = [];
 
-  if (urls.length === 0) {
-    return flags;
+  const normalizedUrl =
+    normalizeUrl(rawUrl);
+
+  let parsedUrl: URL;
+
+  try {
+    parsedUrl =
+      new URL(normalizedUrl);
+  } catch {
+    flags.push({
+      category:
+        "Malformed link",
+      description:
+        "The URL could not be parsed correctly.",
+      points: 25,
+    });
+
+    return {
+      flags,
+      intelligence: null,
+    };
   }
 
+  const hostname =
+    parsedUrl.hostname.toLowerCase();
+
+  const usesHttps =
+    parsedUrl.protocol ===
+    "https:";
+
+  const shortened =
+    isShortenedDomain(
+      hostname,
+    );
+
+  const ipAddress =
+    isIpAddress(
+      hostname,
+    );
+
+  const suspiciousTld =
+    getSuspiciousTld(
+      hostname,
+    );
+
+  const subdomainDepth =
+    getSubdomainDepth(
+      hostname,
+    );
+
+  const longSubdomainChain =
+    subdomainDepth >= 3;
+
+  const containsAtSymbol =
+    normalizedUrl.includes("@");
+
+  const containsPunycode =
+    hostname.includes("xn--");
+
+  /*
+   * Baseline link detection
+   */
   flags.push({
-    category: "Link detected",
+    category:
+      "Link detected",
     description:
-      "The message contains one or more links. Verify the destination before opening them.",
+      "The content contains a URL. Verify the destination before opening it.",
     points: 5,
   });
 
-  let hasShortener = false;
-  let hasIpAddress = false;
-  let hasInsecureHttp = false;
-  let hasSuspiciousTld = false;
-  let hasLongSubdomainChain = false;
-
-  for (const rawUrl of urls) {
-    try {
-      const normalizedUrl = normalizeUrl(rawUrl);
-      const parsedUrl = new URL(normalizedUrl);
-
-      const hostname = parsedUrl.hostname.toLowerCase();
-
-      if (
-        shortenerDomains.some(
-          (domain) =>
-            hostname === domain ||
-            hostname.endsWith(`.${domain}`),
-        )
-      ) {
-        hasShortener = true;
-      }
-
-      if (isIpAddress(hostname)) {
-        hasIpAddress = true;
-      }
-
-      if (parsedUrl.protocol === "http:") {
-        hasInsecureHttp = true;
-      }
-
-      if (
-        suspiciousTlds.some((tld) =>
-          hostname.endsWith(tld),
-        )
-      ) {
-        hasSuspiciousTld = true;
-      }
-
-      const hostnameParts = hostname.split(".");
-
-      if (hostnameParts.length >= 5) {
-        hasLongSubdomainChain = true;
-      }
-    } catch {
-      flags.push({
-        category: "Malformed link",
-        description:
-          "The message contains a link that could not be parsed correctly.",
-        points: 15,
-      });
-    }
-  }
-
-  if (hasShortener) {
+  /*
+   * HTTP instead of HTTPS
+   */
+  if (!usesHttps) {
     flags.push({
-      category: "Shortened link",
+      category:
+        "Insecure link",
       description:
-        "The message contains a shortened URL that hides the final destination.",
-      points: 20,
-    });
-  }
-
-  if (hasIpAddress) {
-    flags.push({
-      category: "IP-based link",
-      description:
-        "The link uses a raw IP address instead of a normal domain name.",
-      points: 25,
-    });
-  }
-
-  if (hasInsecureHttp) {
-    flags.push({
-      category: "Insecure link",
-      description:
-        "The message contains an HTTP link that does not use HTTPS encryption.",
+        "The URL uses HTTP instead of HTTPS.",
       points: 10,
     });
   }
 
-  if (hasSuspiciousTld) {
+  /*
+   * URL shortener
+   */
+  if (shortened) {
     flags.push({
-      category: "Suspicious domain",
+      category:
+        "Shortened link",
       description:
-        "The link uses a domain ending that is commonly abused in phishing campaigns.",
+        "The URL uses a shortening service that hides the final destination.",
+      points: 20,
+    });
+  }
+
+  /*
+   * Raw IP address
+   */
+  if (ipAddress) {
+    flags.push({
+      category:
+        "IP-based link",
+      description:
+        "The URL uses a raw IP address instead of a normal domain name.",
+      points: 25,
+    });
+  }
+
+  /*
+   * Suspicious TLD
+   */
+  if (suspiciousTld) {
+    flags.push({
+      category:
+        "Suspicious domain",
+      description:
+        `The domain uses the ${suspiciousTld} ending, which should be treated cautiously.`,
       points: 15,
     });
   }
 
-  if (hasLongSubdomainChain) {
+  /*
+   * Excessive subdomains
+   */
+  if (
+    longSubdomainChain
+  ) {
     flags.push({
-      category: "Misleading domain structure",
+      category:
+        "Misleading domain structure",
       description:
-        "The link contains an unusually long chain of subdomains that may be designed to appear trustworthy.",
+        "The domain contains an unusually deep subdomain chain.",
       points: 15,
     });
   }
 
-  return flags;
+  /*
+   * Username-style @ symbol
+   */
+  if (
+    containsAtSymbol
+  ) {
+    flags.push({
+      category:
+        "URL obfuscation",
+      description:
+        "The URL contains an @ symbol that may obscure the actual destination.",
+      points: 20,
+    });
+  }
+
+  /*
+   * Punycode / internationalized hostname
+   */
+  if (
+    containsPunycode
+  ) {
+    flags.push({
+      category:
+        "Punycode domain",
+      description:
+        "The URL uses an encoded internationalized domain name that may resemble another website.",
+      points: 20,
+    });
+  }
+
+  /*
+   * Extremely long hostname
+   */
+  if (
+    hostname.length > 50
+  ) {
+    flags.push({
+      category:
+        "Long domain",
+      description:
+        "The hostname is unusually long and may be designed to confuse the recipient.",
+      points: 10,
+    });
+  }
+
+  const intelligence:
+    UrlIntelligence = {
+    originalUrl:
+      rawUrl,
+
+    normalizedUrl,
+
+    protocol:
+      parsedUrl.protocol.replace(
+        ":",
+        "",
+      ),
+
+    hostname,
+
+    pathname:
+      parsedUrl.pathname,
+
+    usesHttps,
+
+    isShortened:
+      shortened,
+
+    isIpAddress:
+      ipAddress,
+
+    hasSuspiciousTld:
+      suspiciousTld !== null,
+
+    hasLongSubdomainChain:
+      longSubdomainChain,
+
+    subdomainDepth,
+
+    suspiciousTld,
+
+    domainLength:
+      hostname.length,
+
+    containsAtSymbol,
+
+    containsPunycode,
+
+    port:
+      parsedUrl.port || null,
+  };
+
+  return {
+    flags,
+    intelligence,
+  };
 }

@@ -1,4 +1,5 @@
 import { calculateRiskScore, determineRiskLevel, getRecommendation, } from "../utils/riskCalculator.js";
+import { analyzeUrls } from "../utils/urlAnalyzer.js";
 const scamRules = [
     {
         category: "Urgency",
@@ -81,19 +82,6 @@ const scamRules = [
         ],
     },
     {
-        category: "Suspicious link",
-        description: "The message contains a link that should be verified before opening.",
-        points: 25,
-        patterns: [
-            /https?:\/\/[^\s]+/i,
-            /\bwww\.[^\s]+/i,
-            /\bbit\.ly\/[^\s]+/i,
-            /\btinyurl\.com\/[^\s]+/i,
-            /\bt\.co\/[^\s]+/i,
-            /\brebrand\.ly\/[^\s]+/i,
-        ],
-    },
-    {
         category: "Investment promise",
         description: "The message promises unusually high, fast, or guaranteed investment returns.",
         points: 25,
@@ -150,6 +138,8 @@ export function analyzeMessage(message) {
             });
         }
     }
+    const urlFlags = analyzeUrls(message);
+    flags.push(...urlFlags);
     const riskScore = calculateRiskScore(flags);
     const riskLevel = determineRiskLevel(riskScore);
     const summary = flags.length === 0

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { SubmitEvent } from "react";
 
 import "./App.css";
@@ -21,11 +21,11 @@ import type { DashboardStatTotals } from "./types/stats";
 
 import {
   analyzeMessage,
+  clearScans,
+  getScans,
+  getStats,
   type AnalysisResult,
 } from "./services/api";
-
-const HISTORY_KEY = "sentri-scan-history";
-const STATS_KEY = "sentri-dashboard-stats";
 
 const defaultStats: DashboardStatTotals = {
   totalScans: 0,
@@ -42,7 +42,16 @@ function App() {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const [historyLoading, setHistoryLoading] =
+    useState(true);
+
+  const [dashboardLoading, setDashboardLoading] =
+    useState(true);
+
   const [error, setError] = useState("");
+
+  const [historyError, setHistoryError] =
+    useState("");
 
   const [history, setHistory] =
     useState<ScanHistoryItem[]>([]);
@@ -50,145 +59,67 @@ function App() {
   const [stats, setStats] =
     useState<DashboardStatTotals>(defaultStats);
 
-  useEffect(() => {
-    const savedHistory =
-      localStorage.getItem(HISTORY_KEY);
+  const loadHistory = useCallback(async () => {
+    try {
+      setHistoryLoading(true);
+      setHistoryError("");
 
-    if (savedHistory) {
-      try {
-        const parsedHistory =
-          JSON.parse(savedHistory) as ScanHistoryItem[];
+      const scans = await getScans(10);
 
-        const migratedHistory =
-          parsedHistory
-            .map((item) => {
-              if (
-                item.type &&
-                item.content
-              ) {
-                return item;
-              }
-
-              const oldItem = item as ScanHistoryItem & {
-                message?: string;
-              };
-
-              if (oldItem.message) {
-                return {
-                  ...item,
-                  type: "Message" as const,
-                  content: oldItem.message,
-                };
-              }
-
-              return null;
-            })
-            .filter(
-              (
-                item,
-              ): item is ScanHistoryItem =>
-                item !== null,
-            );
-
-        setHistory(migratedHistory);
-
-        localStorage.setItem(
-          HISTORY_KEY,
-          JSON.stringify(migratedHistory),
-        );
-      } catch {
-        localStorage.removeItem(HISTORY_KEY);
-      }
-    }
-
-    const savedStats =
-      localStorage.getItem(STATS_KEY);
-
-    if (savedStats) {
-      try {
-        const parsedStats =
-          JSON.parse(savedStats) as DashboardStatTotals;
-
-        setStats(parsedStats);
-      } catch {
-        localStorage.removeItem(STATS_KEY);
-      }
+      setHistory(scans);
+    } catch (requestError) {
+      setHistoryError(
+        requestError instanceof Error
+          ? requestError.message
+          : "Unable to load scan history.",
+      );
+    } finally {
+      setHistoryLoading(false);
     }
   }, []);
 
-  function saveHistory(
-    items: ScanHistoryItem[],
-  ) {
-    setHistory(items);
+  const loadStats = useCallback(async () => {
+    try {
+      const dashboardStats = await getStats();
 
-    localStorage.setItem(
-      HISTORY_KEY,
-      JSON.stringify(items),
-    );
-  }
-
-  function addHistoryItem(
-    item: ScanHistoryItem,
-  ) {
-    setHistory((currentHistory) => {
-      const updatedHistory = [
-        item,
-        ...currentHistory,
-      ].slice(0, 10);
-
-      localStorage.setItem(
-        HISTORY_KEY,
-        JSON.stringify(updatedHistory),
+      setStats(dashboardStats);
+    } catch (requestError) {
+      console.error(
+        "Unable to load Sentri dashboard stats:",
+        requestError,
       );
 
-      return updatedHistory;
-    });
-  }
+      setStats(defaultStats);
+    }
+  }, []);
 
-  function updateStats(
-    scanResult: AnalysisResult,
-  ) {
-    setStats((currentStats) => {
-      const updatedStats: DashboardStatTotals = {
-        ...currentStats,
-        totalScans:
-          currentStats.totalScans + 1,
-      };
+  const refreshDashboard = useCallback(async () => {
+    await Promise.all([
+      loadHistory(),
+      loadStats(),
+    ]);
+  }, [loadHistory, loadStats]);
 
-      if (
-        scanResult.riskLevel === "High"
-      ) {
-        updatedStats.highRisk += 1;
+  useEffect(() => {
+    async function initializeDashboard() {
+      try {
+        setDashboardLoading(true);
+
+        await refreshDashboard();
+      } finally {
+        setDashboardLoading(false);
       }
+    }
 
-      if (
-        scanResult.riskLevel === "Medium"
-      ) {
-        updatedStats.mediumRisk += 1;
-      }
-
-      if (
-        scanResult.riskLevel === "Low"
-      ) {
-        updatedStats.lowRisk += 1;
-      }
-
-      localStorage.setItem(
-        STATS_KEY,
-        JSON.stringify(updatedStats),
-      );
-
-      return updatedStats;
-    });
-  }
+    void initializeDashboard();
+  }, [refreshDashboard]);
 
   async function handleAnalyze(
     event: SubmitEvent<HTMLFormElement>,
   ) {
     event.preventDefault();
 
-    const cleanedMessage =
-      message.trim();
+    const cleanedMessage = message.trim();
 
     if (!cleanedMessage) {
       setError(
@@ -210,18 +141,7 @@ function App() {
 
       setResult(data);
 
-      updateStats(data);
-
-      const historyItem: ScanHistoryItem = {
-        id: crypto.randomUUID(),
-        type: "Message",
-        content: cleanedMessage,
-        result: data,
-        createdAt:
-          new Date().toISOString(),
-      };
-
-      addHistoryItem(historyItem);
+      await refreshDashboard();
     } catch (requestError) {
       setError(
         requestError instanceof Error
@@ -233,22 +153,11 @@ function App() {
     }
   }
 
-  function handleUrlScanComplete(
-    scanResult: AnalysisResult,
-    url: string,
+  async function handleUrlScanComplete(
+    _scanResult: AnalysisResult,
+    _url: string,
   ) {
-    updateStats(scanResult);
-
-    const historyItem: ScanHistoryItem = {
-      id: crypto.randomUUID(),
-      type: "URL",
-      content: url,
-      result: scanResult,
-      createdAt:
-        new Date().toISOString(),
-    };
-
-    addHistoryItem(historyItem);
+    await refreshDashboard();
   }
 
   function handleMessageChange(
@@ -272,9 +181,7 @@ function App() {
   ) {
     setError("");
 
-    if (
-      item.type === "Message"
-    ) {
+    if (item.type === "Message") {
       setMessage(item.content);
       setResult(item.result);
 
@@ -286,25 +193,52 @@ function App() {
       return;
     }
 
-    if (
-      item.type === "URL"
-    ) {
+    if (item.type === "URL") {
       window.alert(
-        `URL Scan\n\n${item.content}\n\nRisk: ${item.result.riskLevel}\nScore: ${item.result.riskScore}/100`,
+        `URL Scan
+
+${item.content}
+
+Risk: ${item.result.riskLevel}
+Score: ${item.result.riskScore}/100`,
       );
     }
   }
 
-  function handleClearHistory() {
-    saveHistory([]);
+  async function handleClearHistory() {
+    try {
+      setHistoryError("");
+
+      await clearScans();
+
+      setHistory([]);
+      setStats(defaultStats);
+    } catch (requestError) {
+      setHistoryError(
+        requestError instanceof Error
+          ? requestError.message
+          : "Unable to clear scan history.",
+      );
+    }
   }
 
-  function handleResetStats() {
-    setStats(defaultStats);
+  async function handleResetStats() {
+    /*
+      Stats now come directly from the scans table.
 
-    localStorage.removeItem(
-      STATS_KEY,
+      Because of that, there is no separate stats record to reset.
+      Resetting stats means clearing the stored scan data.
+    */
+
+    const shouldReset = window.confirm(
+      "Resetting dashboard stats will also clear the stored scan history. Continue?",
     );
+
+    if (!shouldReset) {
+      return;
+    }
+
+    await handleClearHistory();
   }
 
   return (
@@ -330,19 +264,27 @@ function App() {
           NETWORK OVERVIEW
         </div>
 
-        <DashboardStats
-          stats={stats}
-        />
+        {dashboardLoading ? (
+          <div className="history-loading">
+            Synchronizing Sentri Core...
+          </div>
+        ) : (
+          <>
+            <DashboardStats
+              stats={stats}
+            />
 
-        <DashboardControls
-          onResetStats={
-            handleResetStats
-          }
-        />
+            <DashboardControls
+              onResetStats={
+                handleResetStats
+              }
+            />
 
-        <ThreatIndex
-          history={history}
-        />
+            <ThreatIndex
+              history={history}
+            />
+          </>
+        )}
 
         <div className="section-marker">
           <span>02</span>
@@ -473,15 +415,32 @@ function App() {
           SECURITY ARCHIVE
         </div>
 
-        <ScanHistory
-          history={history}
-          onSelect={
-            handleSelectHistory
-          }
-          onClearHistory={
-            handleClearHistory
-          }
-        />
+        {historyLoading && (
+          <div className="history-loading">
+            Loading security archive...
+          </div>
+        )}
+
+        {historyError && (
+          <div
+            className="error-message"
+            role="alert"
+          >
+            {historyError}
+          </div>
+        )}
+
+        {!historyLoading && (
+          <ScanHistory
+            history={history}
+            onSelect={
+              handleSelectHistory
+            }
+            onClearHistory={
+              handleClearHistory
+            }
+          />
+        )}
 
         <footer className="sentri-footer">
           <div>
@@ -494,7 +453,7 @@ function App() {
 
           <p>
             Rule-Based Security Engine •
-            Local Analysis • V1.0
+            SQLite Persistence • Full-Stack V1.0
           </p>
         </footer>
       </main>

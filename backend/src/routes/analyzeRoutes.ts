@@ -1,12 +1,17 @@
 import { Router } from "express";
+
 import { analyzeMessage } from "../services/scamAnalyzer.js";
+import { saveScan } from "../services/scanService.js";
 
 const router = Router();
 
 router.post("/", (request, response) => {
   const message = request.body?.message;
 
-  if (typeof message !== "string" || message.trim().length === 0) {
+  if (
+    typeof message !== "string" ||
+    message.trim().length === 0
+  ) {
     return response.status(400).json({
       error: "Please provide a message to analyze.",
     });
@@ -18,7 +23,15 @@ router.post("/", (request, response) => {
     });
   }
 
-  const result = analyzeMessage(message.trim());
+  const cleanedMessage = message.trim();
+
+  const result = analyzeMessage(cleanedMessage);
+
+  saveScan(
+    "Message",
+    cleanedMessage,
+    result,
+  );
 
   return response.status(200).json(result);
 });

@@ -1,14 +1,6 @@
-import type { AnalysisResult } from "../services/api";
+import type { StoredScan } from "../services/api";
 
-export type ScanType = "Message" | "URL";
-
-export interface ScanHistoryItem {
-  id: string;
-  type: ScanType;
-  content: string;
-  result: AnalysisResult;
-  createdAt: string;
-}
+export type ScanHistoryItem = StoredScan;
 
 interface ScanHistoryProps {
   history: ScanHistoryItem[];
@@ -25,8 +17,13 @@ function ScanHistory({
     <section className="history-section">
       <div className="history-header">
         <div>
-          <p className="eyebrow">Security Archive</p>
-          <h3>Recent Scans</h3>
+          <p className="eyebrow">
+            Security Archive
+          </p>
+
+          <h3>
+            Recent Scans
+          </h3>
         </div>
 
         {history.length > 0 && (
@@ -42,8 +39,13 @@ function ScanHistory({
 
       {history.length === 0 ? (
         <div className="history-empty">
-          <p>No scans recorded.</p>
-          <span>Message and URL scans will appear here.</span>
+          <p>
+            No scans recorded.
+          </p>
+
+          <span>
+            Message and URL scans stored by Sentri will appear here.
+          </span>
         </div>
       ) : (
         <div className="history-list">
@@ -60,12 +62,16 @@ function ScanHistory({
                     {item.type}
                   </span>
 
-                  <strong>
+                  <strong
+                    className={`risk-${item.result.riskLevel.toLowerCase()}`}
+                  >
                     {item.result.riskLevel} Risk
                   </strong>
                 </div>
 
-                <p>{item.content}</p>
+                <p>
+                  {item.content}
+                </p>
               </div>
 
               <div className="history-meta">
@@ -76,7 +82,9 @@ function ScanHistory({
                 </span>
 
                 <small>
-                  {new Date(item.createdAt).toLocaleString()}
+                  {new Date(
+                    item.createdAt,
+                  ).toLocaleString()}
                 </small>
               </div>
             </button>

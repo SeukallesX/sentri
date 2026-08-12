@@ -1,5 +1,6 @@
 import cors from "cors";
 import dotenv from "dotenv";
+
 import express, {
   NextFunction,
   Request,
@@ -7,17 +8,22 @@ import express, {
 } from "express";
 
 import analyzeRoutes from "./routes/analyzeRoutes.js";
+import scanRoutes from "./routes/scanRoutes.js";
+import statsRoutes from "./routes/statsRoutes.js";
 import urlRoutes from "./routes/urlRoutes.js";
 
 dotenv.config();
 
 const app = express();
 
-const port = Number(process.env.PORT) || 5000;
+const port =
+  Number(process.env.PORT) || 5000;
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin:
+      process.env.FRONTEND_URL ??
+      "http://localhost:5173",
   }),
 );
 
@@ -27,61 +33,129 @@ app.use(
   }),
 );
 
-// Root route
-app.get("/", (_req: Request, res: Response) => {
-  res.json({
-    name: "Sentri API",
-    version: "1.0.0",
-    message: "Rule-based scam detection backend.",
-  });
-});
+app.get(
+  "/",
+  (_request: Request, response: Response) => {
+    response.json({
+      name: "Sentri API",
+      version: "1.0.0",
+      message:
+        "Rule-based scam and suspicious-link detection backend.",
+      endpoints: {
+        health:
+          "GET /api/health",
+        analyzeMessage:
+          "POST /api/analyze",
+        analyzeUrl:
+          "POST /api/analyze-url",
+        scanHistory:
+          "GET /api/scans",
+        clearScanHistory:
+          "DELETE /api/scans",
+        dashboardStats:
+          "GET /api/stats",
+      },
+    });
+  },
+);
 
-// Health check
-app.get("/api/health", (_req: Request, res: Response) => {
-  res.json({
-    status: "ok",
-    message: "Sentri backend is running.",
-  });
-});
+app.get(
+  "/api/health",
+  (_request: Request, response: Response) => {
+    response.json({
+      status: "ok",
+      service: "Sentri API",
+      version: "1.0.0",
+      message:
+        "Sentri backend is running.",
+    });
+  },
+);
 
-// Message analysis
-app.use("/api/analyze", analyzeRoutes);
+app.use(
+  "/api/analyze",
+  analyzeRoutes,
+);
 
-// URL analysis
-app.use("/api/analyze-url", urlRoutes);
+app.use(
+  "/api/analyze-url",
+  urlRoutes,
+);
 
-// 404 handler
-app.use((_req: Request, res: Response) => {
-  res.status(404).json({
-    error: "Route not found.",
-  });
-});
+app.use(
+  "/api/scans",
+  scanRoutes,
+);
 
-// Global error handler
+app.use(
+  "/api/stats",
+  statsRoutes,
+);
+
+app.use(
+  (
+    _request: Request,
+    response: Response,
+  ) => {
+    response.status(404).json({
+      error: "Route not found.",
+    });
+  },
+);
+
 app.use(
   (
     error: unknown,
-    _req: Request,
-    res: Response,
+    _request: Request,
+    response: Response,
     _next: NextFunction,
   ) => {
-    console.error("Sentri Server Error:", error);
+    console.error(
+      "Sentri Server Error:",
+      error,
+    );
 
-    res.status(500).json({
-      error: "An unexpected server error occurred.",
+    response.status(500).json({
+      error:
+        "An unexpected server error occurred.",
     });
   },
 );
 
 app.listen(port, () => {
   console.log("");
-  console.log("======================================");
-  console.log("        SENTRI SECURITY API");
-  console.log("======================================");
-  console.log(`Server:  http://localhost:${port}`);
-  console.log(`Health:  http://localhost:${port}/api/health`);
-  console.log(`Message: POST /api/analyze`);
-  console.log(`URL:     POST /api/analyze-url`);
-  console.log("======================================");
+  console.log(
+    "======================================",
+  );
+  console.log(
+    "        SENTRI SECURITY API",
+  );
+  console.log(
+    "======================================",
+  );
+  console.log(
+    `Server:   http://localhost:${port}`,
+  );
+  console.log(
+    `Health:   http://localhost:${port}/api/health`,
+  );
+  console.log(
+    "Message:  POST /api/analyze",
+  );
+  console.log(
+    "URL:      POST /api/analyze-url",
+  );
+  console.log(
+    "History:  GET /api/scans",
+  );
+  console.log(
+    "Clear:    DELETE /api/scans",
+  );
+  console.log(
+    "Stats:    GET /api/stats",
+  );
+  console.log(
+    "======================================",
+  );
   console.log("");
 });
