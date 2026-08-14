@@ -2903,3 +2903,189 @@ grid-template-columns:1fr;
   background:
     rgba(3, 14, 27, 0.45);
 }
+
+/* ===============================
+   URL THREAT INTELLIGENCE
+================================ */
+
+.url-intelligence-panel {
+  margin-top: 24px;
+
+  padding: 20px;
+
+  border:
+    1px solid
+    rgba(77, 224, 214, 0.13);
+
+  border-radius: 16px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(4, 21, 35, 0.7),
+      rgba(2, 12, 24, 0.52)
+    );
+}
+
+.intel-panel-header {
+  display: flex;
+
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  margin-bottom: 17px;
+}
+
+.intel-panel-header h4 {
+  margin: 6px 0 0;
+
+  font-size: 0.95rem;
+}
+
+.intel-domain-card {
+  display: grid;
+
+  gap: 5px;
+
+  margin-bottom: 14px;
+
+  padding: 15px;
+
+  border:
+    1px solid
+    rgba(82, 179, 213, 0.11);
+
+  border-radius: 12px;
+
+  background:
+    rgba(2, 12, 24, 0.52);
+}
+
+.intel-domain-card span {
+  color: #506e88;
+
+  font-size: 0.55rem;
+  font-weight: 900;
+
+  letter-spacing: 0.12em;
+}
+
+.intel-domain-card strong {
+  color: #d1e1ef;
+
+  font-size: 0.92rem;
+
+  word-break: break-word;
+}
+
+.intel-domain-card small {
+  overflow: hidden;
+
+  color: #54728b;
+
+  font-size: 0.63rem;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+.intel-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      4,
+      minmax(0, 1fr)
+    );
+
+  gap: 9px;
+}
+
+.intel-item {
+  min-width: 0;
+
+  padding: 12px;
+
+  border:
+    1px solid
+    rgba(83, 161, 195, 0.09);
+
+  border-radius: 10px;
+
+  background:
+    rgba(2, 12, 23, 0.4);
+}
+
+.intel-item > span {
+  display: block;
+
+  margin-bottom: 7px;
+
+  color: #526d87;
+
+  font-size: 0.52rem;
+  font-weight: 800;
+
+  letter-spacing: 0.08em;
+
+  text-transform: uppercase;
+}
+
+.intel-item strong {
+  display: block;
+
+  overflow: hidden;
+
+  color: #b9ccdc;
+
+  font-size: 0.72rem;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+.intel-good {
+  color: #46e6ae !important;
+}
+
+.intel-warning {
+  color: #ffba58 !important;
+}
+
+.intel-danger {
+  color: #ff7272 !important;
+}
+
+.intel-path {
+  color: #83a8c8 !important;
+}
+
+@media (max-width: 1000px) {
+  .intel-grid {
+    grid-template-columns:
+      repeat(
+        3,
+        minmax(0, 1fr)
+      );
+  }
+}
+
+@media (max-width: 700px) {
+  .intel-grid {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+}
+
+@media (max-width: 450px) {
+  .intel-grid {
+    grid-template-columns: 1fr;
+  }
+}

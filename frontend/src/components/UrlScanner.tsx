@@ -3,6 +3,7 @@ import { useState } from "react";
 import {
   analyzeUrl,
   type AnalysisResult,
+  type UrlAnalysisResult,
 } from "../services/api";
 
 interface UrlScannerProps {
@@ -15,46 +16,74 @@ interface UrlScannerProps {
 function UrlScanner({
   onScanComplete,
 }: UrlScannerProps) {
-  const [url, setUrl] = useState("");
+  const [url, setUrl] =
+    useState("");
 
   const [result, setResult] =
-    useState<AnalysisResult | null>(null);
+    useState<
+      UrlAnalysisResult | null
+    >(null);
 
-  const [error, setError] = useState("");
+  const [error, setError] =
+    useState("");
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [
+    isLoading,
+    setIsLoading,
+  ] = useState(false);
 
   async function handleScan() {
-    const cleanedUrl = url.trim();
+    const cleanedUrl =
+      url.trim();
 
     if (!cleanedUrl) {
-      setError("Enter a URL to scan.");
+      setError(
+        "Enter a URL to scan.",
+      );
+
       return;
     }
 
     const normalizedUrl =
-      cleanedUrl.startsWith("http://") ||
-      cleanedUrl.startsWith("https://") ||
-      cleanedUrl.startsWith("www.")
+      cleanedUrl.startsWith(
+        "http://",
+      ) ||
+      cleanedUrl.startsWith(
+        "https://",
+      ) ||
+      cleanedUrl.startsWith(
+        "www.",
+      )
         ? cleanedUrl
         : `https://${cleanedUrl}`;
 
     try {
       setIsLoading(true);
+
       setError("");
+
       setResult(null);
 
-      const data = await analyzeUrl(normalizedUrl);
+      const data =
+        await analyzeUrl(
+          normalizedUrl,
+        );
 
       setResult(data);
 
       onScanComplete(
         data,
-        normalizedUrl,
+
+        data.intelligence
+          ?.normalizedUrl ??
+          normalizedUrl,
       );
-    } catch (requestError) {
+    } catch (
+      requestError
+    ) {
       setError(
-        requestError instanceof Error
+        requestError instanceof
+          Error
           ? requestError.message
           : "Unable to scan the URL.",
       );
@@ -67,6 +96,29 @@ function UrlScanner({
     setUrl("");
     setResult(null);
     setError("");
+  }
+
+  function getStatusText(
+    value: boolean,
+  ) {
+    return value
+      ? "Detected"
+      : "Clear";
+  }
+
+  function getStatusClass(
+    value: boolean,
+    reversed = false,
+  ) {
+    if (reversed) {
+      return value
+        ? "intel-good"
+        : "intel-warning";
+    }
+
+    return value
+      ? "intel-warning"
+      : "intel-good";
   }
 
   return (
@@ -88,8 +140,17 @@ function UrlScanner({
       </div>
 
       <p className="url-scanner-description">
-        Sentri inspects the structure of a URL for common phishing and
-        malicious-link indicators without opening the destination.
+        Sentri analyzes URL
+        structure without visiting
+        the destination. It checks
+        shortened links, suspicious
+        domains, brand
+        impersonation,
+        typosquatting, suspicious
+        paths, query parameters,
+        redirects, encoded domains,
+        and other phishing
+        indicators.
       </p>
 
       <div className="url-input-group">
@@ -97,7 +158,9 @@ function UrlScanner({
           type="text"
           value={url}
           onChange={(event) => {
-            setUrl(event.target.value);
+            setUrl(
+              event.target.value,
+            );
 
             if (error) {
               setError("");
@@ -105,7 +168,8 @@ function UrlScanner({
           }}
           onKeyDown={(event) => {
             if (
-              event.key === "Enter" &&
+              event.key ===
+                "Enter" &&
               !isLoading &&
               url.trim()
             ) {
@@ -120,17 +184,28 @@ function UrlScanner({
         <button
           type="button"
           className="primary-button"
-          onClick={handleScan}
-          disabled={isLoading || !url.trim()}
+          onClick={
+            handleScan
+          }
+          disabled={
+            isLoading ||
+            !url.trim()
+          }
         >
-          {isLoading ? "Scanning..." : "Scan URL"}
+          {isLoading
+            ? "Scanning..."
+            : "Scan URL"}
         </button>
 
         <button
           type="button"
           className="secondary-button"
-          onClick={handleClear}
-          disabled={isLoading}
+          onClick={
+            handleClear
+          }
+          disabled={
+            isLoading
+          }
         >
           Clear
         </button>
@@ -154,7 +229,8 @@ function UrlScanner({
               </p>
 
               <h4>
-                {result.riskLevel} Risk
+                {result.riskLevel}{" "}
+                Risk
               </h4>
             </div>
 
@@ -165,7 +241,9 @@ function UrlScanner({
                 {result.riskScore}
               </strong>
 
-              <span>/100</span>
+              <span>
+                /100
+              </span>
             </div>
           </div>
 
@@ -175,7 +253,9 @@ function UrlScanner({
             aria-label="URL risk score"
             aria-valuemin={0}
             aria-valuemax={100}
-            aria-valuenow={result.riskScore}
+            aria-valuenow={
+              result.riskScore
+            }
           >
             <div
               className={`risk-fill risk-${result.riskLevel.toLowerCase()}`}
@@ -189,37 +269,422 @@ function UrlScanner({
             {result.summary}
           </p>
 
+          {result.intelligence && (
+            <div className="url-intelligence-panel">
+              <div className="intel-panel-header">
+                <div>
+                  <p className="radar-label">
+                    URL INTELLIGENCE
+                  </p>
+
+                  <h4>
+                    Structural
+                    Analysis
+                  </h4>
+                </div>
+
+                <span className="private-label">
+                  LOCAL
+                </span>
+              </div>
+
+              <div className="intel-domain-card">
+                <span>
+                  HOSTNAME
+                </span>
+
+                <strong>
+                  {
+                    result
+                      .intelligence
+                      .hostname
+                  }
+                </strong>
+
+                <small>
+                  {
+                    result
+                      .intelligence
+                      .normalizedUrl
+                  }
+                </small>
+              </div>
+
+              <div className="intel-grid">
+                <div className="intel-item">
+                  <span>
+                    Protocol
+                  </span>
+
+                  <strong>
+                    {result.intelligence.protocol.toUpperCase()}
+                  </strong>
+                </div>
+
+                <div className="intel-item">
+                  <span>
+                    HTTPS
+                  </span>
+
+                  <strong
+                    className={getStatusClass(
+                      result
+                        .intelligence
+                        .usesHttps,
+
+                      true,
+                    )}
+                  >
+                    {result
+                      .intelligence
+                      .usesHttps
+                      ? "Secure"
+                      : "Not Used"}
+                  </strong>
+                </div>
+
+                <div className="intel-item">
+                  <span>
+                    Shortened URL
+                  </span>
+
+                  <strong
+                    className={getStatusClass(
+                      result
+                        .intelligence
+                        .isShortened,
+                    )}
+                  >
+                    {getStatusText(
+                      result
+                        .intelligence
+                        .isShortened,
+                    )}
+                  </strong>
+                </div>
+
+                <div className="intel-item">
+                  <span>
+                    IP Address
+                  </span>
+
+                  <strong
+                    className={getStatusClass(
+                      result
+                        .intelligence
+                        .isIpAddress,
+                    )}
+                  >
+                    {getStatusText(
+                      result
+                        .intelligence
+                        .isIpAddress,
+                    )}
+                  </strong>
+                </div>
+
+                <div className="intel-item">
+                  <span>
+                    Suspicious TLD
+                  </span>
+
+                  <strong
+                    className={getStatusClass(
+                      result
+                        .intelligence
+                        .hasSuspiciousTld,
+                    )}
+                  >
+                    {result
+                      .intelligence
+                      .suspiciousTld ??
+                      "Clear"}
+                  </strong>
+                </div>
+
+                <div className="intel-item">
+                  <span>
+                    Deep Subdomains
+                  </span>
+
+                  <strong
+                    className={getStatusClass(
+                      result
+                        .intelligence
+                        .hasLongSubdomainChain,
+                    )}
+                  >
+                    {getStatusText(
+                      result
+                        .intelligence
+                        .hasLongSubdomainChain,
+                    )}
+                  </strong>
+                </div>
+
+                <div className="intel-item">
+                  <span>
+                    Brand
+                    Impersonation
+                  </span>
+
+                  <strong
+                    className={
+                      result
+                        .intelligence
+                        .impersonatedBrand
+                        ? "intel-danger"
+                        : "intel-good"
+                    }
+                  >
+                    {result
+                      .intelligence
+                      .impersonatedBrand
+                      ? result.intelligence.impersonatedBrand.toUpperCase()
+                      : "Clear"}
+                  </strong>
+                </div>
+
+                <div className="intel-item">
+                  <span>
+                    Typosquatting
+                  </span>
+
+                  <strong
+                    className={
+                      result
+                        .intelligence
+                        .suspectedTyposquatBrand
+                        ? "intel-danger"
+                        : "intel-good"
+                    }
+                  >
+                    {result
+                      .intelligence
+                      .suspectedTyposquatBrand
+                      ? result.intelligence.suspectedTyposquatBrand.toUpperCase()
+                      : "Clear"}
+                  </strong>
+                </div>
+
+                <div className="intel-item">
+                  <span>
+                    Suspicious Path
+                  </span>
+
+                  <strong
+                    className={
+                      result
+                        .intelligence
+                        .suspiciousPathKeywords
+                        .length > 0
+                        ? "intel-warning"
+                        : "intel-good"
+                    }
+                  >
+                    {result
+                      .intelligence
+                      .suspiciousPathKeywords
+                      .length > 0
+                      ? result.intelligence.suspiciousPathKeywords.join(
+                          ", ",
+                        )
+                      : "Clear"}
+                  </strong>
+                </div>
+
+                <div className="intel-item">
+                  <span>
+                    Query Parameters
+                  </span>
+
+                  <strong
+                    className={
+                      result
+                        .intelligence
+                        .suspiciousQueryKeywords
+                        .length > 0
+                        ? "intel-warning"
+                        : "intel-good"
+                    }
+                  >
+                    {result
+                      .intelligence
+                      .suspiciousQueryKeywords
+                      .length > 0
+                      ? result.intelligence.suspiciousQueryKeywords.join(
+                          ", ",
+                        )
+                      : "Clear"}
+                  </strong>
+                </div>
+
+                <div className="intel-item">
+                  <span>
+                    Nested URL
+                  </span>
+
+                  <strong
+                    className={
+                      result
+                        .intelligence
+                        .containsNestedUrl
+                        ? "intel-danger"
+                        : "intel-good"
+                    }
+                  >
+                    {result
+                      .intelligence
+                      .containsNestedUrl
+                      ? "Detected"
+                      : "Clear"}
+                  </strong>
+                </div>
+
+                <div className="intel-item">
+                  <span>
+                    Subdomain Depth
+                  </span>
+
+                  <strong>
+                    {
+                      result
+                        .intelligence
+                        .subdomainDepth
+                    }
+                  </strong>
+                </div>
+
+                <div className="intel-item">
+                  <span>
+                    Domain Length
+                  </span>
+
+                  <strong>
+                    {
+                      result
+                        .intelligence
+                        .domainLength
+                    }{" "}
+                    chars
+                  </strong>
+                </div>
+
+                <div className="intel-item">
+                  <span>
+                    @ Obfuscation
+                  </span>
+
+                  <strong
+                    className={getStatusClass(
+                      result
+                        .intelligence
+                        .containsAtSymbol,
+                    )}
+                  >
+                    {getStatusText(
+                      result
+                        .intelligence
+                        .containsAtSymbol,
+                    )}
+                  </strong>
+                </div>
+
+                <div className="intel-item">
+                  <span>
+                    Punycode
+                  </span>
+
+                  <strong
+                    className={getStatusClass(
+                      result
+                        .intelligence
+                        .containsPunycode,
+                    )}
+                  >
+                    {getStatusText(
+                      result
+                        .intelligence
+                        .containsPunycode,
+                    )}
+                  </strong>
+                </div>
+
+                <div className="intel-item">
+                  <span>
+                    Port
+                  </span>
+
+                  <strong>
+                    {result
+                      .intelligence
+                      .port ??
+                      "Default"}
+                  </strong>
+                </div>
+
+                <div className="intel-item">
+                  <span>
+                    Path
+                  </span>
+
+                  <strong className="intel-path">
+                    {result
+                      .intelligence
+                      .pathname ||
+                      "/"}
+                  </strong>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="result-section">
             <h4>
-              Detected URL Indicators
+              Detected URL
+              Indicators
             </h4>
 
-            {result.flags.length === 0 ? (
+            {result.flags.length ===
+            0 ? (
               <p className="no-flags">
-                No common suspicious URL indicators were detected.
+                No common suspicious
+                URL indicators were
+                detected.
               </p>
             ) : (
               <div className="flag-list">
-                {result.flags.map((flag) => (
-                  <div
-                    className="flag-card"
-                    key={flag.category}
-                  >
-                    <div>
-                      <h5>
-                        {flag.category}
-                      </h5>
+                {result.flags.map(
+                  (flag) => (
+                    <div
+                      className="flag-card"
+                      key={
+                        flag.category
+                      }
+                    >
+                      <div>
+                        <h5>
+                          {
+                            flag.category
+                          }
+                        </h5>
 
-                      <p>
-                        {flag.description}
-                      </p>
+                        <p>
+                          {
+                            flag.description
+                          }
+                        </p>
+                      </div>
+
+                      <span>
+                        +
+                        {
+                          flag.points
+                        }
+                      </span>
                     </div>
-
-                    <span>
-                      +{flag.points}
-                    </span>
-                  </div>
-                ))}
+                  ),
+                )}
               </div>
             )}
           </div>
@@ -234,7 +699,9 @@ function UrlScanner({
             </h4>
 
             <p>
-              {result.recommendation}
+              {
+                result.recommendation
+              }
             </p>
           </div>
         </div>

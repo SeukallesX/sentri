@@ -35,19 +35,41 @@ export interface UrlIntelligence {
 
   subdomainDepth: number;
 
-  suspiciousTld: string | null;
+  suspiciousTld:
+    | string
+    | null;
 
   domainLength: number;
 
   containsAtSymbol: boolean;
   containsPunycode: boolean;
 
-  port: string | null;
+  port:
+    | string
+    | null;
+
+  impersonatedBrand:
+    | string
+    | null;
+
+  suspectedTyposquatBrand:
+    | string
+    | null;
+
+  suspiciousPathKeywords:
+    string[];
+
+  suspiciousQueryKeywords:
+    string[];
+
+  containsNestedUrl: boolean;
 }
 
 export interface UrlAnalysisResult
   extends AnalysisResult {
-  intelligence: UrlIntelligence | null;
+  intelligence:
+    | UrlIntelligence
+    | null;
 }
 
 export type ScanType =
@@ -74,14 +96,17 @@ interface ApiError {
 }
 
 const API_URL =
-  import.meta.env.VITE_API_URL ??
+  import.meta.env
+    .VITE_API_URL ??
   "http://localhost:5000";
 
 async function parseJson<T>(
   response: Response,
 ): Promise<T> {
   try {
-    return (await response.json()) as T;
+    return (
+      await response.json()
+    ) as T;
   } catch {
     throw new Error(
       "The server returned an invalid response.",
@@ -94,7 +119,8 @@ async function handleAnalysisResponse(
 ): Promise<AnalysisResult> {
   const data =
     await parseJson<
-      AnalysisResult | ApiError
+      | AnalysisResult
+      | ApiError
     >(response);
 
   if (!response.ok) {
@@ -104,7 +130,9 @@ async function handleAnalysisResponse(
         ? data.error
         : "The request could not be completed.";
 
-    throw new Error(errorMessage);
+    throw new Error(
+      errorMessage,
+    );
   }
 
   return data as AnalysisResult;
@@ -115,7 +143,8 @@ async function handleUrlAnalysisResponse(
 ): Promise<UrlAnalysisResult> {
   const data =
     await parseJson<
-      UrlAnalysisResult | ApiError
+      | UrlAnalysisResult
+      | ApiError
     >(response);
 
   if (!response.ok) {
@@ -136,19 +165,22 @@ async function handleUrlAnalysisResponse(
 export async function analyzeMessage(
   message: string,
 ): Promise<AnalysisResult> {
-  const response = await fetch(
-    `${API_URL}/api/analyze`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type":
-          "application/json",
+  const response =
+    await fetch(
+      `${API_URL}/api/analyze`,
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+
+        body: JSON.stringify({
+          message,
+        }),
       },
-      body: JSON.stringify({
-        message,
-      }),
-    },
-  );
+    );
 
   return handleAnalysisResponse(
     response,
@@ -158,19 +190,22 @@ export async function analyzeMessage(
 export async function analyzeUrl(
   url: string,
 ): Promise<UrlAnalysisResult> {
-  const response = await fetch(
-    `${API_URL}/api/analyze-url`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type":
-          "application/json",
+  const response =
+    await fetch(
+      `${API_URL}/api/analyze-url`,
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+
+        body: JSON.stringify({
+          url,
+        }),
       },
-      body: JSON.stringify({
-        url,
-      }),
-    },
-  );
+    );
 
   return handleUrlAnalysisResponse(
     response,
@@ -180,9 +215,10 @@ export async function analyzeUrl(
 export async function getScans(
   limit = 10,
 ): Promise<StoredScan[]> {
-  const response = await fetch(
-    `${API_URL}/api/scans?limit=${limit}`,
-  );
+  const response =
+    await fetch(
+      `${API_URL}/api/scans?limit=${limit}`,
+    );
 
   const data =
     await parseJson<
@@ -199,10 +235,14 @@ export async function getScans(
         ? data.error
         : "Unable to load scan history.";
 
-    throw new Error(errorMessage);
+    throw new Error(
+      errorMessage,
+    );
   }
 
-  if (!("scans" in data)) {
+  if (
+    !("scans" in data)
+  ) {
     return [];
   }
 
@@ -210,12 +250,13 @@ export async function getScans(
 }
 
 export async function clearScans(): Promise<void> {
-  const response = await fetch(
-    `${API_URL}/api/scans`,
-    {
-      method: "DELETE",
-    },
-  );
+  const response =
+    await fetch(
+      `${API_URL}/api/scans`,
+      {
+        method: "DELETE",
+      },
+    );
 
   if (!response.ok) {
     const data =
@@ -231,14 +272,15 @@ export async function clearScans(): Promise<void> {
 }
 
 export async function getStats(): Promise<DashboardStatsResponse> {
-  const response = await fetch(
-    `${API_URL}/api/stats`,
-  );
+  const response =
+    await fetch(
+      `${API_URL}/api/stats`,
+    );
 
   const data =
     await parseJson<
-      DashboardStatsResponse |
-        ApiError
+      | DashboardStatsResponse
+      | ApiError
     >(response);
 
   if (!response.ok) {
