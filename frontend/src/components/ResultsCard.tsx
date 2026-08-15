@@ -4,136 +4,297 @@ interface ResultsCardProps {
   result: AnalysisResult | null;
 }
 
-function ResultsCard({ result }: ResultsCardProps) {
-  const riskClass = result
-    ? `risk-${result.riskLevel.toLowerCase()}`
-    : "risk-idle";
+function ResultsCard({
+  result,
+}: ResultsCardProps) {
+  const riskLevel =
+    result?.riskLevel ?? "Low";
+
+  const riskClass =
+    result
+      ? `risk-${riskLevel.toLowerCase()}`
+      : "risk-low";
+
+  const score =
+    result?.riskScore ?? 0;
+
+  const indicatorCount =
+    result?.flags.length ?? 0;
+
+  const systemStatus =
+    result
+      ? riskLevel === "High"
+        ? "THREAT DETECTED"
+        : riskLevel === "Medium"
+          ? "CAUTION"
+          : "NOMINAL"
+      : "STANDBY";
 
   return (
-    <div className="results-card" aria-live="polite">
-      {!result ? (
-        <div className="empty-state">
-          <div className="threat-radar idle-radar">
-            <div className="radar-ring radar-ring-1" />
-            <div className="radar-ring radar-ring-2" />
-            <div className="radar-ring radar-ring-3" />
-            <div className="radar-sweep" />
+    <section className="results-card jarvis-results-card">
+      <div className="results-hud-header">
+        <div>
+          <p className="eyebrow">
+            Threat Assessment
+          </p>
 
-            <div className="radar-center">
-              <span>S</span>
+          <h3>
+            {result
+              ? `${riskLevel} Risk Detected`
+              : "Awaiting Analysis"}
+          </h3>
+        </div>
+
+        <div
+          className={`hud-status-chip ${riskClass}`}
+        >
+          <span className="hud-status-dot" />
+
+          {systemStatus}
+        </div>
+      </div>
+
+      <div className="results-hud-body">
+        <div className="hud-radar-area">
+          <div className="hud-coordinate hud-coordinate-top">
+            000
+          </div>
+
+          <div className="hud-coordinate hud-coordinate-right">
+            090
+          </div>
+
+          <div className="hud-coordinate hud-coordinate-bottom">
+            180
+          </div>
+
+          <div className="hud-coordinate hud-coordinate-left">
+            270
+          </div>
+
+          <div className="hud-radar">
+            <div className="hud-ring hud-ring-outer" />
+
+            <div className="hud-ring hud-ring-middle" />
+
+            <div className="hud-ring hud-ring-inner" />
+
+            <div className="hud-axis hud-axis-horizontal" />
+
+            <div className="hud-axis hud-axis-vertical" />
+
+            <div className="hud-radar-sweep" />
+
+            <div className="hud-tick-ring" />
+
+            <div className="hud-node hud-node-one" />
+            <div className="hud-node hud-node-two" />
+            <div className="hud-node hud-node-three" />
+
+            <div className={`hud-core ${riskClass}`}>
+              <span className="hud-core-label">
+                SENTRI
+              </span>
+
+              <strong>
+                {score}
+              </strong>
+
+              <small>
+                /100
+              </small>
             </div>
           </div>
 
-          <h3>Awaiting Analysis</h3>
+          <div className="hud-radar-caption">
+            <span className={`hud-caption-dot ${riskClass}`} />
 
-          <p>
-            Scan a suspicious message to activate the Sentri threat radar.
-          </p>
+            {result
+              ? `${riskLevel.toUpperCase()} THREAT PROFILE`
+              : "SCAN ENGINE READY"}
+          </div>
         </div>
-      ) : (
-        <div className="results-content">
-          <div className="results-header">
-            <div>
-              <p className="eyebrow">Threat Assessment</p>
-              <h3>{result.riskLevel} Risk Detected</h3>
+
+        <div className="hud-readout">
+          <div className="hud-readout-title">
+            <span>
+              SYSTEM READOUT
+            </span>
+
+            <small>
+              RULE-X // LOCAL
+            </small>
+          </div>
+
+          <div className="hud-readout-grid">
+            <div className="hud-readout-item">
+              <span>
+                Risk Index
+              </span>
+
+              <strong className={riskClass}>
+                {score
+                  .toString()
+                  .padStart(3, "0")}
+              </strong>
             </div>
 
-            <span className={`threat-status ${riskClass}`}>
-              {result.riskLevel === "High"
-                ? "Threat"
-                : result.riskLevel === "Medium"
-                  ? "Caution"
-                  : "Clear"}
+            <div className="hud-readout-item">
+              <span>
+                Indicators
+              </span>
+
+              <strong>
+                {indicatorCount
+                  .toString()
+                  .padStart(2, "0")}
+              </strong>
+            </div>
+
+            <div className="hud-readout-item">
+              <span>
+                Threat Level
+              </span>
+
+              <strong className={riskClass}>
+                {result
+                  ? riskLevel.toUpperCase()
+                  : "READY"}
+              </strong>
+            </div>
+
+            <div className="hud-readout-item">
+              <span>
+                Engine
+              </span>
+
+              <strong>
+                RULE-X
+              </strong>
+            </div>
+          </div>
+
+          <div className="hud-signal-line">
+            <span>
+              SIGNAL ANALYSIS
+            </span>
+
+            <div className="hud-signal-track">
+              <div
+                className={`hud-signal-fill ${riskClass}`}
+                style={{
+                  width: `${score}%`,
+                }}
+              />
+            </div>
+
+            <strong className={riskClass}>
+              {systemStatus}
+            </strong>
+          </div>
+
+          <div className="hud-summary">
+            <p className="radar-label">
+              Intelligence Summary
+            </p>
+
+            <p>
+              {result
+                ? result.summary
+                : "Sentri is standing by. Initialize a message scan to activate threat analysis."}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {result && (
+        <>
+          <div className="hud-divider">
+            <span>
+              DETECTED SIGNALS
             </span>
           </div>
 
-          <div className="radar-result-layout">
-            <div className={`threat-radar active-radar ${riskClass}`}>
-              <div className="radar-ring radar-ring-1" />
-              <div className="radar-ring radar-ring-2" />
-              <div className="radar-ring radar-ring-3" />
-
-              <div className="radar-crosshair radar-crosshair-x" />
-              <div className="radar-crosshair radar-crosshair-y" />
-
-              <div className="radar-sweep" />
-
-              <span className="threat-point point-1" />
-              <span className="threat-point point-2" />
-              <span className="threat-point point-3" />
-
-              <div className="radar-score">
-                <strong>{result.riskScore}</strong>
-                <span>/100</span>
-              </div>
-            </div>
-
-            <div className="radar-summary">
-              <p className="radar-label">SYSTEM SUMMARY</p>
-
-              <p>{result.summary}</p>
-
-              <div className="radar-metrics">
-                <div>
-                  <span>Risk Level</span>
-                  <strong className={riskClass}>
-                    {result.riskLevel}
-                  </strong>
-                </div>
-
-                <div>
-                  <span>Indicators</span>
-                  <strong>{result.flags.length}</strong>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="risk-bar">
-            <div
-              className={`risk-fill ${riskClass}`}
-              style={{
-                width: `${result.riskScore}%`,
-              }}
-            />
-          </div>
-
-          <div className="result-section">
-            <h4>Detected Indicators</h4>
-
+          <div className="hud-flags">
             {result.flags.length === 0 ? (
-              <p className="no-flags">
-                No common scam indicators detected.
-              </p>
+              <div className="hud-clear-state">
+                <span className="hud-clear-icon">
+                  ✓
+                </span>
+
+                <div>
+                  <strong>
+                    No major indicators detected
+                  </strong>
+
+                  <p>
+                    The analyzed message did not match Sentri's common scam rules.
+                  </p>
+                </div>
+              </div>
             ) : (
-              <div className="flag-list">
-                {result.flags.map((flag) => (
-                  <div
-                    key={flag.category}
-                    className="flag-card"
+              result.flags.map(
+                (
+                  flag,
+                  index,
+                ) => (
+                  <article
+                    className="hud-flag"
+                    key={`${flag.category}-${index}`}
                   >
-                    <div>
-                      <h5>{flag.category}</h5>
-                      <p>{flag.description}</p>
+                    <div className="hud-flag-index">
+                      {(index + 1)
+                        .toString()
+                        .padStart(2, "0")}
                     </div>
 
-                    <span>+{flag.points}</span>
-                  </div>
-                ))}
-              </div>
+                    <div className="hud-flag-content">
+                      <span>
+                        INDICATOR
+                      </span>
+
+                      <strong>
+                        {flag.category}
+                      </strong>
+
+                      <p>
+                        {flag.description}
+                      </p>
+                    </div>
+
+                    <div className="hud-flag-points">
+                      +{flag.points}
+                    </div>
+                  </article>
+                ),
+              )
             )}
           </div>
 
-          <div className="recommendation">
-            <p className="radar-label">DEFENSE GUIDANCE</p>
+          <div className="hud-guidance">
+            <div className="hud-guidance-header">
+              <div>
+                <p className="radar-label">
+                  Defense Guidance
+                </p>
 
-            <h4>Recommended Action</h4>
+                <h4>
+                  Recommended Action
+                </h4>
+              </div>
 
-            <p>{result.recommendation}</p>
+              <span className={riskClass}>
+                RESPONSE PROTOCOL
+              </span>
+            </div>
+
+            <p>
+              {result.recommendation}
+            </p>
           </div>
-        </div>
+        </>
       )}
-    </div>
+    </section>
   );
 }
 

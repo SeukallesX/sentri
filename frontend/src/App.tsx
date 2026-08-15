@@ -2,6 +2,12 @@ import { useCallback, useEffect, useState } from "react";
 import type { SubmitEvent } from "react";
 
 import "./App.css";
+import "./styles/sentri-core.css";
+import "./styles/navbar.css";
+import "./styles/hero.css";
+import "./styles/hud.css";
+import "./styles/scanner.css";
+import "./styles/intelligence.css";
 
 import AnalyzerCard from "./components/AnalyzerCard";
 import DashboardControls from "./components/DashboardControls";
@@ -40,7 +46,8 @@ function App() {
   const [result, setResult] =
     useState<AnalysisResult | null>(null);
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] =
+    useState(false);
 
   const [historyLoading, setHistoryLoading] =
     useState(true);
@@ -48,7 +55,8 @@ function App() {
   const [dashboardLoading, setDashboardLoading] =
     useState(true);
 
-  const [error, setError] = useState("");
+  const [error, setError] =
+    useState("");
 
   const [historyError, setHistoryError] =
     useState("");
@@ -57,57 +65,75 @@ function App() {
     useState<ScanHistoryItem[]>([]);
 
   const [stats, setStats] =
-    useState<DashboardStatTotals>(defaultStats);
+    useState<DashboardStatTotals>(
+      defaultStats,
+    );
 
-  const loadHistory = useCallback(async () => {
-    try {
-      setHistoryLoading(true);
-      setHistoryError("");
+  const loadHistory =
+    useCallback(async () => {
+      try {
+        setHistoryLoading(true);
+        setHistoryError("");
 
-      const scans = await getScans(10);
+        const scans =
+          await getScans(10);
 
-      setHistory(scans);
-    } catch (requestError) {
-      setHistoryError(
-        requestError instanceof Error
-          ? requestError.message
-          : "Unable to load scan history.",
-      );
-    } finally {
-      setHistoryLoading(false);
-    }
-  }, []);
+        setHistory(scans);
+      } catch (requestError) {
+        setHistoryError(
+          requestError instanceof Error
+            ? requestError.message
+            : "Unable to load scan history.",
+        );
+      } finally {
+        setHistoryLoading(false);
+      }
+    }, []);
 
-  const loadStats = useCallback(async () => {
-    try {
-      const dashboardStats = await getStats();
+  const loadStats =
+    useCallback(async () => {
+      try {
+        const dashboardStats =
+          await getStats();
 
-      setStats(dashboardStats);
-    } catch (requestError) {
-      console.error(
-        "Unable to load Sentri dashboard stats:",
-        requestError,
-      );
+        setStats(
+          dashboardStats,
+        );
+      } catch (requestError) {
+        console.error(
+          "Unable to load Sentri dashboard stats:",
+          requestError,
+        );
 
-      setStats(defaultStats);
-    }
-  }, []);
+        setStats(
+          defaultStats,
+        );
+      }
+    }, []);
 
-  const refreshDashboard = useCallback(async () => {
-    await Promise.all([
-      loadHistory(),
-      loadStats(),
+  const refreshDashboard =
+    useCallback(async () => {
+      await Promise.all([
+        loadHistory(),
+        loadStats(),
+      ]);
+    }, [
+      loadHistory,
+      loadStats,
     ]);
-  }, [loadHistory, loadStats]);
 
   useEffect(() => {
     async function initializeDashboard() {
       try {
-        setDashboardLoading(true);
+        setDashboardLoading(
+          true,
+        );
 
         await refreshDashboard();
       } finally {
-        setDashboardLoading(false);
+        setDashboardLoading(
+          false,
+        );
       }
     }
 
@@ -119,7 +145,8 @@ function App() {
   ) {
     event.preventDefault();
 
-    const cleanedMessage = message.trim();
+    const cleanedMessage =
+      message.trim();
 
     if (!cleanedMessage) {
       setError(
@@ -181,9 +208,16 @@ function App() {
   ) {
     setError("");
 
-    if (item.type === "Message") {
-      setMessage(item.content);
-      setResult(item.result);
+    if (
+      item.type === "Message"
+    ) {
+      setMessage(
+        item.content,
+      );
+
+      setResult(
+        item.result,
+      );
 
       window.scrollTo({
         top: 0,
@@ -193,7 +227,9 @@ function App() {
       return;
     }
 
-    if (item.type === "URL") {
+    if (
+      item.type === "URL"
+    ) {
       window.alert(
         `URL Scan
 
@@ -212,7 +248,10 @@ Score: ${item.result.riskScore}/100`,
       await clearScans();
 
       setHistory([]);
-      setStats(defaultStats);
+
+      setStats(
+        defaultStats,
+      );
     } catch (requestError) {
       setHistoryError(
         requestError instanceof Error
@@ -223,16 +262,10 @@ Score: ${item.result.riskScore}/100`,
   }
 
   async function handleResetStats() {
-    /*
-      Stats now come directly from the scans table.
-
-      Because of that, there is no separate stats record to reset.
-      Resetting stats means clearing the stored scan data.
-    */
-
-    const shouldReset = window.confirm(
-      "Resetting dashboard stats will also clear the stored scan history. Continue?",
-    );
+    const shouldReset =
+      window.confirm(
+        "Resetting dashboard stats will also clear the stored scan history. Continue?",
+      );
 
     if (!shouldReset) {
       return;
@@ -260,8 +293,9 @@ Score: ${item.result.riskScore}/100`,
         <Hero />
 
         <div className="section-marker">
-          <span>01</span>
-          NETWORK OVERVIEW
+          <span>
+            01 // THREAT OVERVIEW
+          </span>
         </div>
 
         {dashboardLoading ? (
@@ -287,8 +321,9 @@ Score: ${item.result.riskScore}/100`,
         )}
 
         <div className="section-marker">
-          <span>02</span>
-          THREAT ANALYSIS
+          <span>
+            02 // MESSAGE ANALYSIS
+          </span>
         </div>
 
         <section className="dashboard">
@@ -320,8 +355,9 @@ Score: ${item.result.riskScore}/100`,
         </div>
 
         <div className="section-marker">
-          <span>03</span>
-          LINK INTELLIGENCE
+          <span>
+            03 // LINK INTELLIGENCE
+          </span>
         </div>
 
         <div className="intel-grid">
@@ -337,23 +373,28 @@ Score: ${item.result.riskScore}/100`,
         </div>
 
         <div className="section-marker">
-          <span>04</span>
-          THREAT ANALYTICS
+          <span>
+            04 // THREAT TELEMETRY
+          </span>
         </div>
 
         <ThreatAnalytics
           history={history}
         />
 
+        <div className="section-marker">
+          <span>
+            05 // SENTRI SUBSYSTEMS
+          </span>
+        </div>
+
         <section className="feature-grid">
           <article>
             <div className="feature-icon">
-              <span>⌁</span>
+              <span>
+                ⌁
+              </span>
             </div>
-
-            <span className="feature-number">
-              01
-            </span>
 
             <h3>
               Threat Detection
@@ -362,19 +403,18 @@ Score: ${item.result.riskScore}/100`,
             <p>
               Detects phishing patterns,
               urgency, impersonation,
-              fraudulent payments, fake
-              prizes, and social engineering.
+              fraudulent payments,
+              fake prizes, and social
+              engineering indicators.
             </p>
           </article>
 
           <article>
             <div className="feature-icon">
-              <span>◎</span>
+              <span>
+                ◎
+              </span>
             </div>
-
-            <span className="feature-number">
-              02
-            </span>
 
             <h3>
               Risk Intelligence
@@ -389,12 +429,10 @@ Score: ${item.result.riskScore}/100`,
 
           <article>
             <div className="feature-icon">
-              <span>◇</span>
+              <span>
+                ◇
+              </span>
             </div>
-
-            <span className="feature-number">
-              03
-            </span>
 
             <h3>
               Defense Guidance
@@ -411,8 +449,9 @@ Score: ${item.result.riskScore}/100`,
         </section>
 
         <div className="section-marker">
-          <span>05</span>
-          SECURITY ARCHIVE
+          <span>
+            06 // SECURITY ARCHIVE
+          </span>
         </div>
 
         {historyLoading && (
@@ -444,16 +483,17 @@ Score: ${item.result.riskScore}/100`,
 
         <footer className="sentri-footer">
           <div>
-            <strong>SENTRI</strong>
+            <strong>
+              SENTRI
+            </strong>
 
             <span>
-              Digital Threat Defense System
+              Threat Intelligence System
             </span>
           </div>
 
           <p>
-            Rule-Based Security Engine •
-            SQLite Persistence • Full-Stack V1.0
+            RULE-X Engine • Local Analysis • SQLite Persistence • Full-Stack v1.0.0
           </p>
         </footer>
       </main>

@@ -4,36 +4,65 @@ function Hero() {
       <div className="hero-copy">
         <div className="hero-badge">
           <span className="hero-badge-dot" />
-          Digital Threat Defense System
+
+          SENTRI CORE ONLINE
         </div>
 
         <h2>
-          Scan the
-          <span className="hero-gradient"> digital layer.</span>
+          Detect the signal.
           <br />
-          Stop the threat.
+
+          <span className="hero-gradient">
+            Expose the threat.
+          </span>
         </h2>
 
         <p>
-          Sentri analyzes suspicious messages and links using a rule-based
-          cybersecurity engine designed to identify phishing, fraud,
-          impersonation, malicious URLs, and social engineering techniques.
+          Sentri analyzes suspicious messages and links using a local
+          rule-based security engine designed to detect phishing,
+          impersonation, fraud patterns, suspicious URLs, and social
+          engineering indicators.
         </p>
 
         <div className="hero-system-info">
           <div>
-            <span>ENGINE</span>
-            <strong>RULE-X v1.0</strong>
+            <span>
+              ENGINE
+            </span>
+
+            <strong>
+              RULE-X v1.0
+            </strong>
           </div>
 
           <div>
-            <span>STATUS</span>
-            <strong className="online-text">ONLINE</strong>
+            <span>
+              STATUS
+            </span>
+
+            <strong className="online-text">
+              ONLINE
+            </strong>
           </div>
 
           <div>
-            <span>MODE</span>
-            <strong>LOCAL ANALYSIS</strong>
+            <span>
+              ANALYSIS
+            </span>
+
+            <strong>
+              LOCAL
+            </strong>
+          </div>
+
+          <div>
+            <span>
+              DATABASE
+            </span>
+
+            <strong>
+              SQLITE
+            </strong>
           </div>
         </div>
       </div>
@@ -41,20 +70,25 @@ function Hero() {
       <div className="hero-orb-area">
         <div className="orb-shell">
           <div className="orb-ring orb-ring-one" />
+
           <div className="orb-ring orb-ring-two" />
+
           <div className="orb-ring orb-ring-three" />
 
-          <div className="orb-core">
-            <span>S</span>
-          </div>
+          <div className="orbit-node node-one" />
+          <div className="orbit-node node-two" />
+          <div className="orbit-node node-three" />
 
-          <span className="orbit-node node-one" />
-          <span className="orbit-node node-two" />
-          <span className="orbit-node node-three" />
+          <div className="orb-core">
+            <span>
+              S
+            </span>
+          </div>
         </div>
 
         <div className="orb-label">
           <span />
+
           SENTRI CORE ACTIVE
         </div>
       </div>

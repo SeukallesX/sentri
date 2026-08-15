@@ -1,0 +1,452 @@
+/* =========================================================
+   SENTRI // NAVIGATION COMMAND BAR
+========================================================= */
+
+.navbar {
+  position: relative;
+  z-index: 50;
+
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 24px;
+
+  min-height: 76px;
+
+  padding:
+    13px
+    max(28px, calc((100vw - 1440px) / 2));
+
+  border-bottom:
+    1px solid rgba(74, 180, 218, 0.1);
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(2, 11, 19, 0.96),
+      rgba(2, 9, 15, 0.91)
+    );
+
+  backdrop-filter: blur(18px);
+
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.14);
+}
+
+/* Small command line underneath navbar */
+
+.navbar::after {
+  content: "";
+
+  position: absolute;
+
+  left:
+    max(
+      28px,
+      calc((100vw - 1440px) / 2)
+    );
+
+  bottom: -1px;
+
+  width: 125px;
+  height: 1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #5de2ff,
+      transparent
+    );
+
+  box-shadow:
+    0 0 8px rgba(93, 226, 255, 0.18);
+}
+
+/* =========================================================
+   BRAND
+========================================================= */
+
+.brand {
+  display: flex;
+  align-items: center;
+
+  gap: 13px;
+
+  min-width: 0;
+}
+
+.brand-icon {
+  position: relative;
+
+  width: 43px;
+  height: 43px;
+
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  overflow: hidden;
+
+  border:
+    1px solid rgba(93, 222, 255, 0.34);
+
+  border-radius: 50%;
+
+  color: #a5f2ff;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(63, 204, 245, 0.14),
+      rgba(2, 15, 24, 0.9)
+    );
+
+  font-family:
+    Consolas,
+    "Courier New",
+    monospace;
+
+  font-size: 1rem;
+  font-weight: 900;
+
+  box-shadow:
+    0 0 18px rgba(78, 214, 255, 0.08),
+    inset 0 0 14px rgba(78, 214, 255, 0.05);
+}
+
+/* Rotating outer ring */
+
+.brand-icon::before {
+  content: "";
+
+  position: absolute;
+
+  inset: -5px;
+
+  border:
+    1px dashed rgba(91, 220, 255, 0.2);
+
+  border-radius: 50%;
+
+  animation:
+    sentriLogoRotate
+    16s linear infinite;
+}
+
+@keyframes sentriLogoRotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Tiny scanner glow */
+
+.brand-icon::after {
+  content: "";
+
+  position: absolute;
+
+  width: 70%;
+  height: 1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(130, 237, 255, 0.75),
+      transparent
+    );
+
+  animation:
+    sentriLogoScan
+    2.8s ease-in-out infinite;
+}
+
+@keyframes sentriLogoScan {
+  0%,
+  100% {
+    transform: translateY(-10px);
+    opacity: 0.25;
+  }
+
+  50% {
+    transform: translateY(10px);
+    opacity: 0.8;
+  }
+}
+
+.brand > div:last-child {
+  min-width: 0;
+}
+
+.brand h1 {
+  margin: 0;
+
+  color: #dff8ff;
+
+  font-size: 1.05rem;
+  font-weight: 800;
+
+  line-height: 1;
+
+  letter-spacing: 0.16em;
+}
+
+.brand p {
+  margin: 6px 0 0;
+
+  color: #4f7184;
+
+  font-family:
+    Consolas,
+    "Courier New",
+    monospace;
+
+  font-size: 0.47rem;
+  font-weight: 700;
+
+  letter-spacing: 0.13em;
+
+  text-transform: uppercase;
+}
+
+/* =========================================================
+   RIGHT SIDE SYSTEM STATUS
+========================================================= */
+
+.navbar-system-status {
+  display: flex;
+  align-items: center;
+
+  gap: 24px;
+
+  min-width: 0;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 8px 11px;
+
+  border:
+    1px solid rgba(77, 199, 228, 0.09);
+
+  border-radius: 1px;
+
+  color: #628699;
+
+  background:
+    rgba(4, 22, 31, 0.36);
+
+  font-family:
+    Consolas,
+    "Courier New",
+    monospace;
+
+  font-size: 0.51rem;
+  font-weight: 800;
+
+  letter-spacing: 0.1em;
+
+  text-transform: uppercase;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  color: #5deabb;
+  background: currentColor;
+
+  box-shadow:
+    0 0 8px currentColor;
+}
+
+/* =========================================================
+   ENGINE / MODE MODULES
+========================================================= */
+
+.navbar-module {
+  position: relative;
+
+  display: grid;
+
+  gap: 4px;
+
+  min-width: 70px;
+
+  padding-left: 15px;
+
+  border-left:
+    1px solid rgba(87, 206, 244, 0.12);
+}
+
+.navbar-module::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: -1px;
+
+  width: 1px;
+  height: 9px;
+
+  background: #59dfff;
+
+  box-shadow:
+    0 0 6px rgba(89, 223, 255, 0.4);
+}
+
+.navbar-module span {
+  color: #456879;
+
+  font-family:
+    Consolas,
+    "Courier New",
+    monospace;
+
+  font-size: 0.42rem;
+  font-weight: 700;
+
+  letter-spacing: 0.13em;
+}
+
+.navbar-module strong {
+  color: #91b5c7;
+
+  font-family:
+    Consolas,
+    "Courier New",
+    monospace;
+
+  font-size: 0.58rem;
+  font-weight: 900;
+
+  letter-spacing: 0.08em;
+}
+
+/* =========================================================
+   SUBTLE NAVBAR DATA DECORATION
+========================================================= */
+
+.navbar-system-status::after {
+  content: "SECURE CHANNEL";
+
+  color:
+    rgba(77, 184, 216, 0.2);
+
+  font-family:
+    Consolas,
+    "Courier New",
+    monospace;
+
+  font-size: 0.38rem;
+
+  letter-spacing: 0.15em;
+}
+
+/* =========================================================
+   HOVER RESPONSE
+========================================================= */
+
+.brand-icon {
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.brand:hover .brand-icon {
+  border-color:
+    rgba(98, 230, 255, 0.55);
+
+  box-shadow:
+    0 0 24px rgba(78, 214, 255, 0.12),
+    inset 0 0 17px rgba(78, 214, 255, 0.07);
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 950px) {
+  .navbar-module {
+    display: none;
+  }
+
+  .navbar-system-status::after {
+    display: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .navbar {
+    min-height: 68px;
+
+    padding:
+      11px 18px;
+  }
+
+  .navbar::after {
+    left: 18px;
+  }
+
+  .navbar-system-status {
+    gap: 10px;
+  }
+
+  .brand-icon {
+    width: 38px;
+    height: 38px;
+  }
+
+  .brand h1 {
+    font-size: 0.92rem;
+  }
+
+  .brand p {
+    font-size: 0.4rem;
+  }
+
+  .status {
+    padding: 7px 8px;
+
+    font-size: 0.45rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .brand p {
+    display: none;
+  }
+
+  .status {
+    border: 0;
+
+    padding: 0;
+
+    background: transparent;
+  }
+}
+
+@media (max-width: 400px) {
+  .status {
+    font-size: 0;
+  }
+
+  .status-dot {
+    width: 7px;
+    height: 7px;
+  }
+}

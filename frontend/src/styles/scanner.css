@@ -1,0 +1,592 @@
+/* =========================================================
+   SENTRI // SCANNER SYSTEM
+   Dashboard stats + Message Analyzer + Controls + Export
+========================================================= */
+
+/* =========================================================
+   STATS GRID
+========================================================= */
+
+.stats-grid {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 16px;
+}
+
+.stat-card {
+  position: relative;
+
+  min-width: 0;
+
+  padding: 26px 22px;
+
+  overflow: hidden;
+
+  border:
+    1px solid rgba(70, 191, 238, 0.11);
+
+  border-radius: 2px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(6, 22, 35, 0.84),
+      rgba(2, 11, 20, 0.8)
+    );
+
+  box-shadow:
+    inset 0 0 25px rgba(60, 191, 240, 0.018),
+    0 16px 45px rgba(0, 0, 0, 0.2);
+}
+
+.stat-card::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: 24px;
+
+  width: 68px;
+  height: 1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #50e3ff,
+      transparent
+    );
+}
+
+.stat-card::after {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  right: 25px;
+
+  width: 28px;
+  height: 1px;
+
+  background:
+    rgba(108, 227, 255, 0.45);
+}
+
+.stat-card:hover {
+  border-color:
+    rgba(84, 209, 246, 0.2);
+
+  background:
+    rgba(5, 23, 35, 0.82);
+}
+
+.stat-card span {
+  display: block;
+
+  color: #4d7185;
+
+  font-family:
+    Consolas,
+    "Courier New",
+    monospace;
+
+  font-size: 0.48rem;
+  font-weight: 800;
+
+  letter-spacing: 0.11em;
+
+  text-transform: uppercase;
+}
+
+.stat-card strong {
+  display: block;
+
+  margin-top: 11px;
+
+  color: #d9eff8;
+
+  font-family:
+    Consolas,
+    "Courier New",
+    monospace;
+
+  font-size: 1.75rem;
+
+  line-height: 1;
+}
+
+/* =========================================================
+   DASHBOARD CONTROLS
+========================================================= */
+
+.dashboard-controls {
+  width: 100%;
+
+  display: flex;
+
+  justify-content: flex-end;
+
+  margin: 14px 0 0;
+}
+
+.dashboard-controls button {
+  max-width: max-content;
+}
+
+/* =========================================================
+   MESSAGE ANALYSIS GRID
+========================================================= */
+
+.dashboard {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1.05fr)
+    minmax(0, 0.95fr);
+
+  gap: 20px;
+
+  align-items: stretch;
+}
+
+/* =========================================================
+   ANALYZER CARD
+========================================================= */
+
+.analyzer-card {
+  position: relative;
+
+  width: 100%;
+  min-width: 0;
+
+  min-height: 620px;
+
+  padding: 34px;
+
+  overflow: hidden;
+
+  border:
+    1px solid rgba(70, 191, 238, 0.11);
+
+  border-radius: 2px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(6, 22, 35, 0.84),
+      rgba(2, 11, 20, 0.8)
+    );
+
+  box-shadow:
+    inset 0 0 25px rgba(60, 191, 240, 0.018),
+    0 16px 45px rgba(0, 0, 0, 0.2);
+}
+
+.analyzer-card::before {
+  content: "";
+
+  position: absolute;
+
+  top: -1px;
+  left: -1px;
+
+  width: 34px;
+  height: 34px;
+
+  border-top:
+    1px solid rgba(103, 226, 255, 0.75);
+
+  border-left:
+    1px solid rgba(103, 226, 255, 0.75);
+
+  pointer-events: none;
+}
+
+.analyzer-card::after {
+  content: "";
+
+  position: absolute;
+
+  right: -1px;
+  bottom: -1px;
+
+  width: 34px;
+  height: 34px;
+
+  border-right:
+    1px solid rgba(103, 226, 255, 0.45);
+
+  border-bottom:
+    1px solid rgba(103, 226, 255, 0.45);
+
+  pointer-events: none;
+}
+
+.analyzer-card h3 {
+  margin:
+    7px 0 0;
+
+  color: #e4f7ff;
+
+  font-size: 1.35rem;
+
+  letter-spacing: -0.015em;
+}
+
+.analyzer-card > p {
+  color: #68879a;
+
+  font-size: 0.72rem;
+
+  line-height: 1.7;
+}
+
+/* =========================================================
+   MESSAGE INPUT
+========================================================= */
+
+.analyzer-card textarea {
+  width: 100%;
+
+  min-height: 260px;
+  max-height: 360px;
+
+  margin-top: 18px;
+
+  padding: 17px;
+
+  resize: vertical;
+
+  border:
+    1px solid rgba(91, 196, 235, 0.16);
+
+  border-radius: 2px;
+
+  color: #dcf6ff;
+
+  background:
+    rgba(1, 8, 14, 0.82);
+
+  font-family:
+    Consolas,
+    "Courier New",
+    monospace;
+
+  font-size: 0.76rem;
+
+  line-height: 1.65;
+
+  box-shadow:
+    inset 0 0 18px rgba(0, 0, 0, 0.3);
+}
+
+.analyzer-card textarea::placeholder {
+  color: #3f6277;
+}
+
+.analyzer-card textarea:focus {
+  border-color:
+    rgba(93, 220, 255, 0.55);
+
+  outline: none;
+
+  box-shadow:
+    0 0 0 1px rgba(93, 220, 255, 0.1),
+    inset 0 0 22px rgba(45, 176, 222, 0.035);
+}
+
+/* =========================================================
+   ANALYZER ACTIONS
+========================================================= */
+
+.analyzer-actions {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  margin-top: 16px;
+}
+
+.analyzer-actions .primary-button {
+  min-width: 155px;
+}
+
+.analyzer-actions .secondary-button {
+  min-width: 90px;
+}
+
+/* =========================================================
+   ERROR STATE
+========================================================= */
+
+.error-message {
+  margin-top: 12px;
+
+  padding: 11px 13px;
+
+  border:
+    1px solid rgba(255, 101, 119, 0.16);
+
+  color: #ff8b98;
+
+  background:
+    rgba(92, 19, 30, 0.12);
+
+  font-family:
+    Consolas,
+    "Courier New",
+    monospace;
+
+  font-size: 0.58rem;
+
+  line-height: 1.5;
+}
+
+/* =========================================================
+   REPORT / EXPORT
+========================================================= */
+
+.report-actions {
+  width: 100%;
+
+  display: flex;
+
+  justify-content: flex-end;
+
+  margin-top: 12px;
+}
+
+.report-actions button {
+  max-width: max-content;
+}
+
+/* =========================================================
+   SHARED RESULTS CARD SHELL
+   Detailed HUD internals remain in hud.css
+========================================================= */
+
+.results-card {
+  position: relative;
+
+  width: 100%;
+  min-width: 0;
+
+  min-height: 620px;
+
+  padding: 34px;
+
+  overflow: hidden;
+
+  border:
+    1px solid rgba(70, 191, 238, 0.11);
+
+  border-radius: 2px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(6, 22, 35, 0.84),
+      rgba(2, 11, 20, 0.8)
+    );
+
+  box-shadow:
+    inset 0 0 25px rgba(60, 191, 240, 0.018),
+    0 16px 45px rgba(0, 0, 0, 0.2);
+}
+
+.results-card::before {
+  content: "";
+
+  position: absolute;
+
+  top: -1px;
+  left: -1px;
+
+  width: 34px;
+  height: 34px;
+
+  border-top:
+    1px solid rgba(103, 226, 255, 0.75);
+
+  border-left:
+    1px solid rgba(103, 226, 255, 0.75);
+
+  pointer-events: none;
+}
+
+.results-card::after {
+  content: "";
+
+  position: absolute;
+
+  right: -1px;
+  bottom: -1px;
+
+  width: 34px;
+  height: 34px;
+
+  border-right:
+    1px solid rgba(103, 226, 255, 0.45);
+
+  border-bottom:
+    1px solid rgba(103, 226, 255, 0.45);
+
+  pointer-events: none;
+}
+
+/* =========================================================
+   LOADING STATE
+========================================================= */
+
+.history-loading {
+  position: relative;
+
+  width: 100%;
+
+  padding: 30px;
+
+  overflow: hidden;
+
+  border:
+    1px solid rgba(80, 205, 255, 0.12);
+
+  border-radius: 2px;
+
+  color: #66849f;
+
+  text-align: center;
+
+  background:
+    rgba(3, 14, 27, 0.45);
+
+  font-family:
+    Consolas,
+    monospace;
+
+  font-size: 0.58rem;
+
+  letter-spacing: 0.08em;
+}
+
+.history-loading::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  top: 0;
+
+  width: 25%;
+  height: 1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      #5be2ff,
+      transparent
+    );
+
+  animation:
+    sentriScannerLoading
+    2s linear infinite;
+}
+
+@keyframes sentriScannerLoading {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(500%);
+  }
+}
+
+/* =========================================================
+   GENERIC PANEL SYSTEM
+========================================================= */
+
+.analyzer-card,
+.results-card,
+.stat-card {
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.analyzer-card:hover,
+.results-card:hover {
+  border-color:
+    rgba(82, 205, 244, 0.16);
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1050px) {
+  .dashboard {
+    grid-template-columns:
+      1fr;
+  }
+
+  .stats-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .analyzer-card,
+  .results-card {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 650px) {
+  .stats-grid {
+    grid-template-columns:
+      1fr;
+  }
+
+  .analyzer-card,
+  .results-card {
+    padding: 24px;
+  }
+
+  .analyzer-card textarea {
+    min-height: 220px;
+  }
+
+  .analyzer-actions {
+    flex-direction: column;
+
+    align-items: stretch;
+  }
+
+  .analyzer-actions .primary-button,
+  .analyzer-actions .secondary-button {
+    width: 100%;
+
+    min-width: 0;
+  }
+
+  .report-actions {
+    justify-content: stretch;
+  }
+
+  .report-actions button {
+    width: 100%;
+
+    max-width: none;
+  }
+}

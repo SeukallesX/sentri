@@ -1,0 +1,675 @@
+/* =========================================================
+   SENTRI // HERO COMMAND CORE
+========================================================= */
+
+.hero {
+  position: relative;
+
+  width: 100%;
+
+  min-height: 560px;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1.15fr)
+    minmax(330px, 0.85fr);
+
+  align-items: center;
+
+  gap: 30px;
+
+  padding:
+    64px 64px;
+
+  overflow: hidden;
+
+  border:
+    1px solid rgba(76, 201, 255, 0.12);
+
+  border-radius: 2px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(5, 19, 31, 0.9),
+      rgba(2, 10, 18, 0.86)
+    );
+
+  box-shadow:
+    inset 0 0 40px rgba(60, 185, 240, 0.025),
+    0 28px 80px rgba(0, 0, 0, 0.34);
+}
+
+/* ---------------------------------------------------------
+   COMMAND LABEL
+--------------------------------------------------------- */
+
+.hero::before {
+  content: "SENTRI // COMMAND CORE";
+
+  position: absolute;
+
+  top: 18px;
+  right: 22px;
+
+  color:
+    rgba(92, 211, 244, 0.22);
+
+  font-family:
+    Consolas,
+    "Courier New",
+    monospace;
+
+  font-size: 0.43rem;
+
+  letter-spacing: 0.14em;
+}
+
+/* Bottom technical line */
+
+.hero::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  bottom: 0;
+
+  width: 120px;
+  height: 1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #5fe4ff,
+      transparent
+    );
+}
+
+/* ---------------------------------------------------------
+   CORNER BRACKETS
+--------------------------------------------------------- */
+
+.hero-copy::before {
+  content: "";
+
+  position: absolute;
+
+  top: 10px;
+  left: 10px;
+
+  width: 80px;
+  height: 80px;
+
+  pointer-events: none;
+
+  border-top:
+    1px solid rgba(83, 220, 255, 0.55);
+
+  border-left:
+    1px solid rgba(83, 220, 255, 0.55);
+}
+
+.hero-orb-area::after {
+  content: "";
+
+  position: absolute;
+
+  right: 10px;
+  bottom: 10px;
+
+  width: 80px;
+  height: 80px;
+
+  pointer-events: none;
+
+  border-right:
+    1px solid rgba(83, 220, 255, 0.35);
+
+  border-bottom:
+    1px solid rgba(83, 220, 255, 0.35);
+}
+
+/* =========================================================
+   LEFT SIDE COPY
+========================================================= */
+
+.hero-copy {
+  position: relative;
+
+  min-width: 0;
+
+  z-index: 2;
+}
+
+.hero-badge {
+  width: fit-content;
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 7px 12px;
+
+  border:
+    1px solid rgba(70, 215, 255, 0.18);
+
+  border-radius: 1px;
+
+  color: #66ddff;
+
+  background:
+    rgba(68, 201, 255, 0.035);
+
+  font-family:
+    Consolas,
+    "Courier New",
+    monospace;
+
+  font-size: 0.55rem;
+
+  font-weight: 800;
+
+  letter-spacing: 0.15em;
+
+  text-transform: uppercase;
+}
+
+.hero-badge-dot {
+  width: 5px;
+  height: 5px;
+
+  border-radius: 50%;
+
+  color: #71eaff;
+
+  background: currentColor;
+
+  box-shadow:
+    0 0 9px currentColor;
+}
+
+.hero h2 {
+  max-width: 790px;
+
+  margin:
+    24px 0 18px;
+
+  color: #eaf8ff;
+
+  font-size:
+    clamp(
+      3.4rem,
+      5.8vw,
+      5.9rem
+    );
+
+  line-height: 0.94;
+
+  letter-spacing: -0.055em;
+}
+
+.hero-gradient {
+  background:
+    linear-gradient(
+      90deg,
+      #8eeeff 0%,
+      #56dfff 48%,
+      #6db7ff 100%
+    );
+
+  -webkit-background-clip: text;
+
+  background-clip: text;
+
+  color: transparent;
+
+  filter:
+    saturate(0.86);
+}
+
+.hero-copy > p {
+  max-width: 720px;
+
+  margin: 0;
+
+  color: #7892a6;
+
+  font-size: 0.9rem;
+
+  line-height: 1.75;
+}
+
+/* =========================================================
+   SYSTEM READOUTS
+========================================================= */
+
+.hero-system-info {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 28px;
+
+  margin-top: 30px;
+}
+
+.hero-system-info div {
+  min-width: 100px;
+
+  display: grid;
+
+  gap: 4px;
+
+  padding-left: 11px;
+
+  border-left:
+    1px solid rgba(78, 205, 245, 0.14);
+}
+
+.hero-system-info span {
+  color: #436679;
+
+  font-family:
+    Consolas,
+    "Courier New",
+    monospace;
+
+  font-size: 0.46rem;
+
+  letter-spacing: 0.12em;
+}
+
+.hero-system-info strong {
+  color: #9dbccb;
+
+  font-family:
+    Consolas,
+    "Courier New",
+    monospace;
+
+  font-size: 0.63rem;
+
+  letter-spacing: 0.08em;
+}
+
+.online-text {
+  color: #60efc0 !important;
+
+  text-shadow:
+    0 0 8px rgba(96, 239, 192, 0.25);
+}
+
+/* =========================================================
+   RIGHT SIDE CORE HUD
+========================================================= */
+
+.hero-orb-area {
+  position: relative;
+
+  min-width: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 26px;
+
+  z-index: 2;
+}
+
+.orb-shell {
+  position: relative;
+
+  width: 310px;
+
+  height: 310px;
+
+  display: grid;
+
+  place-items: center;
+}
+
+/* ---------------------------------------------------------
+   RADAR SWEEP
+--------------------------------------------------------- */
+
+.orb-shell::before {
+  content: "";
+
+  position: absolute;
+
+  inset: 34px;
+
+  border-radius: 50%;
+
+  background:
+    conic-gradient(
+      from 0deg,
+      transparent 0deg,
+      rgba(80, 225, 255, 0.12) 50deg,
+      transparent 90deg,
+      transparent 360deg
+    );
+
+  animation:
+    sentriHeroRadarSweep
+    4s linear infinite;
+}
+
+@keyframes sentriHeroRadarSweep {
+  to {
+    transform:
+      rotate(360deg);
+  }
+}
+
+/* ---------------------------------------------------------
+   OUTER TICK RING
+--------------------------------------------------------- */
+
+.orb-shell::after {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  border-radius: 50%;
+
+  background:
+    repeating-conic-gradient(
+      from 0deg,
+      rgba(102, 225, 255, 0.22)
+        0deg 1deg,
+      transparent
+        1deg 12deg
+    );
+
+  mask:
+    radial-gradient(
+      transparent 72%,
+      #000 73%
+    );
+
+  opacity: 0.34;
+}
+
+/* =========================================================
+   ORBIT RINGS
+========================================================= */
+
+.orb-ring {
+  position: absolute;
+
+  border-radius: 50%;
+
+  border:
+    1px solid rgba(78, 210, 255, 0.22);
+}
+
+.orb-ring-one {
+  width: 295px;
+
+  height: 295px;
+
+  border-style: dashed;
+
+  animation:
+    sentriHeroSpin
+    20s linear infinite;
+}
+
+.orb-ring-two {
+  width: 235px;
+
+  height: 235px;
+
+  border-top-color:
+    rgba(90, 220, 255, 0.65);
+
+  border-right-color:
+    rgba(90, 220, 255, 0.08);
+
+  animation:
+    sentriHeroSpinReverse
+    10s linear infinite;
+}
+
+.orb-ring-three {
+  width: 165px;
+
+  height: 165px;
+
+  border:
+    1px solid rgba(108, 229, 255, 0.42);
+
+  box-shadow:
+    inset 0 0 18px rgba(78, 209, 255, 0.05);
+}
+
+@keyframes sentriHeroSpin {
+  to {
+    transform:
+      rotate(360deg);
+  }
+}
+
+@keyframes sentriHeroSpinReverse {
+  to {
+    transform:
+      rotate(-360deg);
+  }
+}
+
+/* =========================================================
+   ORBIT NODES
+========================================================= */
+
+.orbit-node {
+  position: absolute;
+
+  width: 7px;
+
+  height: 7px;
+
+  border:
+    1px solid rgba(109, 232, 255, 0.8);
+
+  border-radius: 50%;
+
+  background: #061622;
+
+  box-shadow:
+    0 0 12px rgba(90, 219, 255, 0.7);
+}
+
+.node-one {
+  top: 18px;
+}
+
+.node-two {
+  right: 30px;
+
+  bottom: 68px;
+}
+
+.node-three {
+  left: 27px;
+
+  top: 108px;
+}
+
+/* =========================================================
+   CORE
+========================================================= */
+
+.orb-core {
+  position: relative;
+
+  z-index: 4;
+
+  width: 108px;
+
+  height: 108px;
+
+  display: grid;
+
+  place-items: center;
+
+  border:
+    1px solid rgba(93, 225, 255, 0.54);
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(75, 218, 255, 0.22),
+      rgba(5, 30, 45, 0.9) 62%,
+      rgba(2, 14, 23, 0.96)
+    );
+
+  box-shadow:
+    0 0 22px rgba(77, 211, 255, 0.2),
+    0 0 50px rgba(77, 211, 255, 0.07),
+    inset 0 0 20px rgba(77, 211, 255, 0.07);
+
+  animation:
+    sentriHeroCorePulse
+    2.8s ease-in-out infinite;
+}
+
+@keyframes sentriHeroCorePulse {
+  0%,
+  100% {
+    transform:
+      scale(1);
+  }
+
+  50% {
+    transform:
+      scale(1.025);
+
+    box-shadow:
+      0 0 30px rgba(75, 207, 255, 0.34),
+      0 0 70px rgba(75, 207, 255, 0.1),
+      inset 0 0 26px rgba(75, 207, 255, 0.1);
+  }
+}
+
+.orb-core span {
+  color: #a1f0ff;
+
+  font-family:
+    Consolas,
+    "Courier New",
+    monospace;
+
+  font-size: 2rem;
+
+  font-weight: 900;
+
+  text-shadow:
+    0 0 12px rgba(111, 229, 255, 0.55);
+}
+
+/* =========================================================
+   CORE STATUS LABEL
+========================================================= */
+
+.orb-label {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  color: #587a8d;
+
+  font-family:
+    Consolas,
+    "Courier New",
+    monospace;
+
+  font-size: 0.48rem;
+
+  font-weight: 800;
+
+  letter-spacing: 0.16em;
+
+  text-transform: uppercase;
+}
+
+.orb-label span {
+  width: 5px;
+
+  height: 5px;
+
+  border-radius: 50%;
+
+  color: #63e8ff;
+
+  background: currentColor;
+
+  box-shadow:
+    0 0 9px currentColor;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1050px) {
+  .hero {
+    grid-template-columns:
+      1fr;
+
+    gap: 45px;
+
+    text-align: center;
+  }
+
+  .hero-badge {
+    margin-left: auto;
+
+    margin-right: auto;
+  }
+
+  .hero-copy > p {
+    margin-left: auto;
+
+    margin-right: auto;
+  }
+
+  .hero-system-info {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 700px) {
+  .hero {
+    min-height: auto;
+
+    padding:
+      46px 24px;
+  }
+
+  .hero h2 {
+    font-size:
+      clamp(
+        2.75rem,
+        13vw,
+        4rem
+      );
+  }
+
+  .orb-shell {
+    transform:
+      scale(0.84);
+  }
+}

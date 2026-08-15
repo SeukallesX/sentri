@@ -14,83 +14,225 @@ function ScanHistory({
   onClearHistory,
 }: ScanHistoryProps) {
   return (
-    <section className="history-section">
-      <div className="history-header">
+    <section className="history-section incident-archive">
+      <div className="history-header incident-archive-header">
         <div>
           <p className="eyebrow">
             Security Archive
           </p>
 
           <h3>
-            Recent Scans
+            Incident Log
           </h3>
         </div>
 
-        {history.length > 0 && (
-          <button
-            type="button"
-            className="secondary-button"
-            onClick={onClearHistory}
-          >
-            Clear History
-          </button>
-        )}
+        <div className="archive-header-actions">
+          <span className="archive-status">
+            DATABASE ONLINE
+          </span>
+
+          {history.length > 0 && (
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={onClearHistory}
+            >
+              Purge Archive
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="archive-table-header">
+        <span>
+          ID
+        </span>
+
+        <span>
+          TYPE
+        </span>
+
+        <span>
+          TARGET
+        </span>
+
+        <span>
+          RISK
+        </span>
+
+        <span>
+          SCORE
+        </span>
+
+        <span>
+          TIMESTAMP
+        </span>
       </div>
 
       {history.length === 0 ? (
-        <div className="history-empty">
+        <div className="archive-empty-state">
+          <div className="archive-empty-radar">
+            <div />
+            <div />
+            <div />
+          </div>
+
+          <strong>
+            NO INCIDENTS LOGGED
+          </strong>
+
           <p>
-            No scans recorded.
+            Message and URL scans stored by Sentri will appear in the
+            security archive.
           </p>
 
           <span>
-            Message and URL scans stored by Sentri will appear here.
+            ARCHIVE NODE // READY
           </span>
         </div>
       ) : (
-        <div className="history-list">
-          {history.map((item) => (
-            <button
-              type="button"
-              className="history-item"
-              key={item.id}
-              onClick={() => onSelect(item)}
-            >
-              <div className="history-message">
-                <div className="history-title-row">
-                  <span className="scan-type-badge">
-                    {item.type}
-                  </span>
+        <div className="incident-list">
+          {history.map(
+            (
+              item,
+              index,
+            ) => {
+              const riskClass =
+                `risk-${item.result.riskLevel.toLowerCase()}`;
 
-                  <strong
-                    className={`risk-${item.result.riskLevel.toLowerCase()}`}
-                  >
-                    {item.result.riskLevel} Risk
-                  </strong>
-                </div>
+              const shortId =
+                item.id
+                  .replace(
+                    /-/g,
+                    "",
+                  )
+                  .slice(
+                    0,
+                    8,
+                  )
+                  .toUpperCase();
 
-                <p>
-                  {item.content}
-                </p>
-              </div>
-
-              <div className="history-meta">
-                <span
-                  className={`history-risk risk-${item.result.riskLevel.toLowerCase()}`}
+              return (
+                <button
+                  type="button"
+                  className="incident-row"
+                  key={item.id}
+                  onClick={() =>
+                    onSelect(
+                      item,
+                    )
+                  }
                 >
-                  {item.result.riskScore}
-                </span>
+                  <div className="incident-id">
+                    <span>
+                      {String(
+                        index +
+                          1,
+                      ).padStart(
+                        2,
+                        "0",
+                      )}
+                    </span>
 
-                <small>
-                  {new Date(
-                    item.createdAt,
-                  ).toLocaleString()}
-                </small>
-              </div>
-            </button>
-          ))}
+                    <strong>
+                      {shortId}
+                    </strong>
+                  </div>
+
+                  <div className="incident-type">
+                    <span
+                      className={`scan-type-badge scan-type-${item.type.toLowerCase()}`}
+                    >
+                      {
+                        item.type
+                      }
+                    </span>
+                  </div>
+
+                  <div className="incident-target">
+                    <strong>
+                      {
+                        item.content
+                      }
+                    </strong>
+
+                    <span>
+                      {
+                        item.result
+                          .summary
+                      }
+                    </span>
+                  </div>
+
+                  <div className="incident-risk">
+                    <span
+                      className={`incident-risk-dot ${riskClass}`}
+                    />
+
+                    <strong
+                      className={
+                        riskClass
+                      }
+                    >
+                      {
+                        item.result
+                          .riskLevel
+                      }
+                    </strong>
+                  </div>
+
+                  <div
+                    className={`incident-score ${riskClass}`}
+                  >
+                    {
+                      item.result
+                        .riskScore
+                    }
+                  </div>
+
+                  <div className="incident-time">
+                    <strong>
+                      {new Date(
+                        item.createdAt,
+                      ).toLocaleTimeString(
+                        [],
+                        {
+                          hour:
+                            "2-digit",
+                          minute:
+                            "2-digit",
+                        },
+                      )}
+                    </strong>
+
+                    <span>
+                      {new Date(
+                        item.createdAt,
+                      ).toLocaleDateString()}
+                    </span>
+                  </div>
+                </button>
+              );
+            },
+          )}
         </div>
       )}
+
+      <div className="archive-footer">
+        <span>
+          SENTRI // INCIDENT DATABASE
+        </span>
+
+        <strong>
+          {history.length
+            .toString()
+            .padStart(
+              2,
+              "0",
+            )}{" "}
+          RECORDS
+        </strong>
+      </div>
     </section>
   );
 }

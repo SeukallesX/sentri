@@ -2,17 +2,45 @@ function Navbar() {
   return (
     <header className="navbar">
       <div className="brand">
-        <div className="brand-icon">S</div>
+        <div className="brand-icon">
+          S
+        </div>
 
         <div>
-          <h1>Sentri</h1>
-          <p>Scam Detection Dashboard</p>
+          <h1>SENTRI</h1>
+
+          <p>
+            Threat Intelligence System
+          </p>
         </div>
       </div>
 
-      <div className="status">
-        <span className="status-dot" />
-        Rule-Based Protection Active
+      <div className="navbar-system-status">
+        <div className="status">
+          <span className="status-dot" />
+
+          System Online
+        </div>
+
+        <div className="navbar-module">
+          <span>
+            ENGINE
+          </span>
+
+          <strong>
+            RULE-X
+          </strong>
+        </div>
+
+        <div className="navbar-module">
+          <span>
+            MODE
+          </span>
+
+          <strong>
+            LOCAL
+          </strong>
+        </div>
       </div>
     </header>
   );
