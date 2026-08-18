@@ -590,3 +590,99 @@
     max-width: none;
   }
 }
+
+/* =========================================================
+   MESSAGE SCANNER — LAYOUT POLISH
+========================================================= */
+
+.analyzer-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.analyzer-card textarea {
+  width: 100%;
+  min-height: 300px;
+  margin-top: 18px;
+  box-sizing: border-box;
+}
+
+/* Character count + privacy warning */
+.analyzer-meta {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 24px;
+
+  margin-top: 14px;
+
+  font-family: monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+
+.analyzer-meta span:first-child {
+  white-space: nowrap;
+}
+
+.analyzer-meta span:last-child {
+  text-align: right;
+}
+
+/* Scanner buttons */
+.analyzer-actions {
+  width: 100%;
+
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+  gap: 12px;
+
+  margin-top: 22px;
+}
+
+.analyzer-actions button {
+  min-height: 48px;
+}
+
+/* Prevent scanner content from crowding */
+.analyzer-card form {
+  width: 100%;
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 900px) {
+  .analyzer-meta {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .analyzer-meta span:last-child {
+    text-align: left;
+  }
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+  .analyzer-card textarea {
+    min-height: 220px;
+  }
+
+  .analyzer-actions {
+    flex-direction: column;
+  }
+
+  .analyzer-actions button {
+    width: 100%;
+  }
+}

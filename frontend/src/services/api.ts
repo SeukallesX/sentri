@@ -12,6 +12,11 @@ export interface ScamFlag {
 export interface AnalysisResult {
   riskScore: number;
   riskLevel: RiskLevel;
+
+  threatCategory: string;
+  confidence: number;
+  attackVector: string;
+
   flags: ScamFlag[];
   summary: string;
   recommendation: string;

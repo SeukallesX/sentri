@@ -1,0 +1,897 @@
+/* =========================================================
+   SENTRI // THREAT TELEMETRY + SUBSYSTEM MODULES
+========================================================= */
+
+/* =========================================================
+   ANALYTICS SECTION
+========================================================= */
+
+.analytics-section {
+  position: relative;
+
+  width: 100%;
+
+  padding: 32px;
+
+  overflow: hidden;
+
+  border:
+    1px solid rgba(75, 183, 222, 0.1);
+
+  border-radius: 2px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(4, 18, 30, 0.92),
+      rgba(2, 10, 18, 0.9)
+    );
+
+  box-shadow:
+    inset 0 0 28px rgba(64, 194, 239, 0.018),
+    0 16px 45px rgba(0, 0, 0, 0.18);
+}
+
+.analytics-section::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: 28px;
+
+  width: 82px;
+  height: 1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #5ce2ff,
+      transparent
+    );
+}
+
+.analytics-section::after {
+  content: "TELEMETRY NODE // 04";
+
+  position: absolute;
+
+  top: 18px;
+  right: 22px;
+
+  color:
+    rgba(92, 211, 244, 0.23);
+
+  font-family:
+    Consolas,
+    "Courier New",
+    monospace;
+
+  font-size: 0.42rem;
+
+  letter-spacing: 0.14em;
+}
+
+
+/* =========================================================
+   ANALYTICS HEADER
+========================================================= */
+
+.analytics-header {
+  display: flex;
+
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding-bottom: 15px;
+
+  border-bottom:
+    1px solid rgba(79, 184, 220, 0.09);
+}
+
+.analytics-header h3 {
+  margin:
+    7px 0 0;
+
+  color: #e3f7ff;
+
+  font-size: 1.35rem;
+
+  letter-spacing: -0.02em;
+}
+
+
+/* =========================================================
+   SUMMARY TELEMETRY
+========================================================= */
+
+.analytics-summary-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 10px;
+
+  margin-top: 20px;
+
+  margin-bottom: 18px;
+}
+
+.analytics-summary-card {
+  position: relative;
+
+  min-width: 0;
+  min-height: 102px;
+
+  padding: 16px 17px;
+
+  overflow: hidden;
+
+  border:
+    1px solid rgba(74, 170, 206, 0.09);
+
+  border-radius: 1px;
+
+  background:
+    rgba(2, 12, 20, 0.58);
+}
+
+.analytics-summary-card::before {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  top: 15px;
+
+  width: 2px;
+  height: 25px;
+
+  background: #58ddff;
+
+  box-shadow:
+    0 0 10px rgba(88, 221, 255, 0.5);
+}
+
+.analytics-summary-card::after {
+  content: "DATA";
+
+  position: absolute;
+
+  right: 10px;
+  bottom: 8px;
+
+  color:
+    rgba(79, 188, 222, 0.18);
+
+  font-family:
+    Consolas,
+    monospace;
+
+  font-size: 0.38rem;
+
+  letter-spacing: 0.12em;
+}
+
+.analytics-summary-card > span {
+  display: block;
+
+  margin-bottom: 12px;
+
+  color: #486a7d;
+
+  font-size: 0.47rem;
+  font-weight: 800;
+
+  letter-spacing: 0.12em;
+
+  text-transform: uppercase;
+}
+
+.analytics-summary-card strong {
+  font-family:
+    Consolas,
+    "Courier New",
+    monospace;
+
+  font-size: 1.75rem;
+
+  line-height: 1;
+
+  letter-spacing: -0.03em;
+}
+
+.analytics-summary-card small {
+  margin-left: 5px;
+
+  color: #4f7082;
+
+  font-family:
+    Consolas,
+    monospace;
+
+  font-size: 0.5rem;
+}
+
+
+/* =========================================================
+   CHART GRID
+========================================================= */
+
+.analytics-grid {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 14px;
+}
+
+.analytics-card {
+  position: relative;
+
+  min-width: 0;
+
+  padding: 20px;
+
+  overflow: hidden;
+
+  border:
+    1px solid rgba(75, 168, 202, 0.09);
+
+  border-radius: 1px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(2, 13, 22, 0.72),
+      rgba(2, 9, 16, 0.6)
+    );
+
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.analytics-card:hover {
+  transform: translateY(-1px);
+
+  border-color:
+    rgba(84, 209, 246, 0.18);
+
+  background:
+    rgba(5, 23, 35, 0.82);
+}
+
+.analytics-card::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: 18px;
+
+  width: 52px;
+  height: 1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(88, 221, 255, 0.8),
+      transparent
+    );
+}
+
+.analytics-card::after {
+  content: "SENTRI";
+
+  position: absolute;
+
+  bottom: 8px;
+  right: 10px;
+
+  color:
+    rgba(73, 180, 214, 0.12);
+
+  font-family:
+    Consolas,
+    monospace;
+
+  font-size: 0.38rem;
+
+  letter-spacing: 0.14em;
+}
+
+.analytics-card-wide {
+  grid-column:
+    1 / -1;
+}
+
+
+/* =========================================================
+   CHART HEADERS
+========================================================= */
+
+.analytics-card-header {
+  padding-bottom: 10px;
+
+  border-bottom:
+    1px solid rgba(73, 170, 205, 0.07);
+}
+
+.analytics-card-header h4 {
+  margin:
+    6px 0 0;
+
+  color: #d8eef7;
+
+  font-size: 0.85rem;
+
+  letter-spacing: 0.02em;
+}
+
+
+/* =========================================================
+   CHART WRAPPERS
+========================================================= */
+
+.chart-wrapper {
+  position: relative;
+
+  min-height: 250px;
+
+  margin-top: 12px;
+}
+
+.chart-wrapper::before {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      rgba(80, 185, 220, 0.025) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(80, 185, 220, 0.025) 1px,
+      transparent 1px
+    );
+
+  background-size: 24px 24px;
+
+  opacity: 0.45;
+}
+
+
+/* =========================================================
+   RECHARTS
+========================================================= */
+
+.recharts-default-tooltip {
+  border:
+    1px solid rgba(87, 209, 247, 0.18) !important;
+
+  border-radius: 1px !important;
+
+  background:
+    rgba(3, 14, 23, 0.96) !important;
+
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.3) !important;
+}
+
+.recharts-tooltip-label,
+.recharts-tooltip-item {
+  color: #a9cadb !important;
+
+  font-family:
+    Consolas,
+    monospace !important;
+
+  font-size: 0.63rem !important;
+}
+
+
+/* =========================================================
+   ANALYTICS LEGEND
+========================================================= */
+
+.analytics-legend {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 7px;
+
+  margin-top: 10px;
+}
+
+.analytics-legend div {
+  min-width: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  padding: 9px 10px;
+
+  border:
+    1px solid rgba(72, 162, 196, 0.07);
+
+  border-radius: 1px;
+
+  background:
+    rgba(2, 11, 18, 0.5);
+}
+
+.legend-dot {
+  width: 6px;
+  height: 6px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+}
+
+.analytics-legend p {
+  margin: 0;
+
+  color: #58788b;
+
+  font-size: 0.55rem;
+
+  letter-spacing: 0.04em;
+}
+
+.analytics-legend strong {
+  margin-left: auto;
+
+  font-family:
+    Consolas,
+    monospace;
+
+  font-size: 0.65rem;
+}
+
+
+/* =========================================================
+   EMPTY ANALYTICS
+========================================================= */
+
+.analytics-empty,
+.chart-empty {
+  position: relative;
+
+  min-height: 220px;
+
+  display: grid;
+
+  place-items: center;
+
+  text-align: center;
+
+  border:
+    1px dashed rgba(77, 181, 216, 0.1);
+
+  border-radius: 1px;
+
+  background:
+    rgba(2, 11, 18, 0.44);
+}
+
+.analytics-empty::before {
+  content: "";
+
+  position: absolute;
+
+  width: 110px;
+  height: 110px;
+
+  border-radius: 50%;
+
+  border:
+    1px solid rgba(76, 205, 240, 0.08);
+
+  background:
+    repeating-conic-gradient(
+      rgba(86, 217, 250, 0.12)
+        0deg 1deg,
+      transparent
+        1deg 18deg
+    );
+
+  mask:
+    radial-gradient(
+      transparent 86%,
+      black 87%
+    );
+
+  animation:
+    sentriAnalyticsSpin
+    22s linear infinite;
+}
+
+@keyframes sentriAnalyticsSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.analytics-empty p,
+.analytics-empty span,
+.chart-empty p {
+  position: relative;
+
+  z-index: 2;
+
+  color: #5c7b8e;
+
+  font-size: 0.62rem;
+}
+
+
+/* =========================================================
+   SUBSYSTEM MODULES
+========================================================= */
+
+.feature-grid {
+  position: relative;
+
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 14px;
+
+  margin-top: 22px;
+}
+
+.feature-grid article {
+  position: relative;
+
+  min-width: 0;
+  min-height: 230px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  padding:
+    26px 26px 50px;
+
+  overflow: hidden;
+
+  border:
+    1px solid rgba(74, 174, 211, 0.1);
+
+  border-radius: 1px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(4, 18, 29, 0.9),
+      rgba(2, 10, 17, 0.9)
+    );
+
+  box-shadow:
+    inset 0 0 30px rgba(72, 205, 245, 0.015),
+    0 18px 40px rgba(0, 0, 0, 0.15);
+
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease;
+}
+
+.feature-grid article:hover {
+  transform:
+    translateY(-3px);
+
+  border-color:
+    rgba(84, 215, 250, 0.24);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(6, 25, 38, 0.94),
+      rgba(2, 12, 20, 0.94)
+    );
+}
+
+
+/* ---------------------------------------------------------
+   MODULE DECORATION
+--------------------------------------------------------- */
+
+.feature-grid article::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: 25px;
+
+  width: 72px;
+  height: 1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #5de3ff,
+      transparent
+    );
+
+  box-shadow:
+    0 0 8px rgba(93, 227, 255, 0.22);
+}
+
+.feature-grid article::after {
+  position: absolute;
+
+  top: 18px;
+  right: 20px;
+
+  color:
+    rgba(85, 202, 235, 0.24);
+
+  font-family:
+    Consolas,
+    monospace;
+
+  font-size: 0.45rem;
+
+  letter-spacing: 0.14em;
+}
+
+.feature-grid article:nth-child(1)::after {
+  content: "SYS // 01";
+}
+
+.feature-grid article:nth-child(2)::after {
+  content: "SYS // 02";
+}
+
+.feature-grid article:nth-child(3)::after {
+  content: "SYS // 03";
+}
+
+
+/* =========================================================
+   MODULE ICON
+========================================================= */
+
+.feature-icon {
+  position: relative;
+
+  width: 46px;
+  height: 46px;
+
+  display: grid;
+
+  place-items: center;
+
+  margin-bottom: 22px;
+
+  border:
+    1px solid rgba(87, 219, 253, 0.18);
+
+  border-radius: 50%;
+
+  color: #68e3ff;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(68, 205, 246, 0.12),
+      rgba(3, 17, 27, 0.8)
+    );
+
+  box-shadow:
+    0 0 18px rgba(72, 211, 251, 0.06),
+    inset 0 0 12px rgba(72, 211, 251, 0.04);
+}
+
+.feature-icon::before {
+  content: "";
+
+  position: absolute;
+
+  inset: -7px;
+
+  border:
+    1px dashed rgba(87, 218, 250, 0.12);
+
+  border-radius: 50%;
+
+  animation:
+    sentriSubsystemSpin
+    18s linear infinite;
+}
+
+@keyframes sentriSubsystemSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.feature-grid article:hover .feature-icon {
+  border-color:
+    rgba(98, 230, 255, 0.38);
+
+  box-shadow:
+    0 0 22px rgba(80, 216, 255, 0.12),
+    inset 0 0 15px rgba(80, 216, 255, 0.06);
+}
+
+
+/* =========================================================
+   MODULE TEXT
+========================================================= */
+
+.feature-grid article h3,
+.feature-grid article h4 {
+  margin:
+    0 0 10px;
+
+  color: #d9f1f9;
+
+  font-size: 1rem;
+
+  letter-spacing: 0.01em;
+}
+
+.feature-grid article > p {
+  max-width: 340px;
+
+  margin: 0;
+
+  color: #668496;
+
+  font-size: 0.67rem;
+
+  line-height: 1.65;
+}
+
+
+/* =========================================================
+   MODULE STATUS
+========================================================= */
+
+.feature-grid article h3::before,
+.feature-grid article h4::before {
+  content: "";
+
+  position: absolute;
+
+  left: 26px;
+  bottom: 23px;
+
+  width: 5px;
+  height: 5px;
+
+  border-radius: 50%;
+
+  background: #5ceabb;
+
+  box-shadow:
+    0 0 8px #5ceabb;
+}
+
+.feature-grid article h3::after,
+.feature-grid article h4::after {
+  position: absolute;
+
+  left: 42px;
+  bottom: 19px;
+
+  color: #507488;
+
+  font-family:
+    Consolas,
+    monospace;
+
+  font-size: 0.45rem;
+
+  font-weight: 700;
+
+  letter-spacing: 0.13em;
+}
+
+.feature-grid article:nth-child(1)
+  h3::after,
+.feature-grid article:nth-child(1)
+  h4::after {
+  content:
+    "DETECTION CORE // ACTIVE";
+}
+
+.feature-grid article:nth-child(2)
+  h3::after,
+.feature-grid article:nth-child(2)
+  h4::after {
+  content:
+    "RISK MATRIX // ACTIVE";
+}
+
+.feature-grid article:nth-child(3)
+  h3::after,
+.feature-grid article:nth-child(3)
+  h4::after {
+  content:
+    "RESPONSE ENGINE // ACTIVE";
+}
+
+
+/* =========================================================
+   MODULE ACCENTS
+========================================================= */
+
+.feature-grid article:nth-child(1) {
+  border-left-color:
+    rgba(90, 222, 255, 0.2);
+}
+
+.feature-grid article:nth-child(2) {
+  border-left-color:
+    rgba(109, 182, 255, 0.2);
+}
+
+.feature-grid article:nth-child(3) {
+  border-left-color:
+    rgba(91, 235, 190, 0.18);
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 950px) {
+  .analytics-grid {
+    grid-template-columns:
+      1fr;
+  }
+
+  .analytics-summary-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .feature-grid {
+    grid-template-columns:
+      1fr;
+  }
+
+  .feature-grid article {
+    min-height: 205px;
+  }
+
+  .feature-grid article > p {
+    max-width: 650px;
+  }
+}
+
+@media (max-width: 520px) {
+  .analytics-summary-grid {
+    grid-template-columns:
+      1fr;
+  }
+}

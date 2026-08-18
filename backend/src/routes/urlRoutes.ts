@@ -1,6 +1,10 @@
-import { Router } from "express";
+import {
+  Router,
+} from "express";
 
-import { saveScan } from "../services/scanService.js";
+import {
+  analyzeUrlIntelligence,
+} from "../utils/urlAnalyzer.js";
 
 import {
   calculateRiskScore,
@@ -9,77 +13,186 @@ import {
 } from "../utils/riskCalculator.js";
 
 import {
-  analyzeUrlIntelligence,
-} from "../utils/urlAnalyzer.js";
+  classifyThreat,
+} from "../utils/threatClassifier.js";
 
-const router = Router();
+import {
+  correlateThreats,
+} from "../utils/threatCorrelation.js";
 
-router.post("/", (request, response) => {
-  const url = request.body?.url;
+import {
+  saveScan,
+} from "../services/scanService.js";
 
-  if (
-    typeof url !== "string" ||
-    url.trim().length === 0
-  ) {
-    return response.status(400).json({
-      error: "Please provide a URL to analyze.",
-    });
-  }
+const router =
+  Router();
 
-  const cleanedUrl = url.trim();
+router.post(
+  "/",
+  (
+    req,
+    res,
+  ) => {
+    try {
+      const url =
+        typeof req.body?.url ===
+        "string"
+          ? req.body.url.trim()
+          : "";
 
-  if (cleanedUrl.length > 2048) {
-    return response.status(400).json({
-      error: "The URL is too long.",
-    });
-  }
+      if (!url) {
+        return res
+          .status(400)
+          .json({
+            error:
+              "A URL is required for analysis.",
+          });
+      }
 
-  const {
-    flags,
-    intelligence,
-  } = analyzeUrlIntelligence(
-    cleanedUrl,
-  );
+      if (
+        url.length >
+        2048
+      ) {
+        return res
+          .status(400)
+          .json({
+            error:
+              "The URL is too long.",
+          });
+      }
 
-  const riskScore =
-    calculateRiskScore(flags);
+      /*
+       * Run URL structural analysis.
+       */
+      const analysis =
+        analyzeUrlIntelligence(
+          url,
+        );
 
-  const riskLevel =
-    determineRiskLevel(riskScore);
+      /*
+       * Calculate risk.
+       */
+      const riskScore =
+        calculateRiskScore(
+          analysis.flags,
+        );
 
-  const summary =
-    flags.length === 0
-      ? "Sentri did not detect any common suspicious URL indicators."
-      : `Sentri detected ${flags.length} suspicious URL ${
-          flags.length === 1
-            ? "indicator"
-            : "indicators"
-        }.`;
+      const riskLevel =
+        determineRiskLevel(
+          riskScore,
+        );
 
-  const recommendation =
-    getRecommendation(riskLevel);
+      /*
+       * Primary classification.
+       */
+      const classification =
+        classifyThreat(
+          analysis.flags,
+        );
 
-  const result = {
-    riskScore,
-    riskLevel,
-    flags,
-    summary,
-    recommendation,
-  };
+      /*
+       * Correlate multiple indicators.
+       */
+      const correlation =
+        correlateThreats(
+          analysis.flags,
+        );
 
-  saveScan(
-    "URL",
-    intelligence?.normalizedUrl ??
-      cleanedUrl,
-    result,
-  );
+      /*
+       * Generate summary.
+       */
+      const summary =
+        analysis.flags
+          .length === 0
+          ? "Sentri did not detect any common suspicious URL indicators."
+          : `Sentri detected ${analysis.flags.length} suspicious URL ${
+              analysis.flags
+                .length === 1
+                ? "indicator"
+                : "indicators"
+            }.`;
 
-  return response
-    .status(200)
-    .json({
-      ...result,
-      intelligence,
-    });
-});
+      /*
+       * Complete result object.
+       */
+      const result = {
+        riskScore,
+
+        riskLevel,
+
+        threatCategory:
+          classification.threatCategory,
+
+        confidence:
+          classification.confidence,
+
+        attackVector:
+          classification.attackVector,
+
+        correlatedThreat:
+          correlation.correlatedThreat,
+
+        correlationScore:
+          correlation.correlationScore,
+
+        matchedSignals:
+          correlation.matchedSignals,
+
+        correlationExplanation:
+          correlation.explanation,
+
+        flags:
+          analysis.flags,
+
+        summary,
+
+        recommendation:
+          getRecommendation(
+            riskLevel,
+          ),
+      };
+
+      /*
+       * Save scan to history.
+       */
+      saveScan(
+        "URL",
+
+        analysis
+          .intelligence
+          ?.normalizedUrl ??
+          url,
+
+        result,
+      );
+
+      /*
+       * Return result plus URL intelligence.
+       */
+      return res
+        .status(200)
+        .json({
+          ...result,
+
+          intelligence:
+            analysis.intelligence,
+        });
+    } catch (
+      error
+    ) {
+      console.error(
+        "URL analysis failed:",
+        error,
+      );
+
+      return res
+        .status(500)
+        .json({
+          error:
+            "Unable to analyze the URL.",
+        });
+    }
+  },
+);
 
 export default router;

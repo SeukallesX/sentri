@@ -21,6 +21,17 @@ function ResultsCard({
   const indicatorCount =
     result?.flags.length ?? 0;
 
+  const threatCategory =
+    result?.threatCategory ??
+    "Unknown";
+
+  const confidence =
+    result?.confidence ?? 0;
+
+  const attackVector =
+    result?.attackVector ??
+    "No dominant attack vector detected";
+
   const systemStatus =
     result
       ? riskLevel === "High"
@@ -107,7 +118,9 @@ function ResultsCard({
           </div>
 
           <div className="hud-radar-caption">
-            <span className={`hud-caption-dot ${riskClass}`} />
+            <span
+              className={`hud-caption-dot ${riskClass}`}
+            />
 
             {result
               ? `${riskLevel.toUpperCase()} THREAT PROFILE`
@@ -172,6 +185,30 @@ function ResultsCard({
                 RULE-X
               </strong>
             </div>
+
+            <div className="hud-readout-item">
+              <span>
+                Primary Threat
+              </span>
+
+              <strong className={riskClass}>
+                {result
+                  ? threatCategory.toUpperCase()
+                  : "NONE"}
+              </strong>
+            </div>
+
+            <div className="hud-readout-item">
+              <span>
+                Confidence
+              </span>
+
+              <strong>
+                {result
+                  ? `${confidence}%`
+                  : "0%"}
+              </strong>
+            </div>
           </div>
 
           <div className="hud-signal-line">
@@ -191,6 +228,16 @@ function ResultsCard({
             <strong className={riskClass}>
               {systemStatus}
             </strong>
+          </div>
+
+          <div className="hud-summary">
+            <p className="radar-label">
+              Attack Vector
+            </p>
+
+            <p>
+              {attackVector}
+            </p>
           </div>
 
           <div className="hud-summary">
@@ -245,7 +292,10 @@ function ResultsCard({
                     <div className="hud-flag-index">
                       {(index + 1)
                         .toString()
-                        .padStart(2, "0")}
+                        .padStart(
+                          2,
+                          "0",
+                        )}
                     </div>
 
                     <div className="hud-flag-content">

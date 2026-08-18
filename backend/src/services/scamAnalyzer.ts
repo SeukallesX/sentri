@@ -9,7 +9,17 @@ import {
   getRecommendation,
 } from "../utils/riskCalculator.js";
 
-import { analyzeUrls } from "../utils/urlAnalyzer.js";
+import {
+  analyzeUrls,
+} from "../utils/urlAnalyzer.js";
+
+import {
+  classifyThreat,
+} from "../utils/threatClassifier.js";
+
+import {
+  correlateThreats,
+} from "../utils/threatCorrelation.js";
 
 interface ScamRule {
   category: string;
@@ -21,8 +31,12 @@ interface ScamRule {
 const scamRules: ScamRule[] = [
   {
     category: "Urgency",
-    description: "The message uses pressure or urgent language.",
+
+    description:
+      "The message uses pressure or urgent language.",
+
     points: 15,
+
     patterns: [
       /\bact now\b/i,
       /\bimmediately\b/i,
@@ -34,11 +48,15 @@ const scamRules: ScamRule[] = [
       /\bdo not delay\b/i,
     ],
   },
+
   {
     category: "Account threat",
+
     description:
       "The message threatens account suspension, closure, or restricted access.",
+
     points: 20,
+
     patterns: [
       /\baccount locked\b/i,
       /\baccount is locked\b/i,
@@ -51,11 +69,15 @@ const scamRules: ScamRule[] = [
       /\bconfirm your identity\b/i,
     ],
   },
+
   {
     category: "Sensitive information",
+
     description:
       "The message requests private or security-related information.",
+
     points: 30,
+
     patterns: [
       /\bpassword\b/i,
       /\bverification code\b/i,
@@ -69,11 +91,15 @@ const scamRules: ScamRule[] = [
       /\bpin number\b/i,
     ],
   },
+
   {
     category: "Suspicious payment",
+
     description:
       "The message requests an unusual or difficult-to-reverse payment.",
+
     points: 30,
+
     patterns: [
       /\bgift card\b/i,
       /\bwire transfer\b/i,
@@ -87,11 +113,15 @@ const scamRules: ScamRule[] = [
       /\bsend money\b/i,
     ],
   },
+
   {
     category: "Prize or reward",
+
     description:
       "The message claims the recipient won a prize, reward, or giveaway.",
+
     points: 20,
+
     patterns: [
       /\bcongratulations\b/i,
       /\byou(?:'ve| have) won\b/i,
@@ -103,11 +133,15 @@ const scamRules: ScamRule[] = [
       /\bfree gift\b/i,
     ],
   },
+
   {
     category: "Investment promise",
+
     description:
       "The message promises unusually high, fast, or guaranteed investment returns.",
+
     points: 25,
+
     patterns: [
       /\bguaranteed returns?\b/i,
       /\bdouble your money\b/i,
@@ -119,11 +153,15 @@ const scamRules: ScamRule[] = [
       /\bpassive income opportunity\b/i,
     ],
   },
+
   {
     category: "Impersonation",
+
     description:
       "The sender may be pretending to represent a trusted person or organization.",
+
     points: 20,
+
     patterns: [
       /\bthis is the irs\b/i,
       /\bthis is social security\b/i,
@@ -136,11 +174,15 @@ const scamRules: ScamRule[] = [
       /\bi am your manager\b/i,
     ],
   },
+
   {
     category: "Secrecy request",
+
     description:
       "The message asks the recipient to keep the request secret.",
+
     points: 20,
+
     patterns: [
       /\bdo not tell anyone\b/i,
       /\bkeep this confidential\b/i,
@@ -152,42 +194,131 @@ const scamRules: ScamRule[] = [
   },
 ];
 
-export function analyzeMessage(message: string): AnalysisResult {
+export function analyzeMessage(
+  message: string,
+): AnalysisResult {
   const flags: ScamFlag[] = [];
 
-  for (const rule of scamRules) {
-    const matched = rule.patterns.some((pattern) =>
-      pattern.test(message),
-    );
+  /*
+   * Run message-based scam rules.
+   */
+  for (
+    const rule of scamRules
+  ) {
+    const matched =
+      rule.patterns.some(
+        (pattern) =>
+          pattern.test(
+            message,
+          ),
+      );
 
-    if (matched) {
-      flags.push({
-        category: rule.category,
-        description: rule.description,
-        points: rule.points,
-      });
+    if (!matched) {
+      continue;
     }
+
+    flags.push({
+      category:
+        rule.category,
+
+      description:
+        rule.description,
+
+      points:
+        rule.points,
+    });
   }
 
-  const urlFlags = analyzeUrls(message);
+  /*
+   * Run URL analysis against links
+   * contained in the message.
+   */
+  const urlFlags =
+    analyzeUrls(
+      message,
+    );
 
-  flags.push(...urlFlags);
+  flags.push(
+    ...urlFlags,
+  );
 
-  const riskScore = calculateRiskScore(flags);
-  const riskLevel = determineRiskLevel(riskScore);
+  /*
+   * Calculate risk.
+   */
+  const riskScore =
+    calculateRiskScore(
+      flags,
+    );
 
+  const riskLevel =
+    determineRiskLevel(
+      riskScore,
+    );
+
+  /*
+   * Determine primary threat category.
+   */
+  const classification =
+    classifyThreat(
+      flags,
+    );
+
+  /*
+   * Correlate combinations of signals.
+   */
+  const correlation =
+    correlateThreats(
+      flags,
+    );
+
+  /*
+   * Generate summary.
+   */
   const summary =
     flags.length === 0
       ? "Sentri did not detect any common scam patterns in this message."
       : `Sentri detected ${flags.length} potential scam ${
-          flags.length === 1 ? "indicator" : "indicators"
+          flags.length === 1
+            ? "indicator"
+            : "indicators"
         }.`;
 
+  /*
+   * Return complete result.
+   */
   return {
     riskScore,
+
     riskLevel,
+
+    threatCategory:
+      classification.threatCategory,
+
+    confidence:
+      classification.confidence,
+
+    attackVector:
+      classification.attackVector,
+
+    correlatedThreat:
+      correlation.correlatedThreat,
+
+    correlationScore:
+      correlation.correlationScore,
+
+    matchedSignals:
+      correlation.matchedSignals,
+
+    correlationExplanation:
+      correlation.explanation,
+
     flags,
+
     summary,
-    recommendation: getRecommendation(riskLevel),
+
+    recommendation:
+      getRecommendation(
+        riskLevel,
+      ),
   };
 }

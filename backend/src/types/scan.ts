@@ -8,8 +8,12 @@ export type ScanType =
 
 export interface StoredScan {
   id: string;
+
   type: ScanType;
+
   content: string;
+
   result: AnalysisResult;
+
   createdAt: string;
 }

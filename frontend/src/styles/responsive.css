@@ -1,0 +1,620 @@
+/* =========================================================
+   SENTRI // RESPONSIVE SYSTEM
+   Tablet + Mobile Overrides
+========================================================= */
+
+/* =========================================================
+   LARGE TABLETS / SMALL LAPTOPS
+========================================================= */
+
+@media (max-width: 1200px) {
+  .main-content {
+    width:
+      min(
+        1180px,
+        calc(100% - 36px)
+      );
+  }
+
+  .hero {
+    padding:
+      56px 46px;
+  }
+
+  .results-hud-body,
+  .threat-command-body {
+    gap: 28px;
+  }
+
+  .analytics-summary-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .url-intelligence-panel .intel-grid {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+
+/* =========================================================
+   TABLETS
+========================================================= */
+
+@media (max-width: 1050px) {
+  /* -------------------------------------------------------
+     GLOBAL
+  ------------------------------------------------------- */
+
+  .main-content {
+    width:
+      calc(100% - 32px);
+  }
+
+  .main-content::before,
+  .main-content::after {
+    display: none;
+  }
+
+  /* -------------------------------------------------------
+     HERO
+  ------------------------------------------------------- */
+
+  .hero {
+    grid-template-columns:
+      1fr !important;
+
+    gap: 42px;
+
+    padding:
+      52px 38px;
+
+    text-align: center;
+  }
+
+  .hero-badge {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-copy > p {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-system-info {
+    justify-content: center;
+  }
+
+  /* -------------------------------------------------------
+     OVERVIEW
+  ------------------------------------------------------- */
+
+  .stats-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .threat-command-body {
+    grid-template-columns:
+      1fr;
+  }
+
+  /* -------------------------------------------------------
+     MESSAGE ANALYSIS
+  ------------------------------------------------------- */
+
+  .dashboard {
+    grid-template-columns:
+      1fr;
+  }
+
+  .analyzer-card,
+  .results-card {
+    min-height: auto;
+  }
+
+  .results-hud-body {
+    grid-template-columns:
+      1fr;
+  }
+
+  /* -------------------------------------------------------
+     LINK INTELLIGENCE
+  ------------------------------------------------------- */
+
+  .intel-grid,
+  .main-content > .intel-grid {
+    grid-template-columns:
+      1fr !important;
+  }
+
+  /* -------------------------------------------------------
+     ANALYTICS
+  ------------------------------------------------------- */
+
+  .analytics-grid {
+    grid-template-columns:
+      1fr;
+  }
+
+  /* -------------------------------------------------------
+     SUBSYSTEMS
+  ------------------------------------------------------- */
+
+  .feature-grid {
+    grid-template-columns:
+      1fr;
+  }
+
+  .feature-grid article {
+    min-height: 205px;
+  }
+
+  .feature-grid article > p {
+    max-width: 650px;
+  }
+}
+
+
+/* =========================================================
+   NAVBAR TABLET
+========================================================= */
+
+@media (max-width: 950px) {
+  .navbar-module {
+    display: none;
+  }
+
+  .navbar-system-status::after {
+    display: none;
+  }
+
+  .navbar {
+    gap: 14px;
+  }
+
+  .navbar-system-status {
+    gap: 12px;
+  }
+}
+
+
+/* =========================================================
+   MID-SIZE TABLETS
+========================================================= */
+
+@media (max-width: 850px) {
+  .analytics-summary-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .threat-system-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .url-intelligence-panel .intel-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .archive-table-header {
+    display: none;
+  }
+
+  .incident-row {
+    grid-template-columns:
+      110px
+      75px
+      minmax(0, 1fr)
+      75px;
+  }
+
+  .incident-time {
+    display: none;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+  /* -------------------------------------------------------
+     GLOBAL
+  ------------------------------------------------------- */
+
+  body::after {
+    display: none;
+  }
+
+  .main-content {
+    width:
+      calc(100% - 24px);
+
+    padding-top: 18px;
+  }
+
+  .section-marker {
+    margin:
+      28px 0 13px !important;
+  }
+
+  /* -------------------------------------------------------
+     NAVBAR
+  ------------------------------------------------------- */
+
+  .navbar {
+    min-height: 68px;
+
+    padding:
+      11px 18px;
+  }
+
+  .navbar::after {
+    left: 18px;
+  }
+
+  .navbar-system-status {
+    gap: 10px;
+  }
+
+  .brand-icon {
+    width: 38px;
+    height: 38px;
+  }
+
+  .brand h1 {
+    font-size: 0.92rem;
+  }
+
+  .brand p {
+    font-size: 0.4rem;
+  }
+
+  .status {
+    padding: 7px 8px;
+
+    font-size: 0.45rem;
+  }
+
+  /* -------------------------------------------------------
+     HERO
+  ------------------------------------------------------- */
+
+  .hero {
+    min-height: auto;
+
+    padding:
+      44px 24px;
+  }
+
+  .hero h2 {
+    font-size:
+      clamp(
+        2.65rem,
+        13vw,
+        4rem
+      );
+  }
+
+  .hero-system-info {
+    gap: 18px;
+  }
+
+  .hero-system-info div {
+    min-width: 85px;
+  }
+
+  .orb-shell {
+    transform:
+      scale(0.84);
+  }
+
+  /* -------------------------------------------------------
+     STATS
+  ------------------------------------------------------- */
+
+  .stats-grid {
+    grid-template-columns:
+      1fr;
+  }
+
+  /* -------------------------------------------------------
+     SCANNER
+  ------------------------------------------------------- */
+
+  .analyzer-card,
+  .results-card,
+  .url-scanner-section,
+  .threat-feed,
+  .analytics-section,
+  .history-section,
+  .incident-archive {
+    padding: 24px;
+  }
+
+  .analyzer-card textarea {
+    min-height: 220px;
+  }
+
+  .analyzer-actions {
+    flex-direction: column;
+
+    align-items: stretch;
+  }
+
+  .analyzer-actions .primary-button,
+  .analyzer-actions .secondary-button {
+    width: 100%;
+
+    min-width: 0;
+  }
+
+  .report-actions {
+    justify-content: stretch;
+  }
+
+  .report-actions button {
+    width: 100%;
+
+    max-width: none;
+  }
+
+  /* -------------------------------------------------------
+     HUD
+  ------------------------------------------------------- */
+
+  .hud-radar,
+  .threat-hud {
+    transform:
+      scale(0.84);
+  }
+
+  .hud-readout-grid {
+    grid-template-columns:
+      1fr;
+  }
+
+  .hud-flag {
+    grid-template-columns:
+      40px
+      minmax(0, 1fr);
+  }
+
+  .hud-flag-points {
+    grid-column: 2;
+  }
+
+  .threat-readout-top {
+    flex-direction: column;
+  }
+
+  /* -------------------------------------------------------
+     URL INTELLIGENCE
+  ------------------------------------------------------- */
+
+  .url-input-group {
+    flex-direction: column;
+  }
+
+  .url-input-group button {
+    width: 100%;
+
+    min-width: 0;
+  }
+
+  .url-scanner-header {
+    flex-direction: column;
+  }
+
+  .url-intelligence-grid {
+    grid-template-columns:
+      1fr;
+  }
+
+  /* -------------------------------------------------------
+     ANALYTICS
+  ------------------------------------------------------- */
+
+  .analytics-summary-grid {
+    grid-template-columns:
+      1fr;
+  }
+
+  /* -------------------------------------------------------
+     ARCHIVE
+  ------------------------------------------------------- */
+
+  .incident-archive-header,
+  .history-header {
+    flex-direction: column;
+  }
+
+  .archive-header-actions {
+    width: 100%;
+
+    justify-content: space-between;
+  }
+
+  .incident-row {
+    grid-template-columns:
+      1fr
+      auto;
+
+    gap: 9px;
+  }
+
+  .incident-target {
+    grid-column:
+      1 / -1;
+
+    grid-row: 2;
+  }
+
+  /* -------------------------------------------------------
+     FOOTER
+  ------------------------------------------------------- */
+
+  .sentri-footer {
+    flex-direction: column;
+
+    align-items: flex-start;
+  }
+
+  .sentri-footer p {
+    max-width: 100%;
+
+    text-align: left;
+  }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 520px) {
+  .brand p {
+    display: none;
+  }
+
+  .status {
+    border: 0;
+
+    padding: 0;
+
+    background: transparent;
+  }
+
+  .hero {
+    padding:
+      38px 18px;
+  }
+
+  .hero h2 {
+    font-size:
+      clamp(
+        2.35rem,
+        12vw,
+        3.2rem
+      );
+  }
+
+  .hero-system-info {
+    display: grid;
+
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    width: 100%;
+  }
+
+  .hero-system-info div {
+    text-align: left;
+  }
+
+  .orb-shell {
+    width: 280px;
+
+    height: 280px;
+
+    transform:
+      scale(0.78);
+  }
+
+  .threat-system-grid {
+    grid-template-columns:
+      1fr;
+  }
+
+  .analytics-summary-grid {
+    grid-template-columns:
+      1fr;
+  }
+
+  .url-intelligence-panel .intel-grid {
+    grid-template-columns:
+      1fr !important;
+  }
+
+  .threat-feed-item {
+    grid-template-columns:
+      8px
+      minmax(0, 1fr);
+  }
+
+  .threat-feed-score {
+    grid-column: 2;
+  }
+
+  .archive-header-actions {
+    align-items: stretch;
+
+    flex-direction: column;
+  }
+
+  .archive-header-actions button {
+    width: 100%;
+  }
+
+  .hud-guidance-header {
+    flex-direction: column;
+  }
+}
+
+
+/* =========================================================
+   VERY SMALL MOBILE
+========================================================= */
+
+@media (max-width: 400px) {
+  .status {
+    font-size: 0;
+  }
+
+  .status-dot {
+    width: 7px;
+    height: 7px;
+  }
+
+  .main-content {
+    width:
+      calc(100% - 16px);
+  }
+
+  .hero {
+    padding:
+      34px 16px;
+  }
+
+  .analyzer-card,
+  .results-card,
+  .url-scanner-section,
+  .threat-feed,
+  .analytics-section,
+  .history-section,
+  .incident-archive {
+    padding: 18px;
+  }
+
+  .hero-system-info {
+    grid-template-columns:
+      1fr;
+  }
+
+  .hud-radar,
+  .threat-hud {
+    transform:
+      scale(0.72);
+  }
+
+  .results-hud-header,
+  .threat-command-header {
+    flex-direction: column;
+  }
+}

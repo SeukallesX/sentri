@@ -1,21 +1,28 @@
-import {
-  Router,
-} from "express";
+import { Router } from "express";
 
 import {
   clearScans,
-  getRecentScans,
+  getScans,
 } from "../services/scanService.js";
 
 const router = Router();
 
-router.get(
-  "/",
-  (request, response) => {
+/*
+ * GET /api/scans
+ *
+ * Example:
+ * /api/scans
+ * /api/scans?limit=10
+ */
+router.get("/", (req, res) => {
+  try {
     const requestedLimit =
-      Number(
-        request.query.limit,
-      );
+      typeof req.query.limit === "string"
+        ? Number.parseInt(
+            req.query.limit,
+            10,
+          )
+        : 10;
 
     const limit =
       Number.isFinite(
@@ -25,25 +32,56 @@ router.get(
         : 10;
 
     const scans =
-      getRecentScans(limit);
+      getScans(limit);
 
-    return response.json({
-      scans,
-    });
-  },
-);
+    return res
+      .status(200)
+      .json({
+        scans,
+      });
+  } catch (error) {
+    console.error(
+      "Unable to retrieve scans:",
+      error,
+    );
 
-router.delete(
-  "/",
-  (_request, response) => {
+    return res
+      .status(500)
+      .json({
+        error:
+          "Unable to retrieve scan history.",
+      });
+  }
+});
+
+/*
+ * DELETE /api/scans
+ *
+ * Clears the in-memory scan archive.
+ */
+router.delete("/", (_req, res) => {
+  try {
     clearScans();
 
-    return response.json({
-      success: true,
-      message:
-        "Scan history cleared.",
-    });
-  },
-);
+    return res
+      .status(200)
+      .json({
+        message:
+          "Scan history cleared successfully.",
+      });
+  } catch (error) {
+    console.error(
+      "Unable to clear scans:",
+      error,
+    );
+
+    return res
+      .status(500)
+      .json({
+        error:
+          "Unable to clear scan history.",
+      });
+  }
+});
 
 export default router;

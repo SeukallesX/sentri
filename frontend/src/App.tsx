@@ -8,6 +8,9 @@ import "./styles/hero.css";
 import "./styles/hud.css";
 import "./styles/scanner.css";
 import "./styles/intelligence.css";
+import "./styles/analytics.css";
+import "./styles/archive.css";
+import "./styles/responsive.css";
 
 import AnalyzerCard from "./components/AnalyzerCard";
 import DashboardControls from "./components/DashboardControls";
