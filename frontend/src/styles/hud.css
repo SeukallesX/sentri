@@ -1557,3 +1557,207 @@
       column;
   }
 }
+
+/* =========================================================
+   SENTRI // THREAT CORRELATION
+========================================================= */
+
+.correlation-panel {
+  padding: 20px;
+
+  border:
+    1px solid rgba(76, 181, 217, 0.09);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(3, 16, 26, 0.72),
+      rgba(2, 10, 18, 0.62)
+    );
+}
+
+.correlation-header {
+  display: flex;
+
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 20px;
+}
+
+.correlation-header h4 {
+  margin: 7px 0 0;
+
+  font-family:
+    Consolas,
+    "Courier New",
+    monospace;
+
+  font-size: 1rem;
+
+  letter-spacing: 0.06em;
+}
+
+.correlation-score {
+  display: grid;
+
+  justify-items: end;
+
+  gap: 5px;
+}
+
+.correlation-score span {
+  color: #496c80;
+
+  font-family:
+    Consolas,
+    monospace;
+
+  font-size: 0.45rem;
+
+  letter-spacing: 0.12em;
+}
+
+.correlation-score strong {
+  font-family:
+    Consolas,
+    monospace;
+
+  font-size: 1.15rem;
+}
+
+.correlation-track {
+  height: 5px;
+
+  margin-top: 17px;
+
+  overflow: hidden;
+
+  background:
+    rgba(79, 147, 174, 0.08);
+}
+
+.correlation-fill {
+  position: relative;
+
+  height: 100%;
+
+  background: currentColor;
+
+  box-shadow:
+    0 0 9px currentColor;
+
+  transition:
+    width 450ms ease;
+}
+
+.correlation-fill::after {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  width: 25%;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.34),
+      transparent
+    );
+
+  animation:
+    sentriHudDataSweep
+    2.5s linear infinite;
+}
+
+.correlation-explanation {
+  margin-top: 18px;
+
+  padding-top: 15px;
+
+  border-top:
+    1px solid rgba(76, 173, 209, 0.07);
+}
+
+.correlation-explanation > span,
+.correlation-signals-label {
+  color: #496c80;
+
+  font-family:
+    Consolas,
+    monospace;
+
+  font-size: 0.45rem;
+
+  letter-spacing: 0.12em;
+}
+
+.correlation-explanation p {
+  margin:
+    7px 0 0;
+
+  color: #6f8e9f;
+
+  font-size: 0.68rem;
+
+  line-height: 1.65;
+}
+
+.correlation-signals {
+  margin-top: 17px;
+}
+
+.correlation-signal-list {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 7px;
+
+  margin-top: 10px;
+}
+
+.correlation-signal {
+  padding:
+    6px 9px;
+
+  border:
+    1px solid rgba(82, 205, 240, 0.12);
+
+  color: #6fcfe8;
+
+  background:
+    rgba(71, 186, 224, 0.035);
+
+  font-family:
+    Consolas,
+    monospace;
+
+  font-size: 0.46rem;
+
+  font-weight: 800;
+
+  letter-spacing: 0.08em;
+}
+
+.correlation-no-signals {
+  margin:
+    8px 0 0;
+
+  color: #526f81;
+
+  font-size: 0.6rem;
+}
+
+@media (max-width: 650px) {
+  .correlation-header {
+    flex-direction: column;
+  }
+
+  .correlation-score {
+    justify-items: start;
+  }
+}

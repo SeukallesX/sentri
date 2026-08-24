@@ -32,6 +32,28 @@ function ResultsCard({
     result?.attackVector ??
     "No dominant attack vector detected";
 
+  const correlatedThreat =
+    (result as (AnalysisResult & {
+      correlatedThreat?: string;
+    }) | null)?.correlatedThreat ??
+    "No Correlated Threat";
+
+  const correlationScore =
+    (result as (AnalysisResult & {
+      correlationScore?: number;
+    }) | null)?.correlationScore ?? 0;
+
+  const matchedSignals =
+    (result as (AnalysisResult & {
+      matchedSignals?: string[];
+    }) | null)?.matchedSignals ?? [];
+
+  const correlationExplanation =
+    (result as (AnalysisResult & {
+      correlationExplanation?: string;
+    }) | null)?.correlationExplanation ??
+    "No meaningful combination of threat indicators was detected.";
+
   const systemStatus =
     result
       ? riskLevel === "High"
@@ -256,6 +278,83 @@ function ResultsCard({
 
       {result && (
         <>
+          <div className="hud-divider">
+            <span>
+              CORRELATION ANALYSIS
+            </span>
+          </div>
+
+          <div className="correlation-panel">
+            <div className="correlation-header">
+              <div>
+                <p className="radar-label">
+                  Correlated Threat
+                </p>
+
+                <h4 className={riskClass}>
+                  {correlatedThreat.toUpperCase()}
+                </h4>
+              </div>
+
+              <div className="correlation-score">
+                <span>
+                  CORRELATION
+                </span>
+
+                <strong className={riskClass}>
+                  {correlationScore}%
+                </strong>
+              </div>
+            </div>
+
+            <div className="correlation-track">
+              <div
+                className={`correlation-fill ${riskClass}`}
+                style={{
+                  width: `${correlationScore}%`,
+                }}
+              />
+            </div>
+
+            <div className="correlation-explanation">
+              <span>
+                ANALYSIS
+              </span>
+
+              <p>
+                {correlationExplanation}
+              </p>
+            </div>
+
+            <div className="correlation-signals">
+              <span className="correlation-signals-label">
+                MATCHED SIGNALS
+              </span>
+
+              {matchedSignals.length === 0 ? (
+                <p className="correlation-no-signals">
+                  No correlated signals detected.
+                </p>
+              ) : (
+                <div className="correlation-signal-list">
+                  {matchedSignals.map(
+                    (
+                      signal: string,
+                      index: number,
+                    ) => (
+                      <span
+                        className="correlation-signal"
+                        key={`${signal}-${index}`}
+                      >
+                        {signal.toUpperCase()}
+                      </span>
+                    ),
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
           <div className="hud-divider">
             <span>
               DETECTED SIGNALS
