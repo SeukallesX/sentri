@@ -1,121 +1,268 @@
-# 🛡️ Sentri (In Progress)
+<div align="center">
 
-> A modern cybersecurity threat detection platform designed to analyze suspicious URLs, identify potential scam indicators, and help users understand online security risks.
+# 🛡️ SENTRI
 
----
+### `THREAT INTELLIGENCE SYSTEM`
 
-## 📖 Overview
+**Detect • Analyze • Understand • Defend**
 
-Sentri is a cybersecurity-focused web application designed to make identifying suspicious online content easier and more understandable.
+> A cybersecurity threat-analysis platform built to identify suspicious URLs and scam indicators through explainable, rule-based detection.
 
-Instead of simply labeling a URL as safe or dangerous, Sentri aims to analyze potential threat indicators and provide users with clear information about why something may be suspicious.
-
-Sentri allows users to:
-
-- Scan suspicious URLs
-- Detect potential security threats
-- Identify scam and phishing indicators
-- View URL risk levels
-- Understand why a URL may be dangerous
-- Receive security recommendations
-
-The goal is to create an accessible cybersecurity tool while demonstrating practical skills in threat detection, full-stack development, and security-focused application design.
+**STATUS:** 🟢 ONLINE &nbsp;&nbsp; | &nbsp;&nbsp; **ENGINE:** `RULE-X` &nbsp;&nbsp; | &nbsp;&nbsp; **MODE:** `LOCAL`
 
 ---
 
-## ✨ Features
+`Cybersecurity` • `Threat Detection` • `TypeScript` • `React` • `Node.js`
 
-### 🔗 URL Scanner
+</div>
 
-- Scan suspicious URLs
-- Analyze URL structure
-- Detect suspicious patterns
-- Identify potential malicious links
-- Display scan results
+# ◈ SYSTEM OVERVIEW
 
-### ⚠️ Threat Detection
+The internet is full of links and messages that look legitimate.
 
-- Detect common threat indicators
-- Identify suspicious URL behavior
-- Flag potentially dangerous links
-- Categorize detected security concerns
+Some aren't.
 
-### 📊 Risk Analysis
+**Sentri** is a cybersecurity portfolio project designed to investigate suspicious digital content and expose the warning signs hidden underneath.
 
-- URL risk scoring
-- Low, Medium, and High risk levels
-- Security flag breakdown
-- Easy-to-understand results
-
-### 🛡️ Security Recommendations
-
-- Explain detected risks
-- Provide recommended actions
-- Help users recognize suspicious links
-- Promote safer browsing decisions
-
-### 🎨 Modern Dashboard
-
-- Cybersecurity-focused interface
-- Responsive layout
-- Interactive scanning components
-- Security status indicators
-- Futuristic visual design
+```text
+SUSPICIOUS INPUT
+       │
+       ▼
+┌─────────────────────┐
+│   SENTRI ANALYZER   │
+│      RULE-X         │
+└──────────┬──────────┘
+           │
+           ▼
+   THREAT INDICATORS
+           │
+           ▼
+      RISK ENGINE
+           │
+     ┌─────┼─────┐
+     ▼     ▼     ▼
+    LOW  MEDIUM  HIGH
+     │     │     │
+     └─────┼─────┘
+           ▼
+ SECURITY RECOMMENDATION
+```
 
 ---
 
-# 🛠 Tech Stack
+# ◈ CORE MODULES
 
-### Frontend
+## 🔗 URL INTELLIGENCE
 
-- React
-- TypeScript
-- Vite
-- CSS
+Sentri inspects URLs for patterns commonly associated with phishing, impersonation, and malicious links.
 
-### Backend
+```text
+URL RECEIVED
+     │
+     ├──► Domain Analysis
+     ├──► URL Structure Analysis
+     ├──► Keyword Detection
+     ├──► Impersonation Detection
+     └──► Risk Classification
+```
 
-- Node.js
-- Express
-- TypeScript
-- REST API
+Current checks include:
 
-### Cybersecurity
-
-- URL Analysis
-- Threat Detection
-- Risk Classification
-- Scam Pattern Detection
-
-### Future Integrations
-
-- Threat Intelligence APIs
-- Domain Reputation Services
-- Phishing Detection
-- AI-Assisted Threat Explanations
+- URL shorteners
+- Suspicious top-level domains
+- IP-based URLs
+- Excessive subdomains
+- Punycode domains
+- `@` symbol manipulation
+- Nested URLs
+- Suspicious paths and query parameters
+- Brand impersonation patterns
 
 ---
 
-# 📁 Project Structure
+## 💬 MESSAGE INTELLIGENCE
+
+Scams often rely on social engineering rather than technical exploits.
+
+Sentri analyzes suspicious messages for behavioral patterns commonly associated with phishing and fraud.
+
+Examples include:
+
+```text
+⚠ URGENCY DETECTED
+⚠ ACCOUNT THREAT DETECTED
+⚠ SUSPICIOUS REQUEST
+⚠ PHISHING LANGUAGE
+⚠ SOCIAL ENGINEERING INDICATOR
+```
+
+The analyzer can detect patterns involving:
+
+- Artificial urgency
+- Account suspension threats
+- Pressure to take immediate action
+- Suspicious requests
+- Phishing terminology
+- Scam-related language
+
+---
+
+## 🧠 RULE-X ENGINE
+
+At the center of Sentri is:
+
+```text
+╔══════════════════════════════╗
+║          RULE-X              ║
+║                              ║
+║   EXPLAINABLE THREAT ENGINE  ║
+║                              ║
+║   MODE ............. LOCAL   ║
+║   STATUS ........... ONLINE  ║
+╚══════════════════════════════╝
+```
+
+**RULE-X** is Sentri's rule-based detection engine.
+
+Rather than relying entirely on an external AI model, RULE-X evaluates predefined cybersecurity indicators.
+
+This makes the detection process:
+
+- Explainable
+- Predictable
+- Fast
+- Local
+- Easy to expand
+- Independent from external AI APIs
+
+Each detected indicator contributes to the final security assessment.
+
+---
+
+# ◈ THREAT CLASSIFICATION
+
+Sentri converts detected indicators into an understandable risk assessment.
+
+| Level | Classification | Meaning |
+|:---:|:---|:---|
+| 🟢 | **LOW** | Few or no suspicious indicators detected |
+| 🟡 | **MEDIUM** | Multiple suspicious characteristics detected |
+| 🔴 | **HIGH** | Strong phishing, scam, or malicious indicators detected |
+
+A scan may produce results similar to:
+
+```text
+┌──────────────────────────────────────┐
+│ SENTRI // THREAT REPORT              │
+├──────────────────────────────────────┤
+│                                      │
+│ RISK SCORE       78 / 100            │
+│ THREAT LEVEL     HIGH                │
+│ ENGINE           RULE-X              │
+│                                      │
+│ FLAGS                                │
+│                                      │
+│ [!] Suspicious domain                │
+│ [!] URL shortener detected           │
+│ [!] Urgency language                 │
+│ [!] Possible brand impersonation     │
+│                                      │
+├──────────────────────────────────────┤
+│ RECOMMENDATION                       │
+│                                      │
+│ Avoid interacting with this content  │
+│ until its legitimacy is verified.    │
+└──────────────────────────────────────┘
+```
+
+---
+
+# ◈ FEATURES
+
+### 🛡️ Threat Analysis
+
+- Suspicious URL scanning
+- Scam message analysis
+- Phishing indicator detection
+- Explainable threat flags
+
+### 📊 Risk Intelligence
+
+- Numerical risk scoring
+- Low / Medium / High classification
+- Security recommendations
+- Detection summaries
+
+### 🕒 Scan Intelligence
+
+- Recent scan history
+- Scan activity tracking
+- Security statistics
+- History management
+
+### 🖥️ Command Dashboard
+
+- Threat intelligence interface
+- System status monitoring
+- RULE-X engine status
+- Local analysis mode
+- Responsive cybersecurity UI
+
+---
+
+# ◈ TECHNOLOGY STACK
+
+```text
+┌──────────────────────────────────────┐
+│              SENTRI                  │
+├──────────────────────────────────────┤
+│                                      │
+│ FRONTEND                             │
+│ ├── React                            │
+│ ├── TypeScript                       │
+│ ├── Vite                             │
+│ └── CSS                              │
+│                                      │
+│ BACKEND                              │
+│ ├── Node.js                          │
+│ ├── Express                          │
+│ ├── TypeScript                       │
+│ └── REST API                         │
+│                                      │
+│ SECURITY                             │
+│ ├── URL Pattern Analysis             │
+│ ├── Scam Pattern Detection           │
+│ ├── Risk Classification              │
+│ └── RULE-X Detection Engine          │
+│                                      │
+└──────────────────────────────────────┘
+```
+
+---
+
+# ◈ PROJECT STRUCTURE
 
 ```text
 sentri/
 │
 ├── client/
+│   │
 │   └── src/
 │       │
 │       ├── components/
-│       │
-│       ├── pages/
+│       │   ├── Navbar/
+│       │   ├── ScamAnalyzer/
+│       │   ├── UrlScanner/
+│       │   ├── ScanHistory/
+│       │   └── ResultsCard/
 │       │
 │       ├── services/
-│       │
 │       ├── types/
-│       │
 │       ├── App.tsx
 │       └── main.tsx
 │
 ├── server/
+│   │
 │   └── src/
 │       │
 │       ├── routes/
@@ -128,161 +275,264 @@ sentri/
 
 ---
 
-# 🚀 Getting Started
+# ◈ INITIALIZE SENTRI
 
-## Clone Repository
+## 01 // Clone
 
 ```bash
 git clone https://github.com/SeukallesX/sentri.git
+cd sentri
 ```
 
-## Install Frontend Dependencies
+## 02 // Frontend
 
 ```bash
-cd sentri/client
+cd client
 npm install
-```
-
-## Install Backend Dependencies
-
-```bash
-cd ../server
-npm install
-```
-
-## Start Backend Server
-
-```bash
 npm run dev
 ```
 
-## Start Frontend
+## 03 // Backend
 
 Open another terminal:
 
 ```bash
-cd client
+cd server
+npm install
 npm run dev
+```
+
+Once both systems are running:
+
+```text
+SENTRI INITIALIZATION
+
+[✓] Frontend initialized
+[✓] Backend initialized
+[✓] RULE-X loaded
+[✓] Threat engine ready
+
+SYSTEM ONLINE
 ```
 
 ---
 
-# 📸 Screenshots
+# ◈ API
 
-### Main Dashboard
+Sentri's frontend communicates with its threat-analysis backend through a REST API.
 
-> *(Coming Soon)*
+### Analyze Content
 
-### URL Scanner
+```http
+POST /api/analyze
+```
 
-> *(Coming Soon)*
+Processes suspicious content and returns threat indicators, risk information, and security recommendations.
 
-### Threat Analysis
+### Scan Intelligence
 
-> *(Coming Soon)*
+```http
+/api/scan
+```
 
-### Risk Results
+Handles scan records and statistics.
 
-> *(Coming Soon)*
+### System Health
 
----
+```http
+GET /api/health
+```
 
-# 🎯 Project Goals
-
-- Develop a practical cybersecurity application
-- Analyze suspicious URLs
-- Detect common scam and phishing indicators
-- Provide understandable security risk assessments
-- Explore threat detection techniques
-- Build a full-stack TypeScript application
-- Create a modern cybersecurity dashboard
-- Demonstrate cybersecurity skills through a portfolio project
+Checks the operational status of the Sentri backend.
 
 ---
 
-# 🔮 Roadmap
+# ◈ SCREENSHOTS
 
-## Version 1 — URL Scanner
+## 🖥️ Threat Intelligence Dashboard
 
-- [x] Project Setup
-- [x] Frontend Dashboard
-- [x] Backend API
-- [x] URL Scanner Interface
-- [x] Basic URL Analysis
-- [x] Risk Classification
-- [ ] Improve Scan Results
-- [ ] URL Scan History
+> `// Screenshot Coming Soon`
 
-## Version 2 — Threat Detection
+## 🔗 URL Intelligence
 
-- [ ] Domain Reputation Analysis
-- [ ] Suspicious Domain Detection
-- [ ] Advanced URL Pattern Detection
-- [ ] Threat Categories
-- [ ] Security Recommendation System
+> `// Screenshot Coming Soon`
 
-## Version 3 — Scam Detection
+## 💬 Message Analysis
 
-- [ ] Suspicious Message Analysis
-- [ ] Phishing Detection
-- [ ] Scam Pattern Recognition
-- [ ] Message Risk Scoring
-- [ ] Detailed Threat Explanations
+> `// Screenshot Coming Soon`
 
-## Version 4 — Threat Intelligence
+## 🚨 Threat Report
 
-- [ ] External Threat Intelligence APIs
-- [ ] Domain Reputation Services
-- [ ] Known Malicious URL Detection
-- [ ] Threat Intelligence Dashboard
-- [ ] Security Statistics
+> `// Screenshot Coming Soon`
 
 ---
 
-# 🎓 Learning Objectives
+# ◈ DEVELOPMENT ROADMAP
 
-This project explores:
+## `PHASE 01 // FOUNDATION`
 
-- Cybersecurity Fundamentals
-- URL Threat Analysis
-- Phishing & Scam Detection
-- Risk Classification
-- React Architecture
+- [x] Project architecture
+- [x] React frontend
+- [x] Express backend
+- [x] TypeScript integration
+- [x] REST API
+- [x] Cybersecurity dashboard
+
+## `PHASE 02 // RULE-X`
+
+- [x] URL scanner
+- [x] Message analyzer
+- [x] Threat indicators
+- [x] Risk scoring
+- [x] Risk classification
+- [x] Security recommendations
+
+## `PHASE 03 // INTELLIGENCE`
+
+- [x] Scan history
+- [x] System status
+- [ ] Domain reputation analysis
+- [ ] Expanded phishing rules
+- [ ] Threat categories
+- [ ] Advanced impersonation detection
+- [ ] Security statistics
+
+## `PHASE 04 // THREAT NETWORK`
+
+- [ ] External threat intelligence APIs
+- [ ] Known malicious domain detection
+- [ ] Domain reputation services
+- [ ] Threat intelligence feeds
+- [ ] Cross-source threat verification
+
+## `PHASE 05 // HYBRID INTELLIGENCE`
+
+- [ ] AI-assisted explanations
+- [ ] Context-aware scam analysis
+- [ ] Advanced pattern recognition
+- [ ] Scam classification
+- [ ] RULE-X + AI hybrid detection
+
+---
+
+# ◈ PROJECT OBJECTIVE
+
+Sentri was built as more than a frontend demonstration.
+
+The project explores how a complete cybersecurity system can move through the pipeline:
+
+```text
+COLLECT
+   ↓
+ANALYZE
+   ↓
+DETECT
+   ↓
+CLASSIFY
+   ↓
+EXPLAIN
+   ↓
+RESPOND
+```
+
+Through Sentri, the project demonstrates experience with:
+
+- Cybersecurity fundamentals
+- Threat analysis
+- Phishing detection
+- Scam detection
+- URL intelligence
+- Rule-based security systems
+- Risk scoring
+- Explainable detection
+- React architecture
 - TypeScript
-- Node.js & Express
-- REST API Development
-- Full-Stack Application Development
-- Security-Focused UI/UX Design
+- Node.js
+- Express
+- REST APIs
+- Full-stack development
+- Security-focused UI/UX
+- Git & GitHub
 
 ---
 
-# 🔐 Security Disclaimer
+# ◈ WHY SENTRI?
 
-Sentri is an educational and portfolio project.
+Security tools can generate warnings without explaining what caused them.
 
-The results generated by Sentri should not be considered a replacement for professional cybersecurity software, threat intelligence platforms, or professional security analysis.
+Sentri explores a different approach:
 
-Users should avoid submitting sensitive, private, or confidential information.
+> **Detection should be understandable.**
 
----
+The goal is to expose the indicators behind a security assessment so users can better understand what made a URL or message suspicious.
 
-# 🤝 Contributing
-
-Contributions, suggestions, and feedback are welcome.
-
-Feel free to fork the repository and submit a pull request.
+That makes Sentri both a cybersecurity application and an exploration of **explainable threat detection**.
 
 ---
 
-# 📄 License
+# ⚠ SECURITY DISCLAIMER
 
-This project is licensed under the MIT License.
+Sentri is an educational cybersecurity and portfolio project.
+
+It is **not** a replacement for:
+
+- Professional antivirus software
+- Enterprise security platforms
+- Threat intelligence services
+- Security professionals
+
+A `LOW RISK` result does **not** guarantee that content is safe.
+
+Do not submit passwords, authentication tokens, financial information, personally identifiable information, or other confidential data.
 
 ---
 
-## 👤 Author
+# 🤝 CONTRIBUTING
 
-**Mariel Bravo**
+Ideas, suggestions, and contributions are welcome.
+
+```bash
+# Fork the repository
+
+# Create a branch
+git checkout -b feature/new-feature
+
+# Commit your changes
+git commit -m "Add new feature"
+
+# Push your branch
+git push origin feature/new-feature
+```
+
+Then open a pull request.
+
+---
+
+# 📄 LICENSE
+
+This project is licensed under the **MIT License**.
+
+---
+
+<div align="center">
+
+## 👤 DEVELOPER
+
+### **Mariel Bravo**
+
+Computer Science @ California State University, Fullerton
+
+`AI` • `Blockchain` • `Cybersecurity`
+
+---
+
+### 🛡️ SENTRI
+
+**Threats hide in plain sight. Sentri looks closer.**
+
+`SYSTEM STATUS // ONLINE`
+
+</div>
 
 Computer Science @ California State University, Fullerton
 
