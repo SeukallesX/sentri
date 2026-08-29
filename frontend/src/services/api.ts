@@ -17,7 +17,13 @@ export interface AnalysisResult {
   confidence: number;
   attackVector: string;
 
+  correlatedThreat: string;
+  correlationScore: number;
+  matchedSignals: string[];
+  correlationExplanation: string;
+
   flags: ScamFlag[];
+
   summary: string;
   recommendation: string;
 }
@@ -68,6 +74,16 @@ export interface UrlIntelligence {
     string[];
 
   containsNestedUrl: boolean;
+
+  isTrustedDomain: boolean;
+
+  trustedBrand:
+    | string
+    | null;
+
+  trustedDomain:
+    | string
+    | null;
 }
 
 export interface UrlAnalysisResult
@@ -228,7 +244,8 @@ export async function getScans(
   const data =
     await parseJson<
       | {
-          scans: StoredScan[];
+          scans:
+            StoredScan[];
         }
       | ApiError
     >(response);

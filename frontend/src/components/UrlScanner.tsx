@@ -20,17 +20,15 @@ function UrlScanner({
     useState("");
 
   const [result, setResult] =
-    useState<
-      UrlAnalysisResult | null
-    >(null);
+    useState<UrlAnalysisResult | null>(
+      null,
+    );
 
   const [error, setError] =
     useState("");
 
-  const [
-    isLoading,
-    setIsLoading,
-  ] = useState(false);
+  const [isLoading, setIsLoading] =
+    useState(false);
 
   async function handleScan() {
     const cleanedUrl =
@@ -59,9 +57,7 @@ function UrlScanner({
 
     try {
       setIsLoading(true);
-
       setError("");
-
       setResult(null);
 
       const data =
@@ -73,17 +69,13 @@ function UrlScanner({
 
       onScanComplete(
         data,
-
         data.intelligence
           ?.normalizedUrl ??
           normalizedUrl,
       );
-    } catch (
-      requestError
-    ) {
+    } catch (requestError) {
       setError(
-        requestError instanceof
-          Error
+        requestError instanceof Error
           ? requestError.message
           : "Unable to scan the URL.",
       );
@@ -184,9 +176,7 @@ function UrlScanner({
         <button
           type="button"
           className="primary-button"
-          onClick={
-            handleScan
-          }
+          onClick={handleScan}
           disabled={
             isLoading ||
             !url.trim()
@@ -200,12 +190,8 @@ function UrlScanner({
         <button
           type="button"
           className="secondary-button"
-          onClick={
-            handleClear
-          }
-          disabled={
-            isLoading
-          }
+          onClick={handleClear}
+          disabled={isLoading}
         >
           Clear
         </button>
@@ -229,8 +215,7 @@ function UrlScanner({
               </p>
 
               <h4>
-                {result.riskLevel}{" "}
-                Risk
+                {result.riskLevel} Risk
               </h4>
             </div>
 
@@ -241,9 +226,7 @@ function UrlScanner({
                 {result.riskScore}
               </strong>
 
-              <span>
-                /100
-              </span>
+              <span>/100</span>
             </div>
           </div>
 
@@ -278,8 +261,7 @@ function UrlScanner({
                   </p>
 
                   <h4>
-                    Structural
-                    Analysis
+                    Structural Analysis
                   </h4>
                 </div>
 
@@ -310,7 +292,118 @@ function UrlScanner({
                 </small>
               </div>
 
+              {/* DOMAIN TRUST */}
+
               <div className="intel-grid">
+                <div className="intel-item">
+                  <span>
+                    Domain Trust
+                  </span>
+
+                  <strong
+                    className={
+                      result
+                        .intelligence
+                        .isTrustedDomain
+                        ? "intel-good"
+                        : "intel-warning"
+                    }
+                  >
+                    {result
+                      .intelligence
+                      .isTrustedDomain
+                      ? "VERIFIED"
+                      : "UNVERIFIED"}
+                  </strong>
+                </div>
+
+                <div className="intel-item">
+                  <span>
+                    Trusted Brand
+                  </span>
+
+                  <strong
+                    className={
+                      result
+                        .intelligence
+                        .trustedBrand
+                        ? "intel-good"
+                        : ""
+                    }
+                  >
+                    {result
+                      .intelligence
+                      .trustedBrand
+                      ? result.intelligence.trustedBrand.toUpperCase()
+                      : "None"}
+                  </strong>
+                </div>
+
+                <div className="intel-item">
+                  <span>
+                    Matched Domain
+                  </span>
+
+                  <strong
+                    className={
+                      result
+                        .intelligence
+                        .trustedDomain
+                        ? "intel-good"
+                        : ""
+                    }
+                  >
+                    {result
+                      .intelligence
+                      .trustedDomain ??
+                      "None"}
+                  </strong>
+                </div>
+
+                <div className="intel-item">
+                  <span>
+                    Official Domain
+                  </span>
+
+                  <strong
+                    className={
+                      result
+                        .intelligence
+                        .isTrustedDomain
+                        ? "intel-good"
+                        : "intel-warning"
+                    }
+                  >
+                    {result
+                      .intelligence
+                      .isTrustedDomain
+                      ? "YES"
+                      : "NO"}
+                  </strong>
+                </div>
+
+                <div className="intel-item">
+                  <span>
+                    Brand Claim
+                  </span>
+
+                  <strong
+                    className={
+                      result
+                        .intelligence
+                        .impersonatedBrand
+                        ? "intel-danger"
+                        : "intel-good"
+                    }
+                  >
+                    {result
+                      .intelligence
+                      .impersonatedBrand
+                      ? result.intelligence.impersonatedBrand.toUpperCase()
+                      : "None"}
+                  </strong>
+                </div>
+
                 <div className="intel-item">
                   <span>
                     Protocol
@@ -331,7 +424,6 @@ function UrlScanner({
                       result
                         .intelligence
                         .usesHttps,
-
                       true,
                     )}
                   >
@@ -424,8 +516,7 @@ function UrlScanner({
 
                 <div className="intel-item">
                   <span>
-                    Brand
-                    Impersonation
+                    Brand Impersonation
                   </span>
 
                   <strong
@@ -641,8 +732,7 @@ function UrlScanner({
 
           <div className="result-section">
             <h4>
-              Detected URL
-              Indicators
+              Detected URL Indicators
             </h4>
 
             {result.flags.length ===
@@ -655,12 +745,13 @@ function UrlScanner({
             ) : (
               <div className="flag-list">
                 {result.flags.map(
-                  (flag) => (
+                  (
+                    flag,
+                    index,
+                  ) => (
                     <div
                       className="flag-card"
-                      key={
-                        flag.category
-                      }
+                      key={`${flag.category}-${index}`}
                     >
                       <div>
                         <h5>

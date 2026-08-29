@@ -2,6 +2,10 @@ import type {
   ScamFlag,
 } from "../types/analysis.js";
 
+import {
+  checkTrustedDomain,
+} from "./trustedDomains.js";
+
 export interface UrlIntelligence {
   originalUrl: string;
   normalizedUrl: string;
@@ -48,6 +52,19 @@ export interface UrlIntelligence {
     string[];
 
   containsNestedUrl: boolean;
+
+  /*
+   * Domain trust intelligence
+   */
+  isTrustedDomain: boolean;
+
+  trustedBrand:
+    | string
+    | null;
+
+  trustedDomain:
+    | string
+    | null;
 }
 
 export interface UrlAnalysis {
@@ -68,6 +85,8 @@ const shortenerDomains = [
   "buff.ly",
   "ow.ly",
   "shorturl.at",
+  "cutt.ly",
+  "rb.gy",
 ];
 
 const suspiciousTlds = [
@@ -99,61 +118,6 @@ const protectedBrands = [
   "coinbase",
 ];
 
-const trustedBrandDomains: Record<
-  string,
-  string[]
-> = {
-  paypal: [
-    "paypal.com",
-  ],
-
-  microsoft: [
-    "microsoft.com",
-    "live.com",
-  ],
-
-  apple: [
-    "apple.com",
-    "icloud.com",
-  ],
-
-  amazon: [
-    "amazon.com",
-  ],
-
-  google: [
-    "google.com",
-  ],
-
-  facebook: [
-    "facebook.com",
-  ],
-
-  instagram: [
-    "instagram.com",
-  ],
-
-  netflix: [
-    "netflix.com",
-  ],
-
-  chase: [
-    "chase.com",
-  ],
-
-  bankofamerica: [
-    "bankofamerica.com",
-  ],
-
-  wellsfargo: [
-    "wellsfargo.com",
-  ],
-
-  coinbase: [
-    "coinbase.com",
-  ],
-};
-
 const suspiciousPathKeywords = [
   "login",
   "signin",
@@ -171,6 +135,8 @@ const suspiciousPathKeywords = [
   "auth",
   "authentication",
   "unlock",
+  "recover",
+  "recovery",
 ];
 
 const suspiciousQueryTerms = [
@@ -198,11 +164,8 @@ function normalizeUrl(
     rawUrl.trim();
 
   if (
-    trimmedUrl.startsWith(
-      "http://",
-    ) ||
-    trimmedUrl.startsWith(
-      "https://",
+    /^https?:\/\//i.test(
+      trimmedUrl,
     )
   ) {
     return trimmedUrl;
@@ -324,9 +287,7 @@ function getSuspiciousTld(
         ),
     );
 
-  return (
-    detected ?? null
-  );
+  return detected ?? null;
 }
 
 function isShortenedDomain(
@@ -334,27 +295,7 @@ function isShortenedDomain(
 ): boolean {
   return shortenerDomains.some(
     (domain) =>
-      hostname ===
-        domain ||
-      hostname.endsWith(
-        `.${domain}`,
-      ),
-  );
-}
-
-function isTrustedBrandDomain(
-  hostname: string,
-  brand: string,
-): boolean {
-  const allowedDomains =
-    trustedBrandDomains[
-      brand
-    ] ?? [];
-
-  return allowedDomains.some(
-    (domain) =>
-      hostname ===
-        domain ||
+      hostname === domain ||
       hostname.endsWith(
         `.${domain}`,
       ),
@@ -364,21 +305,27 @@ function isTrustedBrandDomain(
 function detectBrandImpersonation(
   hostname: string,
 ): string | null {
+  const trustMatch =
+    checkTrustedDomain(
+      hostname,
+    );
+
+  /*
+   * An officially trusted domain
+   * is not impersonation.
+   */
+  if (
+    trustMatch.trusted
+  ) {
+    return null;
+  }
+
   for (
     const brand of
       protectedBrands
   ) {
     if (
-      !hostname.includes(
-        brand,
-      )
-    ) {
-      continue;
-    }
-
-    if (
-      !isTrustedBrandDomain(
-        hostname,
+      hostname.includes(
         brand,
       )
     ) {
@@ -403,8 +350,7 @@ function levenshteinDistance(
         Array.from(
           {
             length:
-              second.length +
-              1,
+              second.length + 1,
           },
           () => 0,
         ),
@@ -522,6 +468,17 @@ function normalizeLookalikeCharacters(
 function detectTyposquatting(
   hostname: string,
 ): string | null {
+  const trustMatch =
+    checkTrustedDomain(
+      hostname,
+    );
+
+  if (
+    trustMatch.trusted
+  ) {
+    return null;
+  }
+
   const label =
     getDomainLabel(
       hostname,
@@ -540,15 +497,6 @@ function detectTyposquatting(
     const brand of
       protectedBrands
   ) {
-    if (
-      isTrustedBrandDomain(
-        hostname,
-        brand,
-      )
-    ) {
-      continue;
-    }
-
     const normalizedLabel =
       normalizeLookalikeCharacters(
         label,
@@ -660,7 +608,7 @@ function analyzeQueryParameters(
         );
     } catch {
       /*
-       * Keep the original value
+       * Leave the original value
        * if decoding fails.
        */
     }
@@ -695,8 +643,8 @@ function analyzeQueryParameters(
 }
 
 /*
- * Analyze URLs contained inside a larger
- * message or block of text.
+ * Analyze every URL inside a larger
+ * message or text block.
  */
 export function analyzeUrls(
   content: string,
@@ -731,16 +679,16 @@ export function analyzeUrls(
 }
 
 /*
- * Analyze one specific URL.
+ * Analyze one URL.
  *
- * This is used by the standalone
- * URL Scanner as well as analyzeUrls().
+ * IMPORTANT:
+ * Keep this export name because
+ * urlRoutes.ts already imports it.
  */
 export function analyzeUrlIntelligence(
   rawUrl: string,
 ): UrlAnalysis {
-  const flags: ScamFlag[] =
-    [];
+  const flags: ScamFlag[] = [];
 
   const normalizedUrl =
     normalizeUrl(
@@ -767,13 +715,23 @@ export function analyzeUrlIntelligence(
 
     return {
       flags,
-      intelligence: null,
+
+      intelligence:
+        null,
     };
   }
 
   const hostname =
     parsedUrl.hostname
       .toLowerCase();
+
+  /*
+   * Domain trust analysis
+   */
+  const trustMatch =
+    checkTrustedDomain(
+      hostname,
+    );
 
   const usesHttps =
     parsedUrl.protocol ===
@@ -833,21 +791,37 @@ export function analyzeUrlIntelligence(
     );
 
   /*
-   * Any detected URL gets a small
-   * baseline risk indicator.
+   * -------------------------------------------------------
+   * INFORMATIONAL URL SIGNAL
+   * -------------------------------------------------------
+   *
+   * A URL existing is useful context,
+   * but it is NOT inherently dangerous.
+   *
+   * Therefore:
+   *
+   * Link detected = 0 risk points.
    */
   flags.push({
     category:
       "Link detected",
 
     description:
-      "The content contains a URL. Verify the destination before opening it.",
+      trustMatch.trusted
+        ? `The content contains a URL associated with the trusted ${
+            trustMatch.brand ??
+            "known"
+          } domain ${
+            trustMatch.matchedDomain ??
+            hostname
+          }.`
+        : "The content contains a URL. Verify the destination before opening it.",
 
-    points: 5,
+    points: 0,
   });
 
   /*
-   * HTTP instead of HTTPS.
+   * HTTP instead of HTTPS
    */
   if (!usesHttps) {
     flags.push({
@@ -862,9 +836,11 @@ export function analyzeUrlIntelligence(
   }
 
   /*
-   * Known URL shortener.
+   * Known shortening service
    */
-  if (shortened) {
+  if (
+    shortened
+  ) {
     flags.push({
       category:
         "Shortened link",
@@ -877,9 +853,11 @@ export function analyzeUrlIntelligence(
   }
 
   /*
-   * Raw IP destination.
+   * Raw IP address
    */
-  if (ipAddress) {
+  if (
+    ipAddress
+  ) {
     flags.push({
       category:
         "IP-based link",
@@ -892,9 +870,11 @@ export function analyzeUrlIntelligence(
   }
 
   /*
-   * Suspicious TLD.
+   * Suspicious TLD
    */
-  if (suspiciousTld) {
+  if (
+    suspiciousTld
+  ) {
     flags.push({
       category:
         "Suspicious domain",
@@ -907,7 +887,7 @@ export function analyzeUrlIntelligence(
   }
 
   /*
-   * Deep / misleading subdomains.
+   * Deep subdomain structure
    */
   if (
     longSubdomainChain
@@ -924,8 +904,7 @@ export function analyzeUrlIntelligence(
   }
 
   /*
-   * @ symbol can make the actual
-   * destination confusing.
+   * @ symbol obfuscation
    */
   if (
     containsAtSymbol
@@ -942,7 +921,8 @@ export function analyzeUrlIntelligence(
   }
 
   /*
-   * Punycode / IDN.
+   * Punycode / internationalized
+   * domain encoding
    */
   if (
     containsPunycode
@@ -959,7 +939,7 @@ export function analyzeUrlIntelligence(
   }
 
   /*
-   * Extremely long hostname.
+   * Unusually long hostname
    */
   if (
     hostname.length >
@@ -977,8 +957,8 @@ export function analyzeUrlIntelligence(
   }
 
   /*
-   * Known brand appears in an
-   * untrusted hostname.
+   * Protected brand appears on
+   * an untrusted domain
    */
   if (
     impersonatedBrand
@@ -988,15 +968,14 @@ export function analyzeUrlIntelligence(
         "Brand impersonation",
 
       description:
-        `The domain contains "${impersonatedBrand}" but is not an official ${impersonatedBrand} domain.`,
+        `The domain contains "${impersonatedBrand}" but is not recognized as an official ${impersonatedBrand} domain.`,
 
       points: 30,
     });
   }
 
   /*
-   * Domain resembles a protected
-   * brand name.
+   * Look-alike / typosquat domain
    */
   if (
     suspectedTyposquatBrand
@@ -1006,18 +985,41 @@ export function analyzeUrlIntelligence(
         "Typosquatting",
 
       description:
-        `The domain closely resembles "${suspectedTyposquatBrand}" but is not an official ${suspectedTyposquatBrand} domain.`,
+        `The domain closely resembles "${suspectedTyposquatBrand}" but is not recognized as an official ${suspectedTyposquatBrand} domain.`,
 
       points: 30,
     });
   }
 
   /*
-   * Suspicious path words.
+   * Trusted domains should not be
+   * penalized merely for legitimate
+   * paths such as:
+   *
+   * amazon.com/account
+   * microsoft.com/security
+   *
+   * unless another structural URL
+   * risk is also present.
    */
+  const hasAdditionalUrlRisk =
+    shortened ||
+    ipAddress ||
+    suspiciousTld !== null ||
+    longSubdomainChain ||
+    containsAtSymbol ||
+    containsPunycode ||
+    impersonatedBrand !== null ||
+    suspectedTyposquatBrand !==
+      null;
+
   if (
-    suspiciousPathMatches
-      .length > 0
+    suspiciousPathMatches.length >
+      0 &&
+    (
+      !trustMatch.trusted ||
+      hasAdditionalUrlRisk
+    )
   ) {
     flags.push({
       category:
@@ -1033,7 +1035,7 @@ export function analyzeUrlIntelligence(
   }
 
   /*
-   * Suspicious query parameters.
+   * Suspicious query parameters
    */
   if (
     queryAnalysis
@@ -1049,12 +1051,15 @@ export function analyzeUrlIntelligence(
           ", ",
         )}.`,
 
-      points: 10,
+      points:
+        trustMatch.trusted
+          ? 5
+          : 10,
     });
   }
 
   /*
-   * URL embedded inside another URL.
+   * URL nested inside another URL
    */
   if (
     queryAnalysis
@@ -1071,6 +1076,9 @@ export function analyzeUrlIntelligence(
     });
   }
 
+  /*
+   * Final URL intelligence object
+   */
   const intelligence:
     UrlIntelligence = {
     originalUrl:
@@ -1133,6 +1141,18 @@ export function analyzeUrlIntelligence(
     containsNestedUrl:
       queryAnalysis
         .containsNestedUrl,
+
+    /*
+     * Domain trust result
+     */
+    isTrustedDomain:
+      trustMatch.trusted,
+
+    trustedBrand:
+      trustMatch.brand,
+
+    trustedDomain:
+      trustMatch.matchedDomain,
   };
 
   return {
