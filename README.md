@@ -2,509 +2,757 @@
 
 # 🛡️ SENTRI
 
-### `THREAT INTELLIGENCE SYSTEM`
+### AI-POWERED IDENTITY FRAUD PREVENTION & TRUST INFRASTRUCTURE
 
-**Detect • Analyze • Understand • Defend**
+**Prevent → Detect → Analyze → Intervene → Verify → Respond → Recover → Monitor**
 
-> A cybersecurity threat-analysis platform built to identify suspicious URLs and scam indicators through explainable, rule-based detection.
+> An evolving cybersecurity infrastructure designed to detect fraud and identity threats before they reach the victim — combining explainable threat detection, AI-driven anomaly intelligence, identity monitoring, and blockchain-based trust verification.
 
-**STATUS:** 🟢 ONLINE &nbsp;&nbsp; | &nbsp;&nbsp; **ENGINE:** `RULE-X` &nbsp;&nbsp; | &nbsp;&nbsp; **MODE:** `LOCAL`
+<br>
 
----
+**CURRENT BUILD:** `SENTRI v3` &nbsp; | &nbsp; **ENGINE:** `RULE-X` &nbsp; | &nbsp; **STATUS:** `PROTOTYPE`
 
-`Cybersecurity` • `Threat Detection` • `TypeScript` • `React` • `Node.js`
+<br>
+
+`Cybersecurity` • `Fraud Detection` • `Identity Security` • `AI` • `Blockchain`
 
 </div>
 
-# ◈ SYSTEM OVERVIEW
+---
 
-The internet is full of links and messages that look legitimate.
+# ◈ THE VISION
 
-Some aren't.
+Most security systems react after something suspicious has already happened.
 
-**Sentri** is a cybersecurity portfolio project designed to investigate suspicious digital content and expose the warning signs hidden underneath.
+Sentri explores a different question:
+
+> **What if fraud could be identified and interrupted before it reaches the victim?**
+
+Sentri is an evolving cybersecurity project focused on building toward an intelligent identity-fraud prevention infrastructure.
+
+The current prototype begins with scam detection, suspicious message analysis, URL intelligence, threat scoring, and explainable security recommendations.
+
+But that is only the foundation.
+
+The long-term vision is for Sentri to analyze signals across the identity lifecycle — including suspicious communications, authentication events, devices, account changes, transactions, and behavioral anomalies — to identify coordinated fraud before significant damage occurs.
 
 ```text
-SUSPICIOUS INPUT
+                    ┌─────────────────┐
+                    │     SENTRI      │
+                    │ TRUST & FRAUD   │
+                    │ INTELLIGENCE    │
+                    └────────┬────────┘
+                             │
+        ┌────────────────────┼────────────────────┐
+        │                    │                    │
+        ▼                    ▼                    ▼
+   SCAM SIGNALS        IDENTITY EVENTS      TRUST SIGNALS
+        │                    │                    │
+        └────────────────────┼────────────────────┘
+                             ▼
+                  ┌────────────────────┐
+                  │  SENTRI ANALYSIS   │
+                  │                    │
+                  │ RULE-X + AI/ML     │
+                  └─────────┬──────────┘
+                            │
+                            ▼
+                   ANOMALY DETECTION
+                            │
+                            ▼
+                      RISK ENGINE
+                            │
+                ┌───────────┼───────────┐
+                ▼           ▼           ▼
+               LOW       ELEVATED      HIGH
+                            │
+                            ▼
+                    INTERVENTION LAYER
+                            │
+                            ▼
+                       VERIFICATION
+                            │
+                            ▼
+                RESPONSE + RECOVERY
+                            │
+                            ▼
+                  CONTINUOUS MONITORING
+```
+
+---
+
+# ◈ THE SENTRI LIFECYCLE
+
+Sentri's long-term architecture is centered around eight stages:
+
+```text
+PREVENT
+   ↓
+DETECT
+   ↓
+ANALYZE
+   ↓
+INTERVENE
+   ↓
+VERIFY
+   ↓
+RESPOND
+   ↓
+RECOVER
+   ↓
+MONITOR
+   ↺
+```
+
+### 🛡️ PREVENT
+
+Identify suspicious conditions and strengthen trust before fraud occurs.
+
+### 🔎 DETECT
+
+Detect scam indicators, malicious URLs, abnormal identity events, suspicious devices, account activity, and behavioral anomalies.
+
+### 🧠 ANALYZE
+
+Combine rule-based detection and AI models to determine why activity may represent fraud.
+
+### 🚨 INTERVENE
+
+Escalate high-risk activity before sensitive actions are completed.
+
+### ✅ VERIFY
+
+Use additional trust signals and verification mechanisms to determine whether an identity action is legitimate.
+
+### ⚡ RESPOND
+
+Provide actionable recommendations and coordinate responses to confirmed threats.
+
+### 🔧 RECOVER
+
+Support the recovery process after an identity or account has been compromised.
+
+### 📡 MONITOR
+
+Continue analyzing identity activity for signs of repeated attacks or further compromise.
+
+---
+
+# ◈ CURRENT PROTOTYPE — SENTRI v3
+
+Sentri is currently in **Version 3**.
+
+v3 strengthens the project's core cybersecurity engine before moving into identity intelligence and AI-driven anomaly detection.
+
+```text
+SENTRI v3
+────────────────────────────────
+
+STATUS       PROTOTYPE
+ENGINE       RULE-X
+MODE         EXPLAINABLE DETECTION
+
+CAPABILITIES
+
+[✓] Scam Analysis
+[✓] URL Intelligence
+[✓] Threat Indicators
+[✓] Risk Scoring
+[✓] Risk Classification
+[✓] Security Recommendations
+[✓] Scan History
+[✓] Threat Dashboard
+
+────────────────────────────────
+```
+
+The current system acts as the **detection laboratory** for the larger Sentri architecture.
+
+---
+
+# ◈ RULE-X
+
+At the core of the current prototype is Sentri's explainable rule-based detection engine:
+
+```text
+╔══════════════════════════════════════╗
+║                                      ║
+║               RULE-X                 ║
+║                                      ║
+║      EXPLAINABLE THREAT ENGINE       ║
+║                                      ║
+║  DETECT → SCORE → CLASSIFY → EXPLAIN ║
+║                                      ║
+╚══════════════════════════════════════╝
+```
+
+RULE-X examines security indicators instead of producing an unexplained prediction.
+
+Current indicators include:
+
+- Suspicious domains
+- URL shorteners
+- IP-based URLs
+- Punycode
+- Excessive subdomains
+- Nested URLs
+- Suspicious paths
+- Suspicious query parameters
+- Brand impersonation
+- Urgency language
+- Account threats
+- Phishing terminology
+- Scam patterns
+
+These signals contribute to Sentri's risk assessment.
+
+---
+
+# ◈ URL INTELLIGENCE
+
+Sentri v3 can inspect suspicious URLs and extract security characteristics.
+
+```text
+URL
+ │
+ ├── Protocol
+ ├── Hostname
+ ├── Domain Structure
+ ├── Subdomains
+ ├── TLD
+ ├── Path
+ ├── Query
+ ├── Redirect Indicators
+ └── Impersonation Indicators
        │
        ▼
-┌─────────────────────┐
-│   SENTRI ANALYZER   │
-│      RULE-X         │
-└──────────┬──────────┘
-           │
-           ▼
-   THREAT INDICATORS
-           │
-           ▼
-      RISK ENGINE
-           │
-     ┌─────┼─────┐
-     ▼     ▼     ▼
-    LOW  MEDIUM  HIGH
-     │     │     │
-     └─────┼─────┘
-           ▼
- SECURITY RECOMMENDATION
+   RULE-X ENGINE
+       │
+       ▼
+   RISK ASSESSMENT
 ```
+
+Current analysis includes:
+
+- HTTPS detection
+- URL shortener detection
+- Suspicious TLD detection
+- IP address detection
+- Subdomain depth
+- Domain length
+- `@` symbol detection
+- Punycode detection
+- Nested URL detection
+- Suspicious keywords
+- Brand impersonation
+- Typosquatting indicators
 
 ---
 
-# ◈ CORE MODULES
+# ◈ SCAM INTELLIGENCE
 
-## 🔗 URL INTELLIGENCE
+Fraud is not always technical.
 
-Sentri inspects URLs for patterns commonly associated with phishing, impersonation, and malicious links.
+Many attacks begin with **social engineering**.
+
+Sentri analyzes suspicious messages for patterns designed to manipulate victims.
 
 ```text
-URL RECEIVED
+"ACT NOW"
      │
-     ├──► Domain Analysis
-     ├──► URL Structure Analysis
-     ├──► Keyword Detection
-     ├──► Impersonation Detection
-     └──► Risk Classification
+     ▼
+URGENCY SIGNAL
+
+"YOUR ACCOUNT WILL BE LOCKED"
+     │
+     ▼
+ACCOUNT THREAT
+
+"VERIFY YOUR INFORMATION"
+     │
+     ▼
+PHISHING INDICATOR
+
+          ↓
+
+      RULE-X
+
+          ↓
+
+     RISK SCORE
 ```
 
-Current checks include:
-
-- URL shorteners
-- Suspicious top-level domains
-- IP-based URLs
-- Excessive subdomains
-- Punycode domains
-- `@` symbol manipulation
-- Nested URLs
-- Suspicious paths and query parameters
-- Brand impersonation patterns
+This creates the foundation for future AI-assisted fraud analysis.
 
 ---
 
-## 💬 MESSAGE INTELLIGENCE
+# ◈ FROM RULES TO AI
 
-Scams often rely on social engineering rather than technical exploits.
+RULE-X is not intended to disappear when AI arrives.
 
-Sentri analyzes suspicious messages for behavioral patterns commonly associated with phishing and fraud.
-
-Examples include:
+Future Sentri versions will use a **hybrid intelligence architecture**.
 
 ```text
-⚠ URGENCY DETECTED
-⚠ ACCOUNT THREAT DETECTED
-⚠ SUSPICIOUS REQUEST
-⚠ PHISHING LANGUAGE
-⚠ SOCIAL ENGINEERING INDICATOR
+                SENTRI
+                   │
+         ┌─────────┴─────────┐
+         │                   │
+         ▼                   ▼
+      RULE-X               AI / ML
+         │                   │
+   Known Patterns       Unknown Patterns
+   Explainability       Anomalies
+   Deterministic        Behavioral Signals
+         │                   │
+         └─────────┬─────────┘
+                   ▼
+             RISK ENGINE
+                   │
+                   ▼
+              DECISION
 ```
 
-The analyzer can detect patterns involving:
+RULE-X can identify known suspicious patterns.
 
-- Artificial urgency
-- Account suspension threats
-- Pressure to take immediate action
-- Suspicious requests
-- Phishing terminology
-- Scam-related language
+AI and machine-learning models can eventually help identify unusual activity that static rules may not recognize.
+
+Together, they form the foundation for explainable anomaly intelligence.
 
 ---
 
-## 🧠 RULE-X ENGINE
+# ◈ IDENTITY INTELLIGENCE
 
-At the center of Sentri is:
+Sentri's next major evolution moves beyond individual scam messages and URLs.
+
+Future versions will analyze simulated identity events such as:
 
 ```text
-╔══════════════════════════════╗
-║          RULE-X              ║
-║                              ║
-║   EXPLAINABLE THREAT ENGINE  ║
-║                              ║
-║   MODE ............. LOCAL   ║
-║   STATUS ........... ONLINE  ║
-╚══════════════════════════════╝
+IDENTITY
+   │
+   ├── Login
+   ├── Device
+   ├── Location
+   ├── Password Reset
+   ├── Account Change
+   ├── Transaction
+   ├── Recovery Request
+   └── Behavioral Activity
+            │
+            ▼
+      SENTRI IDENTITY GRAPH
+            │
+            ▼
+       ANOMALY ANALYSIS
 ```
 
-**RULE-X** is Sentri's rule-based detection engine.
+Instead of asking only:
 
-Rather than relying entirely on an external AI model, RULE-X evaluates predefined cybersecurity indicators.
+> "Is this link suspicious?"
 
-This makes the detection process:
+Sentri will begin asking:
 
-- Explainable
-- Predictable
-- Fast
-- Local
-- Easy to expand
-- Independent from external AI APIs
-
-Each detected indicator contributes to the final security assessment.
+> "Does this activity make sense for this identity?"
 
 ---
 
-# ◈ THREAT CLASSIFICATION
+# ◈ EXAMPLE FUTURE USE CASE
 
-Sentri converts detected indicators into an understandable risk assessment.
-
-| Level | Classification | Meaning |
-|:---:|:---|:---|
-| 🟢 | **LOW** | Few or no suspicious indicators detected |
-| 🟡 | **MEDIUM** | Multiple suspicious characteristics detected |
-| 🔴 | **HIGH** | Strong phishing, scam, or malicious indicators detected |
-
-A scan may produce results similar to:
+Imagine an account normally behaves like this:
 
 ```text
-┌──────────────────────────────────────┐
-│ SENTRI // THREAT REPORT              │
-├──────────────────────────────────────┤
-│                                      │
-│ RISK SCORE       78 / 100            │
-│ THREAT LEVEL     HIGH                │
-│ ENGINE           RULE-X              │
-│                                      │
-│ FLAGS                                │
-│                                      │
-│ [!] Suspicious domain                │
-│ [!] URL shortener detected           │
-│ [!] Urgency language                 │
-│ [!] Possible brand impersonation     │
-│                                      │
-├──────────────────────────────────────┤
-│ RECOMMENDATION                       │
-│                                      │
-│ Avoid interacting with this content  │
-│ until its legitimacy is verified.    │
-└──────────────────────────────────────┘
+DEVICE        iPhone
+REGION        California
+LOGIN TIME    7 AM – 11 PM
+ACTIVITY      Normal
 ```
+
+Then Sentri receives:
+
+```text
+03:14 AM     New Device Login
+03:16 AM     Password Changed
+03:18 AM     Recovery Email Changed
+03:21 AM     Large Transaction Requested
+```
+
+Individually, each event might be legitimate.
+
+Together:
+
+```text
+          NEW DEVICE
+              +
+       PASSWORD CHANGE
+              +
+      RECOVERY CHANGE
+              +
+     UNUSUAL TRANSACTION
+              │
+              ▼
+      BEHAVIORAL ANOMALY
+              │
+              ▼
+        HIGH FRAUD RISK
+              │
+              ▼
+          INTERVENE
+              │
+              ▼
+           VERIFY
+```
+
+The objective is to identify the **pattern**, not simply one isolated event.
 
 ---
 
-# ◈ FEATURES
+# ◈ BLOCKCHAIN TRUST LAYER
 
-### 🛡️ Threat Analysis
+Blockchain is planned for a later stage of Sentri.
 
-- Suspicious URL scanning
-- Scam message analysis
-- Phishing indicator detection
-- Explainable threat flags
+It is **not** intended to store sensitive identity information publicly.
 
-### 📊 Risk Intelligence
+Instead, blockchain can provide a trust layer for:
 
-- Numerical risk scoring
-- Low / Medium / High classification
-- Security recommendations
-- Detection summaries
+- Verification proofs
+- Credential attestations
+- Revocations
+- Integrity proofs
+- Tamper-resistant audit records
 
-### 🕒 Scan Intelligence
+```text
+PRIVATE IDENTITY DATA
+        │
+        │      ✕ DO NOT STORE ON-CHAIN
+        ▼
+ SENTRI SECURITY LAYER
+        │
+        ▼
+ VERIFICATION PROOF
+        │
+        ▼
+┌──────────────────────┐
+│   BLOCKCHAIN TRUST   │
+│        LAYER         │
+├──────────────────────┤
+│ Proof                │
+│ Attestation          │
+│ Revocation           │
+│ Audit Record         │
+└──────────────────────┘
+```
 
-- Recent scan history
-- Scan activity tracking
-- Security statistics
-- History management
+Sensitive personal information remains off-chain.
 
-### 🖥️ Command Dashboard
+Blockchain provides **proof of trust**, not a public identity database.
 
-- Threat intelligence interface
-- System status monitoring
-- RULE-X engine status
-- Local analysis mode
-- Responsive cybersecurity UI
+---
+
+# ◈ LONG-TERM ARCHITECTURE
+
+Sentri is designed conceptually around multiple participants in the fraud ecosystem.
+
+```text
+                    SENTRI NETWORK
+
+                         ┌─────┐
+                         │USER │
+                         └──┬──┘
+                            │
+               ┌────────────▼────────────┐
+               │                         │
+               │         SENTRI          │
+               │                         │
+               │  FRAUD + IDENTITY       │
+               │  INTELLIGENCE LAYER     │
+               │                         │
+               └────────────┬────────────┘
+                            │
+           ┌────────────────┼────────────────┐
+           │                │                │
+           ▼                ▼                ▼
+      BUSINESSES        FINANCIAL       INSTITUTIONS
+                         SYSTEMS
+           │                │                │
+           └────────────────┼────────────────┘
+                            │
+                            ▼
+                      TRUST LAYER
+```
+
+The long-term concept could support privacy-conscious fraud intelligence between individuals and organizations without requiring raw identity information to be publicly shared.
 
 ---
 
 # ◈ TECHNOLOGY STACK
 
-```text
-┌──────────────────────────────────────┐
-│              SENTRI                  │
-├──────────────────────────────────────┤
-│                                      │
-│ FRONTEND                             │
-│ ├── React                            │
-│ ├── TypeScript                       │
-│ ├── Vite                             │
-│ └── CSS                              │
-│                                      │
-│ BACKEND                              │
-│ ├── Node.js                          │
-│ ├── Express                          │
-│ ├── TypeScript                       │
-│ └── REST API                         │
-│                                      │
-│ SECURITY                             │
-│ ├── URL Pattern Analysis             │
-│ ├── Scam Pattern Detection           │
-│ ├── Risk Classification              │
-│ └── RULE-X Detection Engine          │
-│                                      │
-└──────────────────────────────────────┘
-```
-
----
-
-# ◈ PROJECT STRUCTURE
+### Current
 
 ```text
-sentri/
-│
-├── client/
-│   │
-│   └── src/
-│       │
-│       ├── components/
-│       │   ├── Navbar/
-│       │   ├── ScamAnalyzer/
-│       │   ├── UrlScanner/
-│       │   ├── ScanHistory/
-│       │   └── ResultsCard/
-│       │
-│       ├── services/
-│       ├── types/
-│       ├── App.tsx
-│       └── main.tsx
-│
-├── server/
-│   │
-│   └── src/
-│       │
-│       ├── routes/
-│       ├── services/
-│       ├── types/
-│       └── server.ts
-│
-└── README.md
+FRONTEND
+├── React
+├── TypeScript
+├── Vite
+└── CSS
+
+BACKEND
+├── Node.js
+├── Express
+├── TypeScript
+└── REST API
+
+SECURITY
+├── RULE-X
+├── URL Intelligence
+├── Scam Detection
+├── Threat Scoring
+└── Explainable Recommendations
 ```
 
----
-
-# ◈ INITIALIZE SENTRI
-
-## 01 // Clone
-
-```bash
-git clone https://github.com/SeukallesX/sentri.git
-cd sentri
-```
-
-## 02 // Frontend
-
-```bash
-cd client
-npm install
-npm run dev
-```
-
-## 03 // Backend
-
-Open another terminal:
-
-```bash
-cd server
-npm install
-npm run dev
-```
-
-Once both systems are running:
+### Planned
 
 ```text
-SENTRI INITIALIZATION
+INTELLIGENCE
+├── AI
+├── Machine Learning
+├── Anomaly Detection
+└── Behavioral Analysis
 
-[✓] Frontend initialized
-[✓] Backend initialized
-[✓] RULE-X loaded
-[✓] Threat engine ready
+IDENTITY
+├── Identity Events
+├── Device Intelligence
+├── Authentication Signals
+└── Transaction Signals
 
-SYSTEM ONLINE
+TRUST
+├── Blockchain
+├── Verification Proofs
+├── Credential Attestations
+├── Revocations
+└── Audit Integrity
 ```
 
 ---
 
-# ◈ API
+# ◈ ROADMAP
 
-Sentri's frontend communicates with its threat-analysis backend through a REST API.
+## `v3 // CORE INTELLIGENCE` — CURRENT
 
-### Analyze Content
+**Build the detection foundation.**
 
-```http
-POST /api/analyze
-```
-
-Processes suspicious content and returns threat indicators, risk information, and security recommendations.
-
-### Scan Intelligence
-
-```http
-/api/scan
-```
-
-Handles scan records and statistics.
-
-### System Health
-
-```http
-GET /api/health
-```
-
-Checks the operational status of the Sentri backend.
-
----
-
-# ◈ SCREENSHOTS
-
-## 🖥️ Threat Intelligence Dashboard
-
-> `// Screenshot Coming Soon`
-
-## 🔗 URL Intelligence
-
-> `// Screenshot Coming Soon`
-
-## 💬 Message Analysis
-
-> `// Screenshot Coming Soon`
-
-## 🚨 Threat Report
-
-> `// Screenshot Coming Soon`
-
----
-
-# ◈ DEVELOPMENT ROADMAP
-
-## `PHASE 01 // FOUNDATION`
-
-- [x] Project architecture
-- [x] React frontend
-- [x] Express backend
-- [x] TypeScript integration
-- [x] REST API
-- [x] Cybersecurity dashboard
-
-## `PHASE 02 // RULE-X`
-
-- [x] URL scanner
-- [x] Message analyzer
+- [x] Scam detection
+- [x] URL intelligence
+- [x] RULE-X
 - [x] Threat indicators
 - [x] Risk scoring
 - [x] Risk classification
-- [x] Security recommendations
-
-## `PHASE 03 // INTELLIGENCE`
-
+- [x] Explainable recommendations
 - [x] Scan history
-- [x] System status
-- [ ] Domain reputation analysis
-- [ ] Expanded phishing rules
-- [ ] Threat categories
-- [ ] Advanced impersonation detection
-- [ ] Security statistics
-
-## `PHASE 04 // THREAT NETWORK`
-
-- [ ] External threat intelligence APIs
-- [ ] Known malicious domain detection
-- [ ] Domain reputation services
-- [ ] Threat intelligence feeds
-- [ ] Cross-source threat verification
-
-## `PHASE 05 // HYBRID INTELLIGENCE`
-
-- [ ] AI-assisted explanations
-- [ ] Context-aware scam analysis
-- [ ] Advanced pattern recognition
-- [ ] Scam classification
-- [ ] RULE-X + AI hybrid detection
+- [ ] Expand detection rules
+- [ ] Improve scoring engine
+- [ ] Improve threat analytics
 
 ---
 
-# ◈ PROJECT OBJECTIVE
+## `v4 // AI INTELLIGENCE`
 
-Sentri was built as more than a frontend demonstration.
+**Move beyond predefined patterns.**
 
-The project explores how a complete cybersecurity system can move through the pipeline:
+- [ ] AI-assisted threat analysis
+- [ ] Machine-learning experiments
+- [ ] Anomaly detection
+- [ ] Hybrid RULE-X + AI engine
+- [ ] Explainable AI output
+- [ ] Behavioral pattern analysis
+
+---
+
+## `v5 // IDENTITY INTELLIGENCE`
+
+**Analyze the identity, not just the message.**
+
+- [ ] Simulated identity profiles
+- [ ] Login event analysis
+- [ ] Device-change detection
+- [ ] Password-reset monitoring
+- [ ] Account-change monitoring
+- [ ] Transaction-event analysis
+- [ ] Identity risk scoring
+- [ ] Cross-event anomaly detection
+
+---
+
+## `v6 // INTERVENTION & RECOVERY`
+
+**Move from detection toward prevention.**
+
+- [ ] Automated intervention workflows
+- [ ] Step-up verification
+- [ ] High-risk action controls
+- [ ] Compromise response
+- [ ] Identity recovery workflows
+- [ ] Post-compromise monitoring
+- [ ] Continuous risk reassessment
+
+---
+
+## `v7 // BLOCKCHAIN TRUST`
+
+**Introduce verifiable trust without exposing identity data.**
+
+- [ ] Verification proofs
+- [ ] Credential attestations
+- [ ] Credential revocation
+- [ ] Tamper-resistant audit proofs
+- [ ] Off-chain identity architecture
+- [ ] Blockchain trust layer prototype
+
+---
+
+## `FUTURE // SENTRI INFRASTRUCTURE`
+
+Explore privacy-conscious fraud intelligence that could connect:
 
 ```text
-COLLECT
-   ↓
-ANALYZE
-   ↓
-DETECT
-   ↓
-CLASSIFY
-   ↓
-EXPLAIN
-   ↓
-RESPOND
+INDIVIDUALS
+     ↕
+BUSINESSES
+     ↕
+FINANCIAL INSTITUTIONS
+     ↕
+OTHER AUTHORIZED ORGANIZATIONS
+     ↕
+SENTRI TRUST INFRASTRUCTURE
 ```
 
-Through Sentri, the project demonstrates experience with:
+---
 
-- Cybersecurity fundamentals
-- Threat analysis
-- Phishing detection
-- Scam detection
-- URL intelligence
-- Rule-based security systems
-- Risk scoring
-- Explainable detection
-- React architecture
+# ◈ WHAT MAKES SENTRI DIFFERENT?
+
+Sentri is not intended to become only another:
+
+```text
+URL CHECKER        ✕
+SCAM CLASSIFIER    ✕
+IDENTITY MONITOR   ✕
+BLOCKCHAIN APP     ✕
+```
+
+The larger idea is to connect these capabilities into a lifecycle.
+
+```text
+THREAT
+  │
+  ▼
+PREVENT
+  │
+DETECT
+  │
+ANALYZE
+  │
+INTERVENE
+  │
+VERIFY
+  │
+RESPOND
+  │
+RECOVER
+  │
+MONITOR
+  │
+  └───────────────↺
+```
+
+That lifecycle is the core of the Sentri vision.
+
+---
+
+# ◈ PROJECT PURPOSE
+
+Sentri is currently a **solo-built cybersecurity portfolio and research prototype**.
+
+The project is being developed incrementally so that each version introduces another layer of the larger architecture.
+
+Rather than attempting to build the entire infrastructure at once:
+
+```text
+v3   Detection
+ ↓
+v4   Intelligence
+ ↓
+v5   Identity
+ ↓
+v6   Prevention + Recovery
+ ↓
+v7   Trust
+ ↓
+∞    Infrastructure
+```
+
+Each stage becomes a prototype for the next.
+
+---
+
+# 🎓 LEARNING OBJECTIVES
+
+Sentri explores:
+
+- Cybersecurity
+- Fraud Detection
+- Identity Security
+- Threat Intelligence
+- Social Engineering Detection
+- URL Intelligence
+- Risk Scoring
+- Explainable Security
+- Artificial Intelligence
+- Machine Learning
+- Anomaly Detection
+- Behavioral Analysis
+- Blockchain Architecture
+- Digital Trust
+- Privacy-Conscious System Design
+- React
 - TypeScript
 - Node.js
 - Express
 - REST APIs
-- Full-stack development
-- Security-focused UI/UX
-- Git & GitHub
+- Full-Stack Architecture
 
 ---
 
-# ◈ WHY SENTRI?
+# ⚠️ SECURITY DISCLAIMER
 
-Security tools can generate warnings without explaining what caused them.
+Sentri is an experimental cybersecurity portfolio and research project.
 
-Sentri explores a different approach:
+It is not currently a production security system and should not be relied upon to protect real accounts, identities, financial transactions, or infrastructure.
 
-> **Detection should be understandable.**
+A `LOW RISK` result does not guarantee that content is safe.
 
-The goal is to expose the indicators behind a security assessment so users can better understand what made a URL or message suspicious.
-
-That makes Sentri both a cybersecurity application and an exploration of **explainable threat detection**.
-
----
-
-# ⚠ SECURITY DISCLAIMER
-
-Sentri is an educational cybersecurity and portfolio project.
-
-It is **not** a replacement for:
-
-- Professional antivirus software
-- Enterprise security platforms
-- Threat intelligence services
-- Security professionals
-
-A `LOW RISK` result does **not** guarantee that content is safe.
-
-Do not submit passwords, authentication tokens, financial information, personally identifiable information, or other confidential data.
+Never submit passwords, private keys, authentication tokens, financial credentials, Social Security numbers, or other sensitive personal information.
 
 ---
 
 # 🤝 CONTRIBUTING
 
-Ideas, suggestions, and contributions are welcome.
+Suggestions, research ideas, security feedback, and contributions are welcome.
 
 ```bash
-# Fork the repository
+git clone https://github.com/SeukallesX/sentri.git
 
-# Create a branch
+cd sentri
+
 git checkout -b feature/new-feature
+```
 
-# Commit your changes
-git commit -m "Add new feature"
+After making changes:
 
-# Push your branch
+```bash
+git add .
+git commit -m "Add new Sentri feature"
 git push origin feature/new-feature
 ```
 
-Then open a pull request.
+Then submit a pull request.
 
 ---
 
@@ -516,24 +764,22 @@ This project is licensed under the **MIT License**.
 
 <div align="center">
 
-## 👤 DEVELOPER
+## 👤 BUILT BY
 
 ### **Mariel Bravo**
 
 Computer Science @ California State University, Fullerton
 
-`AI` • `Blockchain` • `Cybersecurity`
+**Exploring AI • Blockchain • Cybersecurity**
 
 ---
 
-### 🛡️ SENTRI
+# 🛡️ SENTRI
 
-**Threats hide in plain sight. Sentri looks closer.**
+### From scam detection to identity trust infrastructure.
 
-`SYSTEM STATUS // ONLINE`
+`PREVENT → DETECT → ANALYZE → INTERVENE → VERIFY → RESPOND → RECOVER → MONITOR`
+
+**CURRENT SYSTEM // SENTRI v3**
 
 </div>
-
-Computer Science @ California State University, Fullerton
-
-Exploring AI • Blockchain • Cybersecurity
