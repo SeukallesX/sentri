@@ -1,77 +1,172 @@
-import { Router } from "express";
+import {
+  Router,
+} from "express";
 
 import {
   analyzeMessage,
 } from "../services/scamAnalyzer.js";
 
 import {
+  createSecurityEvent,
+} from "../services/securityEventService.js";
+
+import {
   saveScan,
 } from "../services/scanService.js";
 
-const router = Router();
+import type {
+  SecurityEventReference,
+} from "../types/analysis.js";
 
-router.post("/", (req, res) => {
-  try {
-    const message =
-      typeof req.body?.message === "string"
-        ? req.body.message.trim()
-        : "";
+const router =
+  Router();
 
-    if (!message) {
-      return res.status(400).json({
-        error:
-          "A message is required for analysis.",
-      });
+router.post(
+  "/",
+  (
+    req,
+    res,
+  ) => {
+    try {
+      const message =
+        typeof req.body?.message ===
+        "string"
+          ? req.body.message.trim()
+          : "";
+
+      if (!message) {
+        return res
+          .status(400)
+          .json({
+            error:
+              "A message is required for analysis.",
+          });
+      }
+
+      if (
+        message.length >
+        10000
+      ) {
+        return res
+          .status(400)
+          .json({
+            error:
+              "The message is too long.",
+          });
+      }
+
+      /*
+       * ---------------------------------------
+       * 1. CREATE SECURITY EVENT
+       * ---------------------------------------
+       */
+
+      const securityEvent =
+        createSecurityEvent({
+          type:
+            "message",
+
+          content:
+            message,
+
+          metadata: {
+            source:
+              "user",
+          },
+        });
+
+      /*
+       * ---------------------------------------
+       * 2. CREATE EVENT REFERENCE
+       * ---------------------------------------
+       */
+
+      const eventReference:
+        SecurityEventReference = {
+          id:
+            securityEvent.id,
+
+          type:
+            securityEvent.type,
+
+          timestamp:
+            securityEvent
+              .metadata
+              .timestamp,
+
+          source:
+            securityEvent
+              .metadata
+              .source,
+        };
+
+      /*
+       * ---------------------------------------
+       * 3. RULE-X ANALYSIS
+       * ---------------------------------------
+       */
+
+      const result =
+        analyzeMessage(
+          securityEvent.content,
+        );
+
+      /*
+       * ---------------------------------------
+       * 4. COMPLETE RESULT WITH EVENT
+       * ---------------------------------------
+       */
+
+      const resultWithEvent = {
+        ...result,
+
+        event:
+          eventReference,
+      };
+
+      /*
+       * ---------------------------------------
+       * 5. SAVE SCAN
+       * ---------------------------------------
+       */
+
+      saveScan(
+        "Message",
+
+        securityEvent.content,
+
+        resultWithEvent,
+
+        eventReference,
+      );
+
+      /*
+       * ---------------------------------------
+       * 6. API RESPONSE
+       * ---------------------------------------
+       */
+
+      return res
+        .status(200)
+        .json(
+          resultWithEvent,
+        );
+    } catch (
+      error
+    ) {
+      console.error(
+        "Message analysis failed:",
+        error,
+      );
+
+      return res
+        .status(500)
+        .json({
+          error:
+            "Unable to analyze the message.",
+        });
     }
-
-    if (message.length > 10000) {
-      return res.status(400).json({
-        error:
-          "The message is too long.",
-      });
-    }
-
-    /*
-     * analyzeMessage() now returns the full result:
-     *
-     * - riskScore
-     * - riskLevel
-     * - threatCategory
-     * - confidence
-     * - attackVector
-     * - flags
-     * - summary
-     * - recommendation
-     */
-    const result =
-      analyzeMessage(message);
-
-    /*
-     * Save the complete analysis to scan history.
-     *
-     * This means classification data is stored too,
-     * as long as scanService stores the result object.
-     */
-    saveScan(
-      "Message",
-      message,
-      result,
-    );
-
-    return res.status(200).json(
-      result,
-    );
-  } catch (error) {
-    console.error(
-      "Message analysis failed:",
-      error,
-    );
-
-    return res.status(500).json({
-      error:
-        "Unable to analyze the message.",
-    });
-  }
-});
+  },
+);
 
 export default router;

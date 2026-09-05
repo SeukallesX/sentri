@@ -1,5 +1,6 @@
 import type {
   AnalysisResult,
+  SecurityEventReference,
 } from "./analysis.js";
 
 export type ScanType =
@@ -14,6 +15,8 @@ export interface StoredScan {
   content: string;
 
   result: AnalysisResult;
+
+  event?: SecurityEventReference;
 
   createdAt: string;
 }

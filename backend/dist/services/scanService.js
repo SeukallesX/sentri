@@ -1,76 +1,60 @@
 import { randomUUID, } from "node:crypto";
-import { database, } from "../database/database.js";
-function rowToScan(row) {
-    let flags = [];
-    try {
-        flags =
-            JSON.parse(row.flags_json);
-    }
-    catch {
-        flags = [];
-    }
-    return {
-        id: row.id,
-        type: row.type,
-        content: row.content,
-        result: {
-            riskScore: row.risk_score,
-            riskLevel: row.risk_level,
-            flags,
-            summary: row.summary,
-            recommendation: row.recommendation,
-        },
-        createdAt: row.created_at,
-    };
-}
-export function saveScan(type, content, result) {
+const scans = [];
+/*
+ * ---------------------------------------
+ * SAVE SCAN
+ * ---------------------------------------
+ */
+export function saveScan(type, content, result, event) {
     const scan = {
         id: randomUUID(),
         type,
         content,
         result,
+        event,
         createdAt: new Date().toISOString(),
     };
-    const statement = database.prepare(`
-      INSERT INTO scans (
-        id,
-        type,
-        content,
-        risk_score,
-        risk_level,
-        summary,
-        recommendation,
-        flags_json,
-        created_at
-      )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-    statement.run(scan.id, scan.type, scan.content, scan.result.riskScore, scan.result.riskLevel, scan.result.summary, scan.result.recommendation, JSON.stringify(scan.result.flags), scan.createdAt);
+    scans.unshift(scan);
     return scan;
 }
-export function getRecentScans(limit = 10) {
-    const safeLimit = Math.min(Math.max(limit, 1), 100);
-    const statement = database.prepare(`
-      SELECT
-        id,
-        type,
-        content,
-        risk_score,
-        risk_level,
-        summary,
-        recommendation,
-        flags_json,
-        created_at
-      FROM scans
-      ORDER BY created_at DESC
-      LIMIT ?
-    `);
-    const rows = statement.all(safeLimit);
-    return rows.map(rowToScan);
+/*
+ * ---------------------------------------
+ * GET SCANS
+ * ---------------------------------------
+ */
+export function getScans(limit = 10) {
+    const safeLimit = Math.max(1, Math.min(limit, 100));
+    return scans.slice(0, safeLimit);
 }
+/*
+ * ---------------------------------------
+ * CLEAR SCANS
+ * ---------------------------------------
+ */
 export function clearScans() {
-    database.exec(`
-    DELETE FROM scans;
-  `);
+    scans.length = 0;
+}
+/*
+ * ---------------------------------------
+ * GET DASHBOARD STATS
+ * ---------------------------------------
+ */
+export function getScanStats() {
+    const totalScans = scans.length;
+    const highRisk = scans.filter((scan) => scan.result
+        .riskLevel ===
+        "High").length;
+    const mediumRisk = scans.filter((scan) => scan.result
+        .riskLevel ===
+        "Medium").length;
+    const lowRisk = scans.filter((scan) => scan.result
+        .riskLevel ===
+        "Low").length;
+    return {
+        totalScans,
+        highRisk,
+        mediumRisk,
+        lowRisk,
+    };
 }
 //# sourceMappingURL=scanService.js.map

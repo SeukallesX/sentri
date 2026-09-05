@@ -1,5 +1,7 @@
 import { calculateRiskScore, determineRiskLevel, getRecommendation, } from "../utils/riskCalculator.js";
-import { analyzeUrls } from "../utils/urlAnalyzer.js";
+import { analyzeUrls, } from "../utils/urlAnalyzer.js";
+import { classifyThreat, } from "../utils/threatClassifier.js";
+import { correlateThreats, } from "../utils/threatCorrelation.js";
 const scamRules = [
     {
         category: "Urgency",
@@ -128,26 +130,60 @@ const scamRules = [
 ];
 export function analyzeMessage(message) {
     const flags = [];
+    /*
+     * Run message-based scam rules.
+     */
     for (const rule of scamRules) {
         const matched = rule.patterns.some((pattern) => pattern.test(message));
-        if (matched) {
-            flags.push({
-                category: rule.category,
-                description: rule.description,
-                points: rule.points,
-            });
+        if (!matched) {
+            continue;
         }
+        flags.push({
+            category: rule.category,
+            description: rule.description,
+            points: rule.points,
+        });
     }
+    /*
+     * Run URL analysis against links
+     * contained in the message.
+     */
     const urlFlags = analyzeUrls(message);
     flags.push(...urlFlags);
+    /*
+     * Calculate risk.
+     */
     const riskScore = calculateRiskScore(flags);
     const riskLevel = determineRiskLevel(riskScore);
+    /*
+     * Determine primary threat category.
+     */
+    const classification = classifyThreat(flags);
+    /*
+     * Correlate combinations of signals.
+     */
+    const correlation = correlateThreats(flags);
+    /*
+     * Generate summary.
+     */
     const summary = flags.length === 0
         ? "Sentri did not detect any common scam patterns in this message."
-        : `Sentri detected ${flags.length} potential scam ${flags.length === 1 ? "indicator" : "indicators"}.`;
+        : `Sentri detected ${flags.length} potential scam ${flags.length === 1
+            ? "indicator"
+            : "indicators"}.`;
+    /*
+     * Return complete result.
+     */
     return {
         riskScore,
         riskLevel,
+        threatCategory: classification.threatCategory,
+        confidence: classification.confidence,
+        attackVector: classification.attackVector,
+        correlatedThreat: correlation.correlatedThreat,
+        correlationScore: correlation.correlationScore,
+        matchedSignals: correlation.matchedSignals,
+        correlationExplanation: correlation.explanation,
         flags,
         summary,
         recommendation: getRecommendation(riskLevel),

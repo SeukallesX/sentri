@@ -21,8 +21,16 @@ import {
 } from "../utils/threatCorrelation.js";
 
 import {
+  createSecurityEvent,
+} from "../services/securityEventService.js";
+
+import {
   saveScan,
 } from "../services/scanService.js";
+
+import type {
+  SecurityEventReference,
+} from "../types/analysis.js";
 
 const router =
   Router();
@@ -62,16 +70,67 @@ router.post(
       }
 
       /*
-       * Run URL structural analysis.
+       * ---------------------------------------
+       * 1. CREATE SECURITY EVENT
+       * ---------------------------------------
        */
+
+      const securityEvent =
+        createSecurityEvent({
+          type:
+            "url",
+
+          content:
+            url,
+
+          metadata: {
+            source:
+              "user",
+          },
+        });
+
+      /*
+       * ---------------------------------------
+       * 2. CREATE EVENT REFERENCE
+       * ---------------------------------------
+       */
+
+      const eventReference:
+        SecurityEventReference = {
+          id:
+            securityEvent.id,
+
+          type:
+            securityEvent.type,
+
+          timestamp:
+            securityEvent
+              .metadata
+              .timestamp,
+
+          source:
+            securityEvent
+              .metadata
+              .source,
+        };
+
+      /*
+       * ---------------------------------------
+       * 3. URL INTELLIGENCE
+       * ---------------------------------------
+       */
+
       const analysis =
         analyzeUrlIntelligence(
-          url,
+          securityEvent.content,
         );
 
       /*
-       * Calculate risk.
+       * ---------------------------------------
+       * 4. RISK ANALYSIS
+       * ---------------------------------------
        */
+
       const riskScore =
         calculateRiskScore(
           analysis.flags,
@@ -83,63 +142,82 @@ router.post(
         );
 
       /*
-       * Primary classification.
+       * ---------------------------------------
+       * 5. THREAT CLASSIFICATION
+       * ---------------------------------------
        */
+
       const classification =
         classifyThreat(
           analysis.flags,
         );
 
       /*
-       * Correlate multiple indicators.
+       * ---------------------------------------
+       * 6. THREAT CORRELATION
+       * ---------------------------------------
        */
+
       const correlation =
         correlateThreats(
           analysis.flags,
         );
 
       /*
-       * Generate summary.
+       * ---------------------------------------
+       * 7. SUMMARY
+       * ---------------------------------------
        */
+
       const summary =
-        analysis.flags
-          .length === 0
+        analysis.flags.length ===
+        0
           ? "Sentri did not detect any common suspicious URL indicators."
-          : `Sentri detected ${analysis.flags.length} suspicious URL ${
-              analysis.flags
-                .length === 1
+          : `Sentri detected ${analysis.flags.length} URL ${
+              analysis.flags.length ===
+              1
                 ? "indicator"
                 : "indicators"
             }.`;
 
       /*
-       * Complete result object.
+       * ---------------------------------------
+       * 8. COMPLETE RESULT
+       * ---------------------------------------
        */
+
       const result = {
         riskScore,
 
         riskLevel,
 
         threatCategory:
-          classification.threatCategory,
+          classification
+            .threatCategory,
 
         confidence:
-          classification.confidence,
+          classification
+            .confidence,
 
         attackVector:
-          classification.attackVector,
+          classification
+            .attackVector,
 
         correlatedThreat:
-          correlation.correlatedThreat,
+          correlation
+            .correlatedThreat,
 
         correlationScore:
-          correlation.correlationScore,
+          correlation
+            .correlationScore,
 
         matchedSignals:
-          correlation.matchedSignals,
+          correlation
+            .matchedSignals,
 
         correlationExplanation:
-          correlation.explanation,
+          correlation
+            .explanation,
 
         flags:
           analysis.flags,
@@ -150,25 +228,35 @@ router.post(
           getRecommendation(
             riskLevel,
           ),
+
+        event:
+          eventReference,
       };
 
       /*
-       * Save scan to history.
+       * ---------------------------------------
+       * 9. SAVE SCAN
+       * ---------------------------------------
        */
+
       saveScan(
         "URL",
 
-        analysis
-          .intelligence
+        analysis.intelligence
           ?.normalizedUrl ??
-          url,
+          securityEvent.content,
 
         result,
+
+        eventReference,
       );
 
       /*
-       * Return result plus URL intelligence.
+       * ---------------------------------------
+       * 10. API RESPONSE
+       * ---------------------------------------
        */
+
       return res
         .status(200)
         .json({

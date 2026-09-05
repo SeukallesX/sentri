@@ -4,6 +4,7 @@ import {
 
 import type {
   AnalysisResult,
+  SecurityEventReference,
 } from "../types/analysis.js";
 
 import type {
@@ -11,31 +12,72 @@ import type {
   StoredScan,
 } from "../types/scan.js";
 
-const scans: StoredScan[] = [];
+/*
+ * ---------------------------------------
+ * LOAD PERSISTED ARCHIVE
+ * ---------------------------------------
+ */
+
+const scans:
+  StoredScan[] = [];
+
+/*
+ * ---------------------------------------
+ * SAVE SCAN
+ * ---------------------------------------
+ */
 
 export function saveScan(
   type: ScanType,
+
   content: string,
+
   result: AnalysisResult,
+
+  event?: SecurityEventReference,
 ): StoredScan {
-  const scan: StoredScan = {
-    id:
-      randomUUID(),
+  const scan:
+    StoredScan = {
+      id:
+        randomUUID(),
 
-    type,
+      type,
 
-    content,
+      content,
 
-    result,
+      result,
 
-    createdAt:
-      new Date().toISOString(),
-  };
+      event,
 
-  scans.unshift(scan);
+      createdAt:
+        new Date()
+          .toISOString(),
+    };
+
+  scans.unshift(
+    scan,
+  );
+
+  /*
+   * Prevent the local prototype
+   * archive from growing forever.
+   */
+  if (
+    scans.length >
+    1000
+  ) {
+    scans.length =
+      1000;
+  }
 
   return scan;
 }
+
+/*
+ * ---------------------------------------
+ * GET SCANS
+ * ---------------------------------------
+ */
 
 export function getScans(
   limit = 10,
@@ -55,9 +97,23 @@ export function getScans(
   );
 }
 
-export function clearScans(): void {
+/*
+ * ---------------------------------------
+ * CLEAR SCANS
+ * ---------------------------------------
+ */
+
+export function clearScans():
+  void {
   scans.length = 0;
+
 }
+
+/*
+ * ---------------------------------------
+ * DASHBOARD STATISTICS
+ * ---------------------------------------
+ */
 
 export function getScanStats() {
   const totalScans =
@@ -66,28 +122,34 @@ export function getScanStats() {
   const highRisk =
     scans.filter(
       (scan) =>
-        scan.result.riskLevel ===
+        scan.result
+          .riskLevel ===
         "High",
     ).length;
 
   const mediumRisk =
     scans.filter(
       (scan) =>
-        scan.result.riskLevel ===
+        scan.result
+          .riskLevel ===
         "Medium",
     ).length;
 
   const lowRisk =
     scans.filter(
       (scan) =>
-        scan.result.riskLevel ===
+        scan.result
+          .riskLevel ===
         "Low",
     ).length;
 
   return {
     totalScans,
+
     highRisk,
+
     mediumRisk,
+
     lowRisk,
   };
 }
