@@ -35,7 +35,68 @@ export const database =
 
 /*
  * ---------------------------------------
- * SECURITY EVENTS
+ * HELPERS
+ * ---------------------------------------
+ */
+
+interface TableColumn {
+  cid: number;
+  name: string;
+  type: string;
+  notnull: number;
+  dflt_value: unknown;
+  pk: number;
+}
+
+function getTableColumns(
+  tableName: string,
+): string[] {
+  const statement =
+    database.prepare(
+      `PRAGMA table_info(${tableName})`,
+    );
+
+  const rows =
+    statement.all() as unknown as TableColumn[];
+
+  return rows.map(
+    (row) => row.name,
+  );
+}
+
+function addColumnIfMissing(
+  tableName: string,
+  columnName: string,
+  definition: string,
+): void {
+  const columns =
+    getTableColumns(
+      tableName,
+    );
+
+  if (
+    columns.includes(
+      columnName,
+    )
+  ) {
+    return;
+  }
+
+  database.exec(
+    `
+      ALTER TABLE ${tableName}
+      ADD COLUMN ${columnName} ${definition};
+    `,
+  );
+
+  console.log(
+    `[SENTRI DB] Added column ${tableName}.${columnName}`,
+  );
+}
+
+/*
+ * ---------------------------------------
+ * SECURITY EVENTS TABLE
  * ---------------------------------------
  */
 
@@ -59,7 +120,7 @@ database.exec(`
 
 /*
  * ---------------------------------------
- * SCANS
+ * SCANS TABLE
  * ---------------------------------------
  */
 
@@ -106,6 +167,67 @@ database.exec(`
       ON DELETE SET NULL
   );
 `);
+
+/*
+ * ---------------------------------------
+ * MIGRATE EXISTING SCANS TABLE
+ * ---------------------------------------
+ *
+ * If Sentri already has an older scans
+ * table, CREATE TABLE IF NOT EXISTS will
+ * not add new columns.
+ *
+ * These checks safely add them without
+ * deleting existing scan history.
+ */
+
+addColumnIfMissing(
+  "scans",
+  "event_id",
+  "TEXT",
+);
+
+addColumnIfMissing(
+  "scans",
+  "threat_category",
+  "TEXT",
+);
+
+addColumnIfMissing(
+  "scans",
+  "confidence",
+  "INTEGER",
+);
+
+addColumnIfMissing(
+  "scans",
+  "attack_vector",
+  "TEXT",
+);
+
+addColumnIfMissing(
+  "scans",
+  "correlated_threat",
+  "TEXT",
+);
+
+addColumnIfMissing(
+  "scans",
+  "correlation_score",
+  "INTEGER",
+);
+
+addColumnIfMissing(
+  "scans",
+  "matched_signals_json",
+  "TEXT",
+);
+
+addColumnIfMissing(
+  "scans",
+  "correlation_explanation",
+  "TEXT",
+);
 
 /*
  * ---------------------------------------
