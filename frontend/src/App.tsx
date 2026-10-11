@@ -11,6 +11,7 @@ import "./styles/intelligence.css";
 import "./styles/analytics.css";
 import "./styles/archive.css";
 import "./styles/responsive.css";
+import "./styles/securitySignals.css";
 
 import AnalyzerCard from "./components/AnalyzerCard";
 import DashboardControls from "./components/DashboardControls";

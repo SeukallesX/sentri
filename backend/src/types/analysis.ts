@@ -3,6 +3,12 @@ import type {
   SecurityEventType,
 } from "./securityEvent.js";
 
+import type {
+  SecuritySignalEvidence,
+  SignalSeverity,
+  SignalSource,
+} from "./securitySignal.js";
+
 /*
  * ---------------------------------------
  * RISK LEVEL
@@ -16,16 +22,29 @@ export type RiskLevel =
 
 /*
  * ---------------------------------------
- * DETECTION FLAG
+ * SCAM / SECURITY FLAG
  * ---------------------------------------
+ *
+ * Existing Rule-X analyzers can continue
+ * using category, description, and points.
+ *
+ * The optional signal fields allow Sentri
+ * v3 to gradually migrate toward the new
+ * structured security signal model.
  */
 
 export interface ScamFlag {
   category: string;
-
   description: string;
-
   points: number;
+
+  signalId?: string;
+
+  severity?: SignalSeverity;
+
+  source?: SignalSource;
+
+  evidence?: SecuritySignalEvidence[];
 }
 
 /*
@@ -37,13 +56,11 @@ export interface ScamFlag {
 export interface SecurityEventReference {
   id: string;
 
-  type:
-    SecurityEventType;
+  type: SecurityEventType;
 
   timestamp: string;
 
-  source:
-    SecurityEventSource;
+  source: SecurityEventSource;
 }
 
 /*
@@ -55,58 +72,27 @@ export interface SecurityEventReference {
 export interface AnalysisResult {
   riskScore: number;
 
-  riskLevel:
-    RiskLevel;
+  riskLevel: RiskLevel;
 
-  /*
-   * Threat classification
-   */
-  threatCategory:
-    string;
+  threatCategory: string;
 
-  confidence:
-    number;
+  confidence: number;
 
-  attackVector:
-    string;
+  attackVector: string;
 
-  /*
-   * Threat correlation
-   */
-  correlatedThreat:
-    string;
+  correlatedThreat: string;
 
-  correlationScore:
-    number;
+  correlationScore: number;
 
-  matchedSignals:
-    string[];
+  matchedSignals: string[];
 
-  correlationExplanation:
-    string;
+  correlationExplanation: string;
 
-  /*
-   * Detection evidence
-   */
-  flags:
-    ScamFlag[];
+  flags: ScamFlag[];
 
-  /*
-   * Explainability
-   */
-  summary:
-    string;
+  summary: string;
 
-  recommendation:
-    string;
+  recommendation: string;
 
-  /*
-   * Security Event
-   *
-   * Optional for backward
-   * compatibility with older
-   * stored scan records.
-   */
-  event?:
-    SecurityEventReference;
+  event?: SecurityEventReference;
 }

@@ -1,3 +1,4 @@
+
 import type {
   ScamFlag,
 } from "../types/analysis.js";
@@ -6,74 +7,58 @@ import {
   checkTrustedDomain,
 } from "./trustedDomains.js";
 
+import {
+  SIGNAL_REGISTRY,
+  createSignal,
+} from "../config/signalRegistry.js";
+
+import type {
+  SignalDefinition,
+} from "../config/signalRegistry.js";
+
+/*
+ * =======================================
+ * SENTRI V3 — URL INTELLIGENCE ENGINE
+ * =======================================
+ */
+
 export interface UrlIntelligence {
   originalUrl: string;
   normalizedUrl: string;
-
   protocol: string;
   hostname: string;
   pathname: string;
-
   usesHttps: boolean;
-
   isShortened: boolean;
   isIpAddress: boolean;
-
   hasSuspiciousTld: boolean;
   hasLongSubdomainChain: boolean;
-
   subdomainDepth: number;
-
-  suspiciousTld:
-    | string
-    | null;
-
+  suspiciousTld: string | null;
   domainLength: number;
-
   containsAtSymbol: boolean;
   containsPunycode: boolean;
-
-  port:
-    | string
-    | null;
-
-  impersonatedBrand:
-    | string
-    | null;
-
-  suspectedTyposquatBrand:
-    | string
-    | null;
-
-  suspiciousPathKeywords:
-    string[];
-
-  suspiciousQueryKeywords:
-    string[];
-
+  port: string | null;
+  impersonatedBrand: string | null;
+  suspectedTyposquatBrand: string | null;
+  suspiciousPathKeywords: string[];
+  suspiciousQueryKeywords: string[];
   containsNestedUrl: boolean;
-
-  /*
-   * Domain trust intelligence
-   */
   isTrustedDomain: boolean;
-
-  trustedBrand:
-    | string
-    | null;
-
-  trustedDomain:
-    | string
-    | null;
+  trustedBrand: string | null;
+  trustedDomain: string | null;
 }
 
 export interface UrlAnalysis {
   flags: ScamFlag[];
-
-  intelligence:
-    | UrlIntelligence
-    | null;
+  intelligence: UrlIntelligence | null;
 }
+
+/*
+ * ---------------------------------------
+ * DETECTION CONFIGURATION
+ * ---------------------------------------
+ */
 
 const shortenerDomains = [
   "bit.ly",
@@ -157,29 +142,56 @@ const suspiciousQueryTerms = [
   "auth",
 ];
 
+/*
+ * ---------------------------------------
+ * SIGNAL FACTORY
+ * ---------------------------------------
+ *
+ * Retains the existing ScamFlag format
+ * while attaching structured metadata.
+ */
+
+function makeFlag(
+  definition: SignalDefinition,
+  category: string,
+  description: string,
+  evidenceValue?: string,
+  pointsOverride?: number,
+): ScamFlag {
+  const signal = createSignal(
+    definition,
+    description,
+    evidenceValue,
+  );
+
+  return {
+    category,
+    description,
+    points:
+      pointsOverride ?? signal.points,
+    signalId: signal.id,
+    severity: signal.severity,
+    source: signal.source,
+    evidence: signal.evidence,
+  };
+}
+
+/*
+ * ---------------------------------------
+ * URL NORMALIZATION
+ * ---------------------------------------
+ */
+
 function normalizeUrl(
   rawUrl: string,
 ): string {
-  const trimmedUrl =
-    rawUrl.trim();
+  const trimmed = rawUrl.trim();
 
-  if (
-    /^https?:\/\//i.test(
-      trimmedUrl,
-    )
-  ) {
-    return trimmedUrl;
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed;
   }
 
-  if (
-    trimmedUrl.startsWith(
-      "www.",
-    )
-  ) {
-    return `https://${trimmedUrl}`;
-  }
-
-  return `https://${trimmedUrl}`;
+  return `https://${trimmed}`;
 }
 
 function cleanExtractedUrl(
@@ -194,27 +206,26 @@ function cleanExtractedUrl(
 function extractUrls(
   content: string,
 ): string[] {
-  const urlPattern =
+  const pattern =
     /https?:\/\/[^\s<>"'`]+/gi;
 
   const matches =
-    content.match(
-      urlPattern,
-    ) ?? [];
-
-  const cleaned =
-    matches
-      .map(
-        cleanExtractedUrl,
-      )
-      .filter(Boolean);
+    content.match(pattern) ?? [];
 
   return Array.from(
     new Set(
-      cleaned,
+      matches
+        .map(cleanExtractedUrl)
+        .filter(Boolean),
     ),
   );
 }
+
+/*
+ * ---------------------------------------
+ * DOMAIN UTILITIES
+ * ---------------------------------------
+ */
 
 function isIpAddress(
   hostname: string,
@@ -222,72 +233,48 @@ function isIpAddress(
   const ipv4Pattern =
     /^(?:\d{1,3}\.){3}\d{1,3}$/;
 
-  if (
-    !ipv4Pattern.test(
-      hostname,
-    )
-  ) {
+  if (!ipv4Pattern.test(hostname)) {
     return false;
   }
 
-  const parts =
-    hostname.split(".");
-
-  return parts.every(
-    (part) => {
-      const number =
-        Number(part);
+  return hostname
+    .split(".")
+    .every((part) => {
+      const number = Number(part);
 
       return (
-        Number.isInteger(
-          number,
-        ) &&
+        Number.isInteger(number) &&
         number >= 0 &&
         number <= 255
       );
-    },
-  );
+    });
 }
 
 function getSubdomainDepth(
   hostname: string,
 ): number {
-  if (
-    isIpAddress(
-      hostname,
-    )
-  ) {
+  if (isIpAddress(hostname)) {
     return 0;
   }
 
-  const parts =
-    hostname
-      .split(".")
-      .filter(Boolean);
+  const parts = hostname
+    .split(".")
+    .filter(Boolean);
 
-  if (
-    parts.length <= 2
-  ) {
-    return 0;
-  }
-
-  return (
-    parts.length - 2
+  return Math.max(
+    0,
+    parts.length - 2,
   );
 }
 
 function getSuspiciousTld(
   hostname: string,
 ): string | null {
-  const detected =
+  return (
     suspiciousTlds.find(
-      (tld) =>
-        hostname.endsWith(
-          tld,
-        ),
-    );
-
-  return detected ?? null;
+      (tld) => hostname.endsWith(tld),
+    ) ?? null
+  );
 }
 
 function isShortenedDomain(
@@ -296,39 +283,27 @@ function isShortenedDomain(
   return shortenerDomains.some(
     (domain) =>
       hostname === domain ||
-      hostname.endsWith(
-        `.${domain}`,
-      ),
+      hostname.endsWith(`.${domain}`),
   );
 }
+
+/*
+ * ---------------------------------------
+ * BRAND IMPERSONATION
+ * ---------------------------------------
+ */
 
 function detectBrandImpersonation(
   hostname: string,
 ): string | null {
-  const trustMatch =
-    checkTrustedDomain(
-      hostname,
-    );
-
-  /*
-   * An officially trusted domain
-   * is not impersonation.
-   */
   if (
-    trustMatch.trusted
+    checkTrustedDomain(hostname).trusted
   ) {
     return null;
   }
 
-  for (
-    const brand of
-      protectedBrands
-  ) {
-    if (
-      hostname.includes(
-        brand,
-      )
-    ) {
+  for (const brand of protectedBrands) {
+    if (hostname.includes(brand)) {
       return brand;
     }
   }
@@ -336,184 +311,107 @@ function detectBrandImpersonation(
   return null;
 }
 
+/*
+ * ---------------------------------------
+ * TYPOSQUATTING DETECTION
+ * ---------------------------------------
+ */
+
 function levenshteinDistance(
   first: string,
   second: string,
 ): number {
-  const matrix: number[][] =
-    Array.from(
-      {
-        length:
-          first.length + 1,
-      },
-      () =>
-        Array.from(
-          {
-            length:
-              second.length + 1,
-          },
-          () => 0,
-        ),
-    );
-
-  for (
-    let i = 0;
-    i <= first.length;
-    i++
-  ) {
-    matrix[i][0] = i;
-  }
-
-  for (
-    let j = 0;
-    j <= second.length;
-    j++
-  ) {
-    matrix[0][j] = j;
-  }
+  const previous = Array.from(
+    { length: second.length + 1 },
+    (_, index) => index,
+  );
 
   for (
     let i = 1;
     i <= first.length;
     i++
   ) {
+    const current: number[] = [i];
+
     for (
       let j = 1;
       j <= second.length;
       j++
     ) {
       const cost =
-        first[i - 1] ===
-        second[j - 1]
+        first[i - 1] === second[j - 1]
           ? 0
           : 1;
 
-      matrix[i][j] =
-        Math.min(
-          matrix[
-            i - 1
-          ][j] + 1,
-
-          matrix[i][
-            j - 1
-          ] + 1,
-
-          matrix[
-            i - 1
-          ][
-            j - 1
-          ] + cost,
-        );
+      current[j] = Math.min(
+        previous[j] + 1,
+        current[j - 1] + 1,
+        previous[j - 1] + cost,
+      );
     }
+
+    previous.splice(
+      0,
+      previous.length,
+      ...current,
+    );
   }
 
-  return matrix[
-    first.length
-  ][second.length];
+  return previous[second.length];
 }
 
 function getDomainLabel(
   hostname: string,
 ): string {
-  const parts =
-    hostname
-      .split(".")
-      .filter(Boolean);
+  const parts = hostname
+    .split(".")
+    .filter(Boolean);
 
-  if (
-    parts.length < 2
-  ) {
-    return hostname;
-  }
-
-  return parts[
-    parts.length - 2
-  ];
+  return parts.length >= 2
+    ? parts[parts.length - 2]
+    : hostname;
 }
 
 function normalizeLookalikeCharacters(
   value: string,
 ): string {
   return value
-    .replace(
-      /0/g,
-      "o",
-    )
-    .replace(
-      /1/g,
-      "l",
-    )
-    .replace(
-      /3/g,
-      "e",
-    )
-    .replace(
-      /4/g,
-      "a",
-    )
-    .replace(
-      /5/g,
-      "s",
-    )
-    .replace(
-      /7/g,
-      "t",
-    )
-    .replace(
-      /8/g,
-      "b",
-    );
+    .replace(/0/g, "o")
+    .replace(/1/g, "l")
+    .replace(/3/g, "e")
+    .replace(/4/g, "a")
+    .replace(/5/g, "s")
+    .replace(/7/g, "t")
+    .replace(/8/g, "b");
 }
 
 function detectTyposquatting(
   hostname: string,
 ): string | null {
-  const trustMatch =
-    checkTrustedDomain(
-      hostname,
-    );
-
   if (
-    trustMatch.trusted
+    checkTrustedDomain(hostname).trusted
   ) {
     return null;
   }
 
-  const label =
-    getDomainLabel(
-      hostname,
-    )
-      .toLowerCase()
-      .replace(
-        /[^a-z0-9]/g,
-        "",
-      );
+  const label = getDomainLabel(hostname)
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
 
   if (!label) {
     return null;
   }
 
-  for (
-    const brand of
-      protectedBrands
-  ) {
-    const normalizedLabel =
-      normalizeLookalikeCharacters(
-        label,
-      );
+  const normalizedLabel =
+    normalizeLookalikeCharacters(label);
 
-    if (
-      normalizedLabel ===
-      brand
-    ) {
+  for (const brand of protectedBrands) {
+    if (normalizedLabel === brand) {
       return brand;
     }
 
     const distance =
-      levenshteinDistance(
-        label,
-        brand,
-      );
+      levenshteinDistance(label, brand);
 
     if (
       distance > 0 &&
@@ -529,10 +427,8 @@ function detectTyposquatting(
       );
 
     if (
-      normalizedDistance >
-        0 &&
-      normalizedDistance <=
-        1
+      normalizedDistance > 0 &&
+      normalizedDistance <= 1
     ) {
       return brand;
     }
@@ -541,17 +437,19 @@ function detectTyposquatting(
   return null;
 }
 
+/*
+ * ---------------------------------------
+ * PATH AND QUERY ANALYSIS
+ * ---------------------------------------
+ */
+
 function detectSuspiciousPathKeywords(
   pathname: string,
 ): string[] {
-  const normalizedPath =
-    pathname.toLowerCase();
+  const path = pathname.toLowerCase();
 
   return suspiciousPathKeywords.filter(
-    (keyword) =>
-      normalizedPath.includes(
-        keyword,
-      ),
+    (keyword) => path.includes(keyword),
   );
 }
 
@@ -561,18 +459,12 @@ function analyzeQueryParameters(
   suspiciousKeywords: string[];
   containsNestedUrl: boolean;
 } {
-  const detectedKeywords =
-    new Set<string>();
-
-  let containsNestedUrl =
-    false;
+  const keywords = new Set<string>();
+  let containsNestedUrl = false;
 
   for (
-    const [
-      key,
-      value,
-    ] of
-      parsedUrl.searchParams.entries()
+    const [key, value] of
+    parsedUrl.searchParams.entries()
   ) {
     const normalizedKey =
       key.toLowerCase();
@@ -581,25 +473,17 @@ function analyzeQueryParameters(
       value.toLowerCase();
 
     for (
-      const keyword of
-        suspiciousQueryTerms
+      const keyword of suspiciousQueryTerms
     ) {
       if (
-        normalizedKey.includes(
-          keyword,
-        ) ||
-        normalizedValue.includes(
-          keyword,
-        )
+        normalizedKey.includes(keyword) ||
+        normalizedValue.includes(keyword)
       ) {
-        detectedKeywords.add(
-          keyword,
-        );
+        keywords.add(keyword);
       }
     }
 
-    let decodedValue =
-      normalizedValue;
+    let decodedValue = normalizedValue;
 
     try {
       decodedValue =
@@ -607,178 +491,131 @@ function analyzeQueryParameters(
           normalizedValue,
         );
     } catch {
-      /*
-       * Leave the original value
-       * if decoding fails.
-       */
+      // Preserve the original value.
     }
 
     if (
-      normalizedValue.includes(
-        "http://",
-      ) ||
-      normalizedValue.includes(
-        "https://",
-      ) ||
-      decodedValue.includes(
-        "http://",
-      ) ||
-      decodedValue.includes(
-        "https://",
-      )
+      /https?:\/\//i.test(normalizedValue) ||
+      /https?:\/\//i.test(decodedValue)
     ) {
-      containsNestedUrl =
-        true;
+      containsNestedUrl = true;
     }
   }
 
   return {
-    suspiciousKeywords:
-      Array.from(
-        detectedKeywords,
-      ),
-
+    suspiciousKeywords: [...keywords],
     containsNestedUrl,
   };
 }
 
 /*
- * Analyze every URL inside a larger
- * message or text block.
+ * ---------------------------------------
+ * ANALYZE URLS IN A MESSAGE
+ * ---------------------------------------
  */
+
 export function analyzeUrls(
   content: string,
 ): ScamFlag[] {
   const flags: ScamFlag[] = [];
 
-  const urls =
-    extractUrls(
-      content,
-    );
-
-  if (
-    urls.length === 0
-  ) {
-    return flags;
-  }
-
-  for (
-    const url of urls
-  ) {
+  for (const url of extractUrls(content)) {
     const analysis =
-      analyzeUrlIntelligence(
-        url,
-      );
+      analyzeUrlIntelligence(url);
 
-    flags.push(
-      ...analysis.flags,
-    );
+    flags.push(...analysis.flags);
   }
 
   return flags;
 }
 
 /*
- * Analyze one URL.
- *
- * IMPORTANT:
- * Keep this export name because
- * urlRoutes.ts already imports it.
+ * ---------------------------------------
+ * ANALYZE A SINGLE URL
+ * ---------------------------------------
  */
+
 export function analyzeUrlIntelligence(
   rawUrl: string,
 ): UrlAnalysis {
   const flags: ScamFlag[] = [];
 
   const normalizedUrl =
-    normalizeUrl(
-      rawUrl,
-    );
+    normalizeUrl(rawUrl);
 
   let parsedUrl: URL;
 
   try {
-    parsedUrl =
-      new URL(
-        normalizedUrl,
+    parsedUrl = new URL(normalizedUrl);
+
+    if (
+      !["http:", "https:"].includes(
+        parsedUrl.protocol,
+      ) ||
+      !parsedUrl.hostname
+    ) {
+      throw new Error(
+        "Unsupported URL protocol",
       );
+    }
   } catch {
     flags.push({
-      category:
-        "Malformed link",
-
+      category: "Malformed link",
       description:
         "The URL could not be parsed correctly.",
-
       points: 25,
+      signalId: "URL-MALFORMED",
+      severity: "high",
+      source: "url-intelligence",
+      evidence: [
+        {
+          description:
+            "Invalid or unsupported URL.",
+        },
+      ],
     });
 
     return {
       flags,
-
-      intelligence:
-        null,
+      intelligence: null,
     };
   }
 
   const hostname =
-    parsedUrl.hostname
-      .toLowerCase();
+    parsedUrl.hostname.toLowerCase();
 
-  /*
-   * Domain trust analysis
-   */
   const trustMatch =
-    checkTrustedDomain(
-      hostname,
-    );
+    checkTrustedDomain(hostname);
 
   const usesHttps =
-    parsedUrl.protocol ===
-    "https:";
+    parsedUrl.protocol === "https:";
 
   const shortened =
-    isShortenedDomain(
-      hostname,
-    );
+    isShortenedDomain(hostname);
 
   const ipAddress =
-    isIpAddress(
-      hostname,
-    );
+    isIpAddress(hostname);
 
   const suspiciousTld =
-    getSuspiciousTld(
-      hostname,
-    );
+    getSuspiciousTld(hostname);
 
   const subdomainDepth =
-    getSubdomainDepth(
-      hostname,
-    );
+    getSubdomainDepth(hostname);
 
   const longSubdomainChain =
     subdomainDepth >= 3;
 
   const containsAtSymbol =
-    normalizedUrl.includes(
-      "@",
-    );
+    normalizedUrl.includes("@");
 
   const containsPunycode =
-    hostname.includes(
-      "xn--",
-    );
+    hostname.includes("xn--");
 
   const impersonatedBrand =
-    detectBrandImpersonation(
-      hostname,
-    );
+    detectBrandImpersonation(hostname);
 
   const suspectedTyposquatBrand =
-    detectTyposquatting(
-      hostname,
-    );
+    detectTyposquatting(hostname);
 
   const suspiciousPathMatches =
     detectSuspiciousPathKeywords(
@@ -786,222 +623,143 @@ export function analyzeUrlIntelligence(
     );
 
   const queryAnalysis =
-    analyzeQueryParameters(
-      parsedUrl,
-    );
+    analyzeQueryParameters(parsedUrl);
 
   /*
-   * -------------------------------------------------------
-   * INFORMATIONAL URL SIGNAL
-   * -------------------------------------------------------
-   *
-   * A URL existing is useful context,
-   * but it is NOT inherently dangerous.
-   *
-   * Therefore:
-   *
-   * Link detected = 0 risk points.
+   * Informational signal.
+   * A URL alone is not malicious.
    */
-  flags.push({
-    category:
-      "Link detected",
 
-    description:
+  flags.push(
+    makeFlag(
+      SIGNAL_REGISTRY.LINK_DETECTED,
+      "Link detected",
       trustMatch.trusted
         ? `The content contains a URL associated with the trusted ${
-            trustMatch.brand ??
-            "known"
+            trustMatch.brand ?? "known"
           } domain ${
             trustMatch.matchedDomain ??
             hostname
           }.`
         : "The content contains a URL. Verify the destination before opening it.",
+      hostname,
+    ),
+  );
 
-    points: 0,
-  });
-
-  /*
-   * HTTP instead of HTTPS
-   */
   if (!usesHttps) {
-    flags.push({
-      category:
+    flags.push(
+      makeFlag(
+        SIGNAL_REGISTRY.INSECURE_HTTP,
         "Insecure link",
-
-      description:
         "The URL uses HTTP instead of HTTPS.",
-
-      points: 10,
-    });
+        parsedUrl.protocol,
+      ),
+    );
   }
 
-  /*
-   * Known shortening service
-   */
-  if (
-    shortened
-  ) {
-    flags.push({
-      category:
+  if (shortened) {
+    flags.push(
+      makeFlag(
+        SIGNAL_REGISTRY.SHORTENED_URL,
         "Shortened link",
-
-      description:
         "The URL uses a shortening service that hides the final destination.",
-
-      points: 20,
-    });
+        hostname,
+      ),
+    );
   }
 
-  /*
-   * Raw IP address
-   */
-  if (
-    ipAddress
-  ) {
-    flags.push({
-      category:
+  if (ipAddress) {
+    flags.push(
+      makeFlag(
+        SIGNAL_REGISTRY.IP_ADDRESS_URL,
         "IP-based link",
-
-      description:
         "The URL uses a raw IP address instead of a normal domain name.",
-
-      points: 25,
-    });
+        hostname,
+      ),
+    );
   }
 
-  /*
-   * Suspicious TLD
-   */
-  if (
-    suspiciousTld
-  ) {
-    flags.push({
-      category:
+  if (suspiciousTld) {
+    flags.push(
+      makeFlag(
+        SIGNAL_REGISTRY.SUSPICIOUS_TLD,
         "Suspicious domain",
-
-      description:
         `The domain uses the ${suspiciousTld} ending, which should be treated cautiously.`,
-
-      points: 15,
-    });
+        suspiciousTld,
+      ),
+    );
   }
 
-  /*
-   * Deep subdomain structure
-   */
-  if (
-    longSubdomainChain
-  ) {
-    flags.push({
-      category:
+  if (longSubdomainChain) {
+    flags.push(
+      makeFlag(
+        SIGNAL_REGISTRY.DEEP_SUBDOMAIN,
         "Misleading domain structure",
-
-      description:
         "The domain contains an unusually deep subdomain chain.",
-
-      points: 15,
-    });
+        hostname,
+      ),
+    );
   }
 
-  /*
-   * @ symbol obfuscation
-   */
-  if (
-    containsAtSymbol
-  ) {
-    flags.push({
-      category:
+  if (containsAtSymbol) {
+    flags.push(
+      makeFlag(
+        SIGNAL_REGISTRY.AT_OBFUSCATION,
         "URL obfuscation",
-
-      description:
         "The URL contains an @ symbol that may obscure the actual destination.",
-
-      points: 20,
-    });
+        hostname,
+      ),
+    );
   }
 
-  /*
-   * Punycode / internationalized
-   * domain encoding
-   */
-  if (
-    containsPunycode
-  ) {
-    flags.push({
-      category:
+  if (containsPunycode) {
+    flags.push(
+      makeFlag(
+        SIGNAL_REGISTRY.PUNYCODE,
         "Punycode domain",
-
-      description:
         "The URL uses an encoded internationalized domain name that may resemble another website.",
-
-      points: 20,
-    });
+        hostname,
+      ),
+    );
   }
 
-  /*
-   * Unusually long hostname
-   */
-  if (
-    hostname.length >
-    50
-  ) {
-    flags.push({
-      category:
+  if (hostname.length > 50) {
+    flags.push(
+      makeFlag(
+        SIGNAL_REGISTRY.LONG_DOMAIN,
         "Long domain",
-
-      description:
         "The hostname is unusually long and may be designed to confuse the recipient.",
-
-      points: 10,
-    });
+        hostname,
+      ),
+    );
   }
 
-  /*
-   * Protected brand appears on
-   * an untrusted domain
-   */
-  if (
-    impersonatedBrand
-  ) {
-    flags.push({
-      category:
+  if (impersonatedBrand) {
+    flags.push(
+      makeFlag(
+        SIGNAL_REGISTRY.BRAND_IMPERSONATION,
         "Brand impersonation",
-
-      description:
         `The domain contains "${impersonatedBrand}" but is not recognized as an official ${impersonatedBrand} domain.`,
-
-      points: 30,
-    });
+        hostname,
+      ),
+    );
   }
 
-  /*
-   * Look-alike / typosquat domain
-   */
-  if (
-    suspectedTyposquatBrand
-  ) {
-    flags.push({
-      category:
+  if (suspectedTyposquatBrand) {
+    flags.push(
+      makeFlag(
+        SIGNAL_REGISTRY.TYPOSQUATTING,
         "Typosquatting",
-
-      description:
         `The domain closely resembles "${suspectedTyposquatBrand}" but is not recognized as an official ${suspectedTyposquatBrand} domain.`,
-
-      points: 30,
-    });
+        hostname,
+      ),
+    );
   }
 
   /*
-   * Trusted domains should not be
-   * penalized merely for legitimate
-   * paths such as:
-   *
-   * amazon.com/account
-   * microsoft.com/security
-   *
-   * unless another structural URL
-   * risk is also present.
+   * Trusted-domain path protection.
    */
+
   const hasAdditionalUrlRisk =
     shortened ||
     ipAddress ||
@@ -1010,147 +768,94 @@ export function analyzeUrlIntelligence(
     containsAtSymbol ||
     containsPunycode ||
     impersonatedBrand !== null ||
-    suspectedTyposquatBrand !==
-      null;
+    suspectedTyposquatBrand !== null;
 
   if (
-    suspiciousPathMatches.length >
-      0 &&
+    suspiciousPathMatches.length > 0 &&
     (
       !trustMatch.trusted ||
       hasAdditionalUrlRisk
     )
   ) {
-    flags.push({
-      category:
+    flags.push(
+      makeFlag(
+        SIGNAL_REGISTRY.SUSPICIOUS_PATH,
         "Suspicious URL path",
-
-      description:
         `The URL path contains security-sensitive terms: ${suspiciousPathMatches.join(
           ", ",
         )}.`,
-
-      points: 15,
-    });
+        suspiciousPathMatches.join(", "),
+      ),
+    );
   }
 
-  /*
-   * Suspicious query parameters
-   */
   if (
-    queryAnalysis
-      .suspiciousKeywords
-      .length > 0
+    queryAnalysis.suspiciousKeywords.length >
+    0
   ) {
-    flags.push({
-      category:
+    flags.push(
+      makeFlag(
+        SIGNAL_REGISTRY.SUSPICIOUS_QUERY,
         "Suspicious query parameters",
-
-      description:
         `The URL contains security-sensitive query terms: ${queryAnalysis.suspiciousKeywords.join(
           ", ",
         )}.`,
-
-      points:
-        trustMatch.trusted
-          ? 5
-          : 10,
-    });
-  }
-
-  /*
-   * URL nested inside another URL
-   */
-  if (
-    queryAnalysis
-      .containsNestedUrl
-  ) {
-    flags.push({
-      category:
-        "Nested URL",
-
-      description:
-        "The URL contains another web address inside its query parameters, which may be used for redirects or destination hiding.",
-
-      points: 20,
-    });
-  }
-
-  /*
-   * Final URL intelligence object
-   */
-  const intelligence:
-    UrlIntelligence = {
-    originalUrl:
-      rawUrl,
-
-    normalizedUrl,
-
-    protocol:
-      parsedUrl.protocol.replace(
-        ":",
-        "",
+        queryAnalysis.suspiciousKeywords.join(
+          ", ",
+        ),
+        trustMatch.trusted ? 5 : 10,
       ),
+    );
+  }
 
+  if (queryAnalysis.containsNestedUrl) {
+    flags.push(
+      makeFlag(
+        SIGNAL_REGISTRY.NESTED_URL,
+        "Nested URL",
+        "The URL contains another web address inside its query parameters, which may be used for redirects or destination hiding.",
+        parsedUrl.hostname,
+      ),
+    );
+  }
+
+  /*
+   * ---------------------------------------
+   * FINAL INTELLIGENCE OBJECT
+   * ---------------------------------------
+   */
+
+  const intelligence: UrlIntelligence = {
+    originalUrl: rawUrl,
+    normalizedUrl,
+    protocol:
+      parsedUrl.protocol.replace(":", ""),
     hostname,
-
-    pathname:
-      parsedUrl.pathname,
-
+    pathname: parsedUrl.pathname,
     usesHttps,
-
-    isShortened:
-      shortened,
-
-    isIpAddress:
-      ipAddress,
-
+    isShortened: shortened,
+    isIpAddress: ipAddress,
     hasSuspiciousTld:
-      suspiciousTld !==
-      null,
-
+      suspiciousTld !== null,
     hasLongSubdomainChain:
       longSubdomainChain,
-
     subdomainDepth,
-
     suspiciousTld,
-
-    domainLength:
-      hostname.length,
-
+    domainLength: hostname.length,
     containsAtSymbol,
-
     containsPunycode,
-
-    port:
-      parsedUrl.port ||
-      null,
-
+    port: parsedUrl.port || null,
     impersonatedBrand,
-
     suspectedTyposquatBrand,
-
     suspiciousPathKeywords:
       suspiciousPathMatches,
-
     suspiciousQueryKeywords:
-      queryAnalysis
-        .suspiciousKeywords,
-
+      queryAnalysis.suspiciousKeywords,
     containsNestedUrl:
-      queryAnalysis
-        .containsNestedUrl,
-
-    /*
-     * Domain trust result
-     */
+      queryAnalysis.containsNestedUrl,
     isTrustedDomain:
       trustMatch.trusted,
-
-    trustedBrand:
-      trustMatch.brand,
-
+    trustedBrand: trustMatch.brand,
     trustedDomain:
       trustMatch.matchedDomain,
   };

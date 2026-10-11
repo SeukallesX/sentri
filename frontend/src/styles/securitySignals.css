@@ -1,0 +1,495 @@
+
+/*
+ * ==========================================
+ * SENTRI V3 — SECURITY SIGNAL HUD
+ * ==========================================
+ */
+
+:root {
+  --sentri-signal-bg: #07131e;
+  --sentri-signal-surface: #0b1b29;
+  --sentri-signal-surface-hover: #102638;
+
+  --sentri-signal-border:
+    rgba(68, 212, 226, 0.18);
+
+  --sentri-signal-cyan: #40c9d0;
+  --sentri-signal-cyan-bright: #73e7e7;
+
+  --sentri-signal-text: #e8f7fa;
+  --sentri-signal-muted: #89a6b6;
+
+  --sentri-severity-info: #5de4c7;
+  --sentri-severity-low: #69c9ff;
+  --sentri-severity-medium: #ffd166;
+  --sentri-severity-high: #ff9254;
+  --sentri-severity-critical: #ff5367;
+}
+
+/* ==========================================
+   SIGNAL OVERVIEW
+========================================== */
+
+.sentri-signal-overview {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.sentri-signal-stat {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  min-width: 0;
+  min-height: 86px;
+
+  padding: 15px 17px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(64, 201, 208, 0.07),
+      rgba(7, 19, 30, 0.95)
+    );
+
+  border:
+    1px solid var(--sentri-signal-border);
+
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.sentri-signal-stat::before {
+  content: "";
+
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 36px;
+  height: 2px;
+
+  background: var(--sentri-signal-cyan);
+}
+
+.sentri-signal-stat > span {
+  color: var(--sentri-signal-muted);
+
+  font-size: 10px;
+  font-weight: 700;
+
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+
+.sentri-signal-stat > strong {
+  margin-top: 9px;
+
+  color: var(--sentri-signal-cyan-bright);
+
+  font-size: 27px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+/* ==========================================
+   SIGNAL LIST
+========================================== */
+
+.jarvis-results-card .hud-flags {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+/* ==========================================
+   SECURITY SIGNAL CARDS
+========================================== */
+
+.jarvis-results-card .sentri-signal-card {
+  --signal-accent: var(--sentri-signal-cyan);
+
+  position: relative;
+
+  display: grid;
+
+  grid-template-columns:
+    42px minmax(0, 1fr) auto;
+
+  align-items: start;
+  gap: 14px;
+
+  width: 100%;
+  min-width: 0;
+
+  padding: 18px;
+
+  background:
+    linear-gradient(
+      120deg,
+      rgba(64, 201, 208, 0.035),
+      rgba(8, 20, 32, 0.95)
+    );
+
+  border:
+    1px solid var(--sentri-signal-border);
+
+  border-left:
+    3px solid var(--signal-accent);
+
+  border-radius: 12px;
+
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    transform 180ms ease;
+}
+
+.jarvis-results-card
+.sentri-signal-card:hover {
+  border-color: var(--signal-accent);
+
+  background:
+    linear-gradient(
+      120deg,
+      rgba(64, 201, 208, 0.08),
+      rgba(10, 25, 39, 0.98)
+    );
+
+  transform: translateY(-2px);
+}
+
+/* ==========================================
+   SEVERITY COLORS
+========================================== */
+
+.jarvis-results-card
+.sentri-signal-card.sentri-severity-info {
+  --signal-accent: var(--sentri-severity-info);
+}
+
+.jarvis-results-card
+.sentri-signal-card.sentri-severity-low {
+  --signal-accent: var(--sentri-severity-low);
+}
+
+.jarvis-results-card
+.sentri-signal-card.sentri-severity-medium {
+  --signal-accent: var(--sentri-severity-medium);
+}
+
+.jarvis-results-card
+.sentri-signal-card.sentri-severity-high {
+  --signal-accent: var(--sentri-severity-high);
+}
+
+.jarvis-results-card
+.sentri-signal-card.sentri-severity-critical {
+  --signal-accent: var(--sentri-severity-critical);
+}
+
+/* ==========================================
+   SIGNAL INDEX
+========================================== */
+
+.jarvis-results-card
+.sentri-signal-card .hud-flag-index {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 38px;
+  height: 38px;
+
+  color: var(--signal-accent);
+
+  font-size: 13px;
+  font-weight: 800;
+
+  border:
+    1px solid var(--signal-accent);
+
+  border-radius: 8px;
+
+  background:
+    rgba(64, 201, 208, 0.06);
+}
+
+/* ==========================================
+   SIGNAL CONTENT
+========================================== */
+
+.jarvis-results-card
+.sentri-signal-card .hud-flag-content {
+  min-width: 0;
+}
+
+.jarvis-results-card
+.sentri-signal-card .hud-flag-content > span {
+  color: var(--sentri-signal-muted);
+
+  font-size: 10px;
+  font-weight: 700;
+
+  letter-spacing: 1.1px;
+}
+
+.jarvis-results-card
+.sentri-signal-card .hud-flag-content > strong {
+  display: block;
+
+  margin-top: 6px;
+
+  color: var(--sentri-signal-text);
+
+  font-size: 15px;
+  font-weight: 750;
+}
+
+.jarvis-results-card
+.sentri-signal-card .hud-flag-content > p {
+  margin-top: 8px;
+
+  color: var(--sentri-signal-muted);
+
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+/* ==========================================
+   SIGNAL METADATA
+========================================== */
+
+.sentri-signal-metadata {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.sentri-signal-id {
+  color: var(--sentri-signal-cyan-bright);
+
+  font-family:
+    "Consolas",
+    "Courier New",
+    monospace;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  letter-spacing: 0.5px;
+  overflow-wrap: anywhere;
+}
+
+.sentri-signal-severity {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 4px 8px;
+
+  color: var(--signal-accent);
+
+  font-size: 10px;
+  font-weight: 800;
+
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+
+  border:
+    1px solid var(--signal-accent);
+
+  border-radius: 5px;
+
+  background:
+    color-mix(
+      in srgb,
+      var(--signal-accent) 10%,
+      transparent
+    );
+}
+
+.sentri-signal-source {
+  color: var(--sentri-signal-muted);
+
+  font-size: 10px;
+  font-weight: 700;
+
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+/* ==========================================
+   DETECTION EVIDENCE
+========================================== */
+
+.sentri-signal-evidence {
+  margin-top: 12px;
+  padding: 12px 14px;
+
+  background:
+    rgba(64, 201, 208, 0.045);
+
+  border-left:
+    2px solid var(--signal-accent);
+
+  border-radius: 5px;
+}
+
+.sentri-signal-evidence > span {
+  color: var(--sentri-signal-cyan);
+
+  font-size: 10px;
+  font-weight: 800;
+
+  letter-spacing: 1px;
+}
+
+.sentri-signal-evidence > div {
+  margin-top: 8px;
+}
+
+.sentri-signal-evidence p {
+  color: var(--sentri-signal-muted);
+
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.sentri-signal-evidence code {
+  display: block;
+
+  max-width: 100%;
+  margin-top: 5px;
+  padding: 7px 9px;
+
+  color: var(--sentri-signal-cyan-bright);
+
+  background:
+    rgba(3, 12, 19, 0.75);
+
+  border:
+    1px solid rgba(64, 201, 208, 0.1);
+
+  border-radius: 5px;
+
+  font-family:
+    "Consolas",
+    "Courier New",
+    monospace;
+
+  font-size: 12px;
+
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* ==========================================
+   RISK CONTRIBUTION
+========================================== */
+
+.jarvis-results-card
+.sentri-signal-card .hud-flag-points {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 48px;
+
+  padding: 8px 10px;
+
+  color: var(--signal-accent);
+
+  background:
+    rgba(64, 201, 208, 0.08);
+
+  border:
+    1px solid var(--signal-accent);
+
+  border-radius: 7px;
+
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+/* ==========================================
+   RESPONSIVE DESIGN
+========================================== */
+
+@media (max-width: 700px) {
+  .sentri-signal-overview {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
+
+  .sentri-signal-stat {
+    min-height: 75px;
+    padding: 12px;
+  }
+
+  .sentri-signal-stat > span {
+    font-size: 9px;
+  }
+
+  .sentri-signal-stat > strong {
+    font-size: 23px;
+  }
+
+  .jarvis-results-card
+  .sentri-signal-card {
+    grid-template-columns:
+      32px minmax(0, 1fr);
+
+    gap: 10px;
+    padding: 14px;
+  }
+
+  .jarvis-results-card
+  .sentri-signal-card .hud-flag-index {
+    width: 30px;
+    height: 30px;
+  }
+
+  .jarvis-results-card
+  .sentri-signal-card .hud-flag-points {
+    grid-column: 2;
+    justify-self: start;
+  }
+}
+
+@media (max-width: 440px) {
+  .sentri-signal-overview {
+    grid-template-columns:
+      minmax(0, 1fr);
+  }
+
+  .sentri-signal-stat {
+    min-height: 65px;
+  }
+}
+
+/* ==========================================
+   REDUCED MOTION
+========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .jarvis-results-card
+  .sentri-signal-card {
+    transition: none;
+  }
+
+  .jarvis-results-card
+  .sentri-signal-card:hover {
+    transform: none;
+  }
+}

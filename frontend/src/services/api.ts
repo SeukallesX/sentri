@@ -7,6 +7,18 @@ export interface ScamFlag {
   category: string;
   description: string;
   points: number;
+  signalId?: string;
+  severity?:
+    | "info"
+    | "low"
+    | "medium"
+    | "high"
+    | "critical";
+  source?: string;
+  evidence?: {
+    description: string;
+    value?: string;
+  }[];
 }
 
 /*

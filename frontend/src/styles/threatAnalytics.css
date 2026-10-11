@@ -1,0 +1,247 @@
+
+/*
+ * ==========================================
+ * SENTRI V3 — THREAT ANALYTICS HUD
+ * ==========================================
+ */
+
+/* FILTER PANEL */
+
+.sentri-analytics-filters {
+  margin-bottom: 22px;
+  padding: 20px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(64, 201, 208, 0.07),
+      rgba(7, 19, 30, 0.96)
+    );
+
+  border:
+    1px solid rgba(64, 201, 208, 0.2);
+
+  border-radius: 12px;
+}
+
+.sentri-filter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.sentri-filter-eyebrow {
+  color: #40c9d0;
+
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.sentri-filter-header h4 {
+  margin: 5px 0 0;
+  color: #e8f7fa;
+  font-size: 17px;
+}
+
+.sentri-filter-count {
+  color: #73e7e7;
+
+  font-family: Consolas, monospace;
+  font-size: 11px;
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+/* FILTER CONTROLS */
+
+.sentri-filter-controls {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(0, 1fr)
+    auto;
+
+  align-items: end;
+  gap: 12px;
+}
+
+.sentri-filter-field {
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+  min-width: 0;
+}
+
+.sentri-filter-field > span {
+  color: #89a6b6;
+
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.sentri-filter-field select {
+  width: 100%;
+  min-height: 42px;
+
+  padding: 10px 12px;
+
+  color: #e8f7fa;
+  background: #0b1b29;
+
+  border:
+    1px solid rgba(64, 201, 208, 0.25);
+
+  border-radius: 7px;
+
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.sentri-filter-field select:focus-visible {
+  outline: 2px solid #40c9d0;
+  outline-offset: 2px;
+}
+
+/* RESET BUTTON */
+
+.sentri-filter-reset {
+  min-height: 42px;
+  padding: 10px 16px;
+
+  color: #73e7e7;
+  background: rgba(64, 201, 208, 0.08);
+
+  border:
+    1px solid rgba(64, 201, 208, 0.3);
+
+  border-radius: 7px;
+
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.7px;
+
+  cursor: pointer;
+
+  transition:
+    background 180ms ease,
+    color 180ms ease;
+}
+
+.sentri-filter-reset:hover:not(:disabled) {
+  color: #07131e;
+  background: #40c9d0;
+}
+
+.sentri-filter-reset:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* TOP SECURITY SIGNALS */
+
+.sentri-top-signals {
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+}
+
+.sentri-top-signal {
+  min-width: 0;
+}
+
+.sentri-top-signal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 12px;
+  margin-bottom: 7px;
+}
+
+.sentri-top-signal-name {
+  color: #d9e7f5;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.sentri-top-signal-count {
+  color: #4ee8d3;
+  font-size: 13px;
+}
+
+.sentri-top-signal-track {
+  height: 7px;
+
+  background:
+    rgba(78, 232, 211, 0.08);
+
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.sentri-top-signal-fill {
+  height: 100%;
+  background: #4ee8d3;
+  border-radius: 8px;
+}
+
+.sentri-top-signal-id {
+  display: block;
+  margin-top: 6px;
+
+  color: #8098af;
+
+  font-family: Consolas, monospace;
+  font-size: 10px;
+}
+
+/* ANALYTICS DISCLAIMER */
+
+.sentri-analytics-disclaimer {
+  margin-top: 18px;
+
+  color: #8098af;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 700px) {
+  .sentri-filter-controls {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .sentri-filter-reset {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 480px) {
+  .sentri-filter-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .sentri-filter-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .sentri-filter-reset {
+    grid-column: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sentri-filter-reset {
+    transition: none;
+  }
+}

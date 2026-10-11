@@ -1,3 +1,4 @@
+
 import type {
   AnalysisResult,
   ScamFlag,
@@ -21,22 +22,41 @@ import {
   correlateThreats,
 } from "../utils/threatCorrelation.js";
 
+import {
+  SIGNAL_REGISTRY,
+  createSignal,
+} from "../config/signalRegistry.js";
+
+import type {
+  SignalDefinition,
+} from "../config/signalRegistry.js";
+
+/*
+ * ---------------------------------------
+ * RULE-X DETECTION ENGINE
+ * SENTRI VERSION 3
+ * ---------------------------------------
+ */
+
 interface ScamRule {
   category: string;
   description: string;
-  points: number;
+  signal: SignalDefinition;
   patterns: RegExp[];
 }
+
+/*
+ * ---------------------------------------
+ * MESSAGE DETECTION RULES
+ * ---------------------------------------
+ */
 
 const scamRules: ScamRule[] = [
   {
     category: "Urgency",
-
     description:
       "The message uses pressure or urgent language.",
-
-    points: 15,
-
+    signal: SIGNAL_REGISTRY.URGENCY,
     patterns: [
       /\bact now\b/i,
       /\bimmediately\b/i,
@@ -51,12 +71,9 @@ const scamRules: ScamRule[] = [
 
   {
     category: "Account threat",
-
     description:
       "The message threatens account suspension, closure, or restricted access.",
-
-    points: 20,
-
+    signal: SIGNAL_REGISTRY.ACCOUNT_THREAT,
     patterns: [
       /\baccount locked\b/i,
       /\baccount is locked\b/i,
@@ -72,12 +89,9 @@ const scamRules: ScamRule[] = [
 
   {
     category: "Sensitive information",
-
     description:
       "The message requests private or security-related information.",
-
-    points: 30,
-
+    signal: SIGNAL_REGISTRY.SENSITIVE_INFORMATION,
     patterns: [
       /\bpassword\b/i,
       /\bverification code\b/i,
@@ -94,12 +108,9 @@ const scamRules: ScamRule[] = [
 
   {
     category: "Suspicious payment",
-
     description:
       "The message requests an unusual or difficult-to-reverse payment.",
-
-    points: 30,
-
+    signal: SIGNAL_REGISTRY.SUSPICIOUS_PAYMENT,
     patterns: [
       /\bgift card\b/i,
       /\bwire transfer\b/i,
@@ -116,12 +127,9 @@ const scamRules: ScamRule[] = [
 
   {
     category: "Prize or reward",
-
     description:
       "The message claims the recipient won a prize, reward, or giveaway.",
-
-    points: 20,
-
+    signal: SIGNAL_REGISTRY.PRIZE_REWARD,
     patterns: [
       /\bcongratulations\b/i,
       /\byou(?:'ve| have) won\b/i,
@@ -136,12 +144,9 @@ const scamRules: ScamRule[] = [
 
   {
     category: "Investment promise",
-
     description:
       "The message promises unusually high, fast, or guaranteed investment returns.",
-
-    points: 25,
-
+    signal: SIGNAL_REGISTRY.INVESTMENT_PROMISE,
     patterns: [
       /\bguaranteed returns?\b/i,
       /\bdouble your money\b/i,
@@ -156,12 +161,9 @@ const scamRules: ScamRule[] = [
 
   {
     category: "Impersonation",
-
     description:
       "The sender may be pretending to represent a trusted person or organization.",
-
-    points: 20,
-
+    signal: SIGNAL_REGISTRY.IMPERSONATION,
     patterns: [
       /\bthis is the irs\b/i,
       /\bthis is social security\b/i,
@@ -177,12 +179,9 @@ const scamRules: ScamRule[] = [
 
   {
     category: "Secrecy request",
-
     description:
       "The message asks the recipient to keep the request secret.",
-
-    points: 20,
-
+    signal: SIGNAL_REGISTRY.SECRECY_REQUEST,
     patterns: [
       /\bdo not tell anyone\b/i,
       /\bkeep this confidential\b/i,
@@ -194,101 +193,163 @@ const scamRules: ScamRule[] = [
   },
 ];
 
-export function analyzeMessage(
+/*
+ * ---------------------------------------
+ * EXTRACT MATCHED EVIDENCE
+ * ---------------------------------------
+ */
+
+function extractEvidence(
   message: string,
-): AnalysisResult {
+  patterns: RegExp[],
+): string[] {
+  const evidence = new Set<string>();
+
+  for (const pattern of patterns) {
+    const match = pattern.exec(message);
+
+    if (match?.[0]) {
+      evidence.add(match[0]);
+    }
+  }
+
+  return [...evidence];
+}
+
+/*
+ * ---------------------------------------
+ * RULE-X SIGNAL EXTRACTION
+ * ---------------------------------------
+ */
+
+function analyzeMessageRules(
+  message: string,
+): ScamFlag[] {
   const flags: ScamFlag[] = [];
 
-  /*
-   * Run message-based scam rules.
-   */
-  for (
-    const rule of scamRules
-  ) {
-    const matched =
-      rule.patterns.some(
-        (pattern) =>
-          pattern.test(
-            message,
-          ),
-      );
+  for (const rule of scamRules) {
+    const matches = extractEvidence(
+      message,
+      rule.patterns,
+    );
 
-    if (!matched) {
+    if (matches.length === 0) {
       continue;
     }
 
+    const signal = createSignal(
+      rule.signal,
+      rule.description,
+    );
+
+    /*
+     * Store the matching phrases as
+     * evidence without duplicating points.
+     */
+
+    signal.evidence = matches.map(
+      (value) => ({
+        description:
+          "Matched Rule-X detection pattern.",
+        value,
+      }),
+    );
+
     flags.push({
-      category:
-        rule.category,
-
-      description:
-        rule.description,
-
-      points:
-        rule.points,
+      category: rule.category,
+      description: rule.description,
+      points: signal.points,
+      signalId: signal.id,
+      severity: signal.severity,
+      source: signal.source,
+      evidence: signal.evidence,
     });
   }
 
-  /*
-   * Run URL analysis against links
-   * contained in the message.
-   */
-  const urlFlags =
-    analyzeUrls(
-      message,
-    );
+  return flags;
+}
 
-  flags.push(
-    ...urlFlags,
-  );
+/*
+ * ---------------------------------------
+ * MAIN MESSAGE ANALYZER
+ * ---------------------------------------
+ */
+
+export function analyzeMessage(
+  message: string,
+): AnalysisResult {
+  /*
+   * STEP 1
+   * Extract Rule-X security signals.
+   */
+
+  const flags: ScamFlag[] =
+    analyzeMessageRules(message);
 
   /*
-   * Calculate risk.
+   * STEP 2
+   * Analyze URLs embedded in the message.
    */
+
+  const urlFlags = analyzeUrls(message);
+
+  flags.push(...urlFlags);
+
+  /*
+   * STEP 3
+   * Calculate overall risk.
+   */
+
   const riskScore =
-    calculateRiskScore(
-      flags,
-    );
+    calculateRiskScore(flags);
 
   const riskLevel =
-    determineRiskLevel(
-      riskScore,
-    );
+    determineRiskLevel(riskScore);
 
   /*
-   * Determine primary threat category.
+   * STEP 4
+   * Classify the primary threat.
    */
+
   const classification =
-    classifyThreat(
-      flags,
-    );
+    classifyThreat(flags);
 
   /*
-   * Correlate combinations of signals.
+   * STEP 5
+   * Correlate detected indicators.
    */
+
   const correlation =
-    correlateThreats(
-      flags,
-    );
+    correlateThreats(flags);
 
   /*
-   * Generate summary.
+   * STEP 6
+   * Generate an explainable summary.
    */
+
+  const actionableFlags =
+    flags.filter(
+      (flag) => flag.points > 0,
+    );
+
+  const count = actionableFlags.length;
+
   const summary =
-    flags.length === 0
+    count === 0
       ? "Sentri did not detect any common scam patterns in this message."
-      : `Sentri detected ${flags.length} potential scam ${
-          flags.length === 1
+      : `Sentri detected ${count} potential scam ${
+          count === 1
             ? "indicator"
             : "indicators"
         }.`;
 
   /*
-   * Return complete result.
+   * STEP 7
+   * Return the complete analysis.
    */
+
   return {
     riskScore,
-
     riskLevel,
 
     threatCategory:
@@ -313,12 +374,9 @@ export function analyzeMessage(
       correlation.explanation,
 
     flags,
-
     summary,
 
     recommendation:
-      getRecommendation(
-        riskLevel,
-      ),
+      getRecommendation(riskLevel),
   };
 }

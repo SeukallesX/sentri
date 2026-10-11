@@ -1,70 +1,130 @@
+
 import type { AnalysisResult } from "../services/api";
 
 interface ResultsCardProps {
   result: AnalysisResult | null;
 }
 
-function ResultsCard({
-  result,
-}: ResultsCardProps) {
-  const riskLevel =
-    result?.riskLevel ?? "Low";
+type SignalSeverity =
+  | "info"
+  | "low"
+  | "medium"
+  | "high"
+  | "critical";
 
-  const riskClass =
-    result
-      ? `risk-${riskLevel.toLowerCase()}`
-      : "risk-low";
+interface SignalEvidence {
+  description: string;
+  value?: string;
+}
 
-  const score =
-    result?.riskScore ?? 0;
+interface StructuredFlag {
+  category: string;
+  description: string;
+  points: number;
+  signalId?: string;
+  severity?: SignalSeverity;
+  source?: string;
+  evidence?: SignalEvidence[];
+}
 
-  const indicatorCount =
-    result?.flags.length ?? 0;
+function getSeverity(
+  flag: StructuredFlag,
+): SignalSeverity {
+  if (flag.severity) {
+    return flag.severity;
+  }
+
+  if (flag.points >= 30) return "critical";
+  if (flag.points >= 20) return "high";
+  if (flag.points >= 10) return "medium";
+  if (flag.points > 0) return "low";
+
+  return "info";
+}
+
+function getSeverityClass(
+  severity: SignalSeverity,
+): string {
+  return `sentri-severity-${severity}`;
+}
+
+function formatSource(source?: string): string {
+  if (!source) return "LEGACY RULE";
+
+  return source.replace(/-/g, " ").toUpperCase();
+}
+
+function ResultsCard({ result }: ResultsCardProps) {
+  const riskLevel = result?.riskLevel ?? "Low";
+
+  const riskClass = result
+    ? `risk-${riskLevel.toLowerCase()}`
+    : "risk-low";
+
+  const score = result?.riskScore ?? 0;
+
+  const flags: StructuredFlag[] =
+    result?.flags ?? [];
+
+  const indicatorCount = flags.filter(
+    (flag) => flag.points > 0,
+  ).length;
+
+  const structuredCount = flags.filter(
+    (flag) => Boolean(flag.signalId),
+  ).length;
+
+  const informationalCount = flags.filter(
+    (flag) => flag.points === 0,
+  ).length;
 
   const threatCategory =
-    result?.threatCategory ??
-    "Unknown";
+    result?.threatCategory ?? "Unknown";
 
-  const confidence =
-    result?.confidence ?? 0;
+  const confidence = result?.confidence ?? 0;
 
   const attackVector =
     result?.attackVector ??
     "No dominant attack vector detected";
 
   const correlatedThreat =
-    (result as (AnalysisResult & {
-      correlatedThreat?: string;
-    }) | null)?.correlatedThreat ??
+    result?.correlatedThreat ??
     "No Correlated Threat";
 
   const correlationScore =
-    (result as (AnalysisResult & {
-      correlationScore?: number;
-    }) | null)?.correlationScore ?? 0;
+    result?.correlationScore ?? 0;
 
   const matchedSignals =
-    (result as (AnalysisResult & {
-      matchedSignals?: string[];
-    }) | null)?.matchedSignals ?? [];
+    result?.matchedSignals ?? [];
 
   const correlationExplanation =
-    (result as (AnalysisResult & {
-      correlationExplanation?: string;
-    }) | null)?.correlationExplanation ??
+    result?.correlationExplanation ??
     "No meaningful combination of threat indicators was detected.";
 
-  const systemStatus =
-    result
-      ? riskLevel === "High"
-        ? "THREAT DETECTED"
-        : riskLevel === "Medium"
-          ? "CAUTION"
-          : "NOMINAL"
-      : "STANDBY";
+  const systemStatus = result
+    ? riskLevel === "High"
+      ? "THREAT DETECTED"
+      : riskLevel === "Medium"
+        ? "CAUTION"
+        : "NOMINAL"
+    : "STANDBY";
+
+  const riskPercentage = Math.max(
+    0,
+    Math.min(100, score),
+  );
+
+  const correlationPercentage = Math.max(
+    0,
+    Math.min(100, correlationScore),
+  );
 
   return (
     <section className="results-card jarvis-results-card">
+      {/* =====================================
+          THREAT ASSESSMENT HEADER
+      ===================================== */}
+
       <div className="results-hud-header">
         <div>
           <p className="eyebrow">
@@ -82,10 +142,13 @@ function ResultsCard({
           className={`hud-status-chip ${riskClass}`}
         >
           <span className="hud-status-dot" />
-
           {systemStatus}
         </div>
       </div>
+
+      {/* =====================================
+          RADAR AND SYSTEM READOUT
+      ===================================== */}
 
       <div className="results-hud-body">
         <div className="hud-radar-area">
@@ -107,17 +170,13 @@ function ResultsCard({
 
           <div className="hud-radar">
             <div className="hud-ring hud-ring-outer" />
-
             <div className="hud-ring hud-ring-middle" />
-
             <div className="hud-ring hud-ring-inner" />
 
             <div className="hud-axis hud-axis-horizontal" />
-
             <div className="hud-axis hud-axis-vertical" />
 
             <div className="hud-radar-sweep" />
-
             <div className="hud-tick-ring" />
 
             <div className="hud-node hud-node-one" />
@@ -129,13 +188,8 @@ function ResultsCard({
                 SENTRI
               </span>
 
-              <strong>
-                {score}
-              </strong>
-
-              <small>
-                /100
-              </small>
+              <strong>{score}</strong>
+              <small>/100</small>
             </div>
           </div>
 
@@ -152,32 +206,21 @@ function ResultsCard({
 
         <div className="hud-readout">
           <div className="hud-readout-title">
-            <span>
-              SYSTEM READOUT
-            </span>
-
-            <small>
-              RULE-X // LOCAL
-            </small>
+            <span>SYSTEM READOUT</span>
+            <small>RULE-X // LOCAL</small>
           </div>
 
           <div className="hud-readout-grid">
             <div className="hud-readout-item">
-              <span>
-                Risk Index
-              </span>
+              <span>Risk Index</span>
 
               <strong className={riskClass}>
-                {score
-                  .toString()
-                  .padStart(3, "0")}
+                {score.toString().padStart(3, "0")}
               </strong>
             </div>
 
             <div className="hud-readout-item">
-              <span>
-                Indicators
-              </span>
+              <span>Indicators</span>
 
               <strong>
                 {indicatorCount
@@ -187,9 +230,7 @@ function ResultsCard({
             </div>
 
             <div className="hud-readout-item">
-              <span>
-                Threat Level
-              </span>
+              <span>Threat Level</span>
 
               <strong className={riskClass}>
                 {result
@@ -199,19 +240,12 @@ function ResultsCard({
             </div>
 
             <div className="hud-readout-item">
-              <span>
-                Engine
-              </span>
-
-              <strong>
-                RULE-X
-              </strong>
+              <span>Engine</span>
+              <strong>RULE-X</strong>
             </div>
 
             <div className="hud-readout-item">
-              <span>
-                Primary Threat
-              </span>
+              <span>Primary Threat</span>
 
               <strong className={riskClass}>
                 {result
@@ -221,28 +255,22 @@ function ResultsCard({
             </div>
 
             <div className="hud-readout-item">
-              <span>
-                Confidence
-              </span>
+              <span>Confidence</span>
 
               <strong>
-                {result
-                  ? `${confidence}%`
-                  : "0%"}
+                {result ? `${confidence}%` : "0%"}
               </strong>
             </div>
           </div>
 
           <div className="hud-signal-line">
-            <span>
-              SIGNAL ANALYSIS
-            </span>
+            <span>SIGNAL ANALYSIS</span>
 
             <div className="hud-signal-track">
               <div
                 className={`hud-signal-fill ${riskClass}`}
                 style={{
-                  width: `${score}%`,
+                  width: `${riskPercentage}%`,
                 }}
               />
             </div>
@@ -257,9 +285,7 @@ function ResultsCard({
               Attack Vector
             </p>
 
-            <p>
-              {attackVector}
-            </p>
+            <p>{attackVector}</p>
           </div>
 
           <div className="hud-summary">
@@ -270,7 +296,7 @@ function ResultsCard({
             <p>
               {result
                 ? result.summary
-                : "Sentri is standing by. Initialize a message scan to activate threat analysis."}
+                : "Sentri is standing by. Initialize a scan to activate threat analysis."}
             </p>
           </div>
         </div>
@@ -278,10 +304,12 @@ function ResultsCard({
 
       {result && (
         <>
-          <div className="hud-divider">
-            <span>
+          {/* =====================================
               CORRELATION ANALYSIS
-            </span>
+          ===================================== */}
+
+          <div className="hud-divider">
+            <span>CORRELATION ANALYSIS</span>
           </div>
 
           <div className="correlation-panel">
@@ -297,9 +325,7 @@ function ResultsCard({
               </div>
 
               <div className="correlation-score">
-                <span>
-                  CORRELATION
-                </span>
+                <span>CORRELATION</span>
 
                 <strong className={riskClass}>
                   {correlationScore}%
@@ -311,19 +337,14 @@ function ResultsCard({
               <div
                 className={`correlation-fill ${riskClass}`}
                 style={{
-                  width: `${correlationScore}%`,
+                  width: `${correlationPercentage}%`,
                 }}
               />
             </div>
 
             <div className="correlation-explanation">
-              <span>
-                ANALYSIS
-              </span>
-
-              <p>
-                {correlationExplanation}
-              </p>
+              <span>ANALYSIS</span>
+              <p>{correlationExplanation}</p>
             </div>
 
             <div className="correlation-signals">
@@ -338,10 +359,7 @@ function ResultsCard({
               ) : (
                 <div className="correlation-signal-list">
                   {matchedSignals.map(
-                    (
-                      signal: string,
-                      index: number,
-                    ) => (
+                    (signal, index) => (
                       <span
                         className="correlation-signal"
                         key={`${signal}-${index}`}
@@ -355,14 +373,35 @@ function ResultsCard({
             </div>
           </div>
 
+          {/* =====================================
+              STRUCTURED SECURITY SIGNALS
+          ===================================== */}
+
           <div className="hud-divider">
             <span>
-              DETECTED SIGNALS
+              DETECTED SECURITY SIGNALS
             </span>
           </div>
 
+          <div className="sentri-signal-overview">
+            <div className="sentri-signal-stat">
+              <span>RISK INDICATORS</span>
+              <strong>{indicatorCount}</strong>
+            </div>
+
+            <div className="sentri-signal-stat">
+              <span>STRUCTURED SIGNALS</span>
+              <strong>{structuredCount}</strong>
+            </div>
+
+            <div className="sentri-signal-stat">
+              <span>INFORMATIONAL</span>
+              <strong>{informationalCount}</strong>
+            </div>
+          </div>
+
           <div className="hud-flags">
-            {result.flags.length === 0 ? (
+            {flags.length === 0 ? (
               <div className="hud-clear-state">
                 <span className="hud-clear-icon">
                   ✓
@@ -374,51 +413,106 @@ function ResultsCard({
                   </strong>
 
                   <p>
-                    The analyzed message did not match Sentri's common scam rules.
+                    The analyzed content did not
+                    match Sentri's current
+                    detection rules.
                   </p>
                 </div>
               </div>
             ) : (
-              result.flags.map(
-                (
-                  flag,
-                  index,
-                ) => (
+              flags.map((flag, index) => {
+                const severity =
+                  getSeverity(flag);
+
+                const evidence =
+                  flag.evidence ?? [];
+
+                return (
                   <article
-                    className="hud-flag"
-                    key={`${flag.category}-${index}`}
+                    className={`hud-flag sentri-signal-card ${getSeverityClass(
+                      severity,
+                    )}`}
+                    key={`${
+                      flag.signalId ??
+                      flag.category
+                    }-${index}`}
                   >
                     <div className="hud-flag-index">
                       {(index + 1)
                         .toString()
-                        .padStart(
-                          2,
-                          "0",
-                        )}
+                        .padStart(2, "0")}
                     </div>
 
                     <div className="hud-flag-content">
                       <span>
-                        INDICATOR
+                        SECURITY INDICATOR
                       </span>
 
                       <strong>
                         {flag.category}
                       </strong>
 
-                      <p>
-                        {flag.description}
-                      </p>
+                      <div className="sentri-signal-metadata">
+                        <span className="sentri-signal-id">
+                          {flag.signalId ??
+                            "LEGACY-SIGNAL"}
+                        </span>
+
+                        <span className="sentri-signal-severity">
+                          {severity}
+                        </span>
+
+                        <span className="sentri-signal-source">
+                          {formatSource(
+                            flag.source,
+                          )}
+                        </span>
+                      </div>
+
+                      <p>{flag.description}</p>
+
+                      {evidence.length > 0 && (
+                        <div className="sentri-signal-evidence">
+                          <span>
+                            DETECTION EVIDENCE
+                          </span>
+
+                          {evidence.map(
+                            (
+                              item,
+                              evidenceIndex,
+                            ) => (
+                              <div
+                                key={evidenceIndex}
+                              >
+                                <p>
+                                  {item.description}
+                                </p>
+
+                                {item.value && (
+                                  <code>
+                                    {item.value}
+                                  </code>
+                                )}
+                              </div>
+                            ),
+                          )}
+                        </div>
+                      )}
                     </div>
 
                     <div className="hud-flag-points">
                       +{flag.points}
                     </div>
                   </article>
-                ),
-              )
+                );
+              })
             )}
           </div>
+
+          {/* =====================================
+              DEFENSE GUIDANCE
+          ===================================== */}
 
           <div className="hud-guidance">
             <div className="hud-guidance-header">
@@ -437,9 +531,7 @@ function ResultsCard({
               </span>
             </div>
 
-            <p>
-              {result.recommendation}
-            </p>
+            <p>{result.recommendation}</p>
           </div>
         </>
       )}
