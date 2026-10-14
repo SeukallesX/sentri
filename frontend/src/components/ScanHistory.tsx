@@ -1,6 +1,12 @@
 
 import { useMemo, useState } from "react";
 import type { StoredScan } from "../services/api";
+
+import {
+  downloadInvestigationReport,
+  type ReportFormat,
+} from "../utils/reportGenerator";
+
 import "../styles/securityTimeline.css";
 
 export type ScanHistoryItem = StoredScan;
@@ -59,10 +65,15 @@ function ScanHistory({
     useState<TypeFilter>("all");
   const [sortOrder, setSortOrder] =
     useState<SortOrder>("newest");
+
   const [expandedId, setExpandedId] =
     useState<string | null>(null);
+
   const [confirmClear, setConfirmClear] =
     useState(false);
+
+  const [exportError, setExportError] =
+    useState<string | null>(null);
 
   const filteredHistory = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -164,6 +175,30 @@ function ScanHistory({
     onClearHistory();
     setConfirmClear(false);
     setExpandedId(null);
+    setExportError(null);
+  }
+
+  function handleExport(
+    item: ScanHistoryItem,
+    format: ReportFormat,
+  ) {
+    setExportError(null);
+
+    try {
+      downloadInvestigationReport(
+        item,
+        format,
+      );
+    } catch (error) {
+      console.error(
+        "Sentri report export failed:",
+        error,
+      );
+
+      setExportError(
+        "Unable to export this report. Please try again.",
+      );
+    }
   }
 
   return (
@@ -212,7 +247,7 @@ function ScanHistory({
         </div>
       </div>
 
-      {/* INVESTIGATION CONTROLS */}
+      {/* FILTER CONTROLS */}
 
       <div className="sentri-timeline-controls">
         <div className="sentri-timeline-search">
@@ -295,8 +330,6 @@ function ScanHistory({
         </div>
       </div>
 
-      {/* FILTER STATUS */}
-
       <div className="sentri-timeline-status">
         <span>
           DISPLAYING {filteredHistory.length} OF{" "}
@@ -313,7 +346,7 @@ function ScanHistory({
         )}
       </div>
 
-      {/* EXISTING ARCHIVE HEADER */}
+      {/* TABLE HEADER */}
 
       <div className="archive-table-header">
         <span>ID</span>
@@ -386,18 +419,19 @@ function ScanHistory({
                     : ""
                 }`}
               >
-                {/* MAIN ROW */}
+                {/* SCAN ROW */}
 
                 <button
                   type="button"
                   className="incident-row"
                   aria-expanded={expanded}
                   aria-controls={`sentri-evidence-${item.id}`}
-                  onClick={() =>
+                  onClick={() => {
                     setExpandedId(
                       expanded ? null : item.id,
-                    )
-                  }
+                    );
+                    setExportError(null);
+                  }}
                 >
                   <div className="incident-id">
                     <span>
@@ -453,7 +487,7 @@ function ScanHistory({
                   </div>
                 </button>
 
-                {/* EXPANDABLE INVESTIGATION PANEL */}
+                {/* INVESTIGATION PANEL */}
 
                 {expanded && (
                   <div
@@ -466,21 +500,52 @@ function ScanHistory({
                           SENTRI // EVENT INSPECTION
                         </span>
 
-                        <h4>
-                          Security Evidence
-                        </h4>
+                        <h4>Security Evidence</h4>
                       </div>
 
-                      <button
-                        type="button"
-                        className="sentri-inspect-button"
-                        onClick={() =>
-                          onSelect(item)
-                        }
-                      >
-                        Inspect Scan
-                      </button>
+                      <div className="sentri-investigation-actions">
+                        <button
+                          type="button"
+                          className="sentri-inspect-button"
+                          onClick={() =>
+                            onSelect(item)
+                          }
+                        >
+                          Inspect Scan
+                        </button>
+
+                        <button
+                          type="button"
+                          className="sentri-export-button"
+                          onClick={() =>
+                            handleExport(item, "json")
+                          }
+                        >
+                          Export JSON
+                        </button>
+
+                        <button
+                          type="button"
+                          className="sentri-export-button"
+                          onClick={() =>
+                            handleExport(item, "txt")
+                          }
+                        >
+                          Export TXT
+                        </button>
+                      </div>
                     </div>
+
+                    {exportError && (
+                      <p
+                        className="sentri-export-error"
+                        role="alert"
+                      >
+                        {exportError}
+                      </p>
+                    )}
+
+                    {/* METRICS */}
 
                     <div className="sentri-investigation-metrics">
                       <div>
@@ -514,11 +579,17 @@ function ScanHistory({
                       </div>
                     </div>
 
+                    {/* ORIGINAL CONTENT */}
+
                     <div className="sentri-investigation-content">
-                      <span>ORIGINAL SCAN CONTENT</span>
+                      <span>
+                        ORIGINAL SCAN CONTENT
+                      </span>
 
                       <p>{item.content}</p>
                     </div>
+
+                    {/* DETECTION EVIDENCE */}
 
                     <div className="sentri-investigation-signals">
                       <div className="sentri-investigation-section-heading">
@@ -603,6 +674,8 @@ function ScanHistory({
                       )}
                     </div>
 
+                    {/* RESPONSE GUIDANCE */}
+
                     <div className="sentri-investigation-guidance">
                       <span>
                         RECOMMENDED RESPONSE
@@ -612,6 +685,12 @@ function ScanHistory({
                         {item.result.recommendation}
                       </p>
                     </div>
+
+                    <p className="sentri-report-privacy">
+                      Reports are generated locally
+                      and may contain sensitive scan
+                      content. Review before sharing.
+                    </p>
                   </div>
                 )}
               </div>
